@@ -2,7 +2,6 @@ const STORAGE_KEY = "gym-app-exercises";
 
 const input = document.getElementById("exercise-name-input");
 const saveButton = document.getElementById("save-exercise");
-const deleteAllButton = document.getElementById("delete-all-exercises");
 const exerciseList = document.getElementById("exercise-list");
 const addSetting = document.getElementById("add-setting");
 const settingsContainer = document.getElementById("settings-container");
@@ -83,10 +82,7 @@ saveButton.addEventListener("click", function () {
 
 	updateExercises(exercises);
 	clearExerciseForm();
-});
-
-deleteAllButton.addEventListener("click", function () {
-	updateExercises([]);
+	updateSettingsRowsVisiblity();
 });
 
 function loadExercises() {
@@ -161,24 +157,43 @@ addSetting.addEventListener("click", function() {
 	const settingsRow = document.createElement("div")
 	settingsRow.classList.add("settings-row");
 
+	const settingNameDeleteRow = document.createElement("div");
+	settingNameDeleteRow.classList.add("setting-delete-button-row");
+
+	const settingNameSpan = document.createElement("span");
+    settingNameSpan.textContent = "Setting name";
+	settingNameSpan.classList.add("field-name");
+
 	const settingName = document.createElement("input");
-	settingName.placeholder = "Setting name...";
+	settingName.placeholder = "Name...";
 	settingName.classList.add("setting-name");
+	settingName.classList.add("text-input");
+
+	const settingValueSpan = document.createElement("span");
+    settingValueSpan.textContent = "Value";
+	settingValueSpan.classList.add("field-name");
 
 	const settingValue = document.createElement("input");
 	settingValue.placeholder = "Setting value...";
 	settingValue.classList.add("setting-value");
+	settingValue.classList.add("text-input");
 
 	const delButton = createDeleteButton()
     delButton.addEventListener("click", function () {
 	    settingsRow.remove();
+		updateSettingsRowsVisiblity();
 	  });
+
+	settingNameDeleteRow.appendChild(settingNameSpan);
+	settingNameDeleteRow.appendChild(delButton);
 	
+	settingsRow.appendChild(settingNameDeleteRow);
 	settingsRow.appendChild(settingName);	
+	settingsRow.appendChild(settingValueSpan);
 	settingsRow.appendChild(settingValue);
-	settingsRow.appendChild(delButton);
 
 	settingsContainer.appendChild(settingsRow);
+	updateSettingsRowsVisiblity();
 });
 
 function readSettingsFromPage(){
@@ -238,9 +253,14 @@ function updateExercises(exercises){
 
 function createDeleteButton() {
 	const button = document.createElement("button");
-
 	button.classList.add("delete-button");
-    button.textContent = "X";
+
+	const icon = document.createElement("i");
+	icon.classList.add("fa-regular");
+	icon.classList.add("fa-trash-can");
+
+
+	button.appendChild(icon);
 
     return button;
 }
@@ -274,6 +294,16 @@ function updateSelectedNavButton(screenId) {
       bottomNavButtons[i].classList.remove("selected");
     }
   }
+}
+
+function updateSettingsRowsVisiblity() {
+	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+
+	if (settingsRows.length > 0) {
+		settingsContainer.classList.remove("hidden");
+	} else {
+		settingsContainer.classList.add("hidden");
+	}
 }
 
 //---------------------//

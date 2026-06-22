@@ -21,6 +21,19 @@ main {
   display: none;
 }
 
+/* ---------- Shared containers ---------- */
+
+.content-card {
+  background: #232323;
+  border: 0.5px solid #333;
+  border-radius: 10px;
+
+  margin-top: 2px;
+  margin-bottom: 2px;
+
+  padding: 4px;
+}
+
 
 /* ---------- Shared buttons ---------- */
 
@@ -33,6 +46,63 @@ main {
   color: inherit;
 }
 
+.save-button {
+  width: 100%;
+  background: hotpink;
+  color: floralwhite;
+  border: none;
+  border-radius: 8px;
+
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 10px; 
+
+  font-size: 16px;
+}
+
+.delete-button {
+  margin-left: auto;
+  width: auto;
+  padding: 0;
+
+  background: none;
+  border: none;
+  color: hotpink;
+  font-size: 18px;
+}
+
+/* ---------- Shared inputs ---------- */
+
+.text-input {
+  width: 100%;
+  box-sizing: border-box;
+
+  background-color: #232323;
+  color: floralwhite;
+
+  border: 0.5px solid #333;
+  border-radius: 8px;
+  
+  padding: 6px 12px;
+  font-size: 16px;
+
+  outline: none;
+}
+
+.text-input::placeholder {
+  color: #888;
+}
+
+.text-input:focus {
+  border-color: hotpink;
+}
+
+.field-name {
+  display: block;
+  text-align: left;
+  color: floralwhite;
+  font-size: 14px;
+}
 
 /* ---------- Top title rows ---------- */
 
@@ -70,8 +140,17 @@ main {
 .page-subtitle {
   font-size: 14px;
   color: #999999;
+  margin-bottom: 20px;
 }
 
+.content-header {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  
+  color: #999999;
+  font-size: 14px;
+}
 
 /* ---------- Bottom nav ---------- */
 
@@ -213,30 +292,43 @@ main {
 
 /* ---------- Exercise screen ---------- */
 
-.delete-button {
-  width: 10%;
-  margin-left: 12px;
-  padding: 6px 10px;
-
-  font-size: 14px;
-  color: red;
+.add-setting {
+  font-size: 18px;
+  color: hotpink;
+  background: none;
+  border: none;
 }
 
-.add-setting {
-  width: 10%;
-  margin-left: 12px;
-  padding: 6px 10px;
+.add-setting > i {
+  background: hotpink;
+  color: black;
+  border-radius: 999px;
+  padding: 4px;
+  font-size:14px;
+}
 
+.add-setting > span {
+  margin-left: 8px;
+  border-radius: 999px;
   font-size: 14px;
-  color: red;
 }
 
 .exercise-row,
 .settings-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
 
   margin-right: 12px;
   padding: 6px 10px;
+  gap: 4px;
+}
+
+.setting-delete-button-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.settings-row .text-input {
+  width: 88%;
 }

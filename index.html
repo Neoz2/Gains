@@ -73,6 +73,8 @@
           <span class="page-title">Start training</span>
           <span class="page-subtitle">Start a new session</span>
         </div>
+
+        <span class="content-header">SELECT METHOD</span>
     </section>
 
 <!-- CREATE EXERCISES -->
@@ -86,18 +88,21 @@
           <span class="page-subtitle">Configure static machine settings for reuse</span>
         </div>
 
-      <input id="exercise-name-input" placeholder="Input an exercise...">  
-        <button id="add-setting" class="add-setting">
-          +
-        </button>
-      <div id="settings-container"></div>
+        <span class="content-header">NEW EXERCISE</span>        
+
+      <input id="exercise-name-input" class="text-input" placeholder="Exercise name">  
+        <span class="content-header">MACHINE SETTINGS</span>    
+        <div class="content-card">
+          <button id="add-setting" class="add-setting">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add setting</span>
+          </button>
+        </div>
+      <div id="settings-container" class="content-card hidden"></div>
 
       <span>
-        <button id="save-exercise">
-          Save
-        </button>
-        <button id="delete-all-exercises">
-          Delete all
+        <button id="save-exercise" class="save-button">
+          Save exercise
         </button>
       </span>
 
