@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff2f92">
+
+  <title>Gym App</title>
+</head>
+<body>
+  <main>
+
+<!-- HOME -->
+    <section id="home-screen">
+      <div class="home-content">
+        <div class="home-welcome-block"> 
+          <span class="home-welcome-block-text">
+            <span>Welcome back</span>
+            <span>Ready to train?</span>
+          </span>
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        
+        <span class="home-nav-header">MAIN AREAS</span>
+        <button class="home-nav-item nav-button" data-screen="start-training-screen">
+          <i class="fa-solid fa-circle-play"></i>
+          <span class="home-nav-text">
+            <span class="">Training</span>
+            <span>Start a new session</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <button class="home-nav-item nav-button" data-screen="create-exercises-screen">
+          <i class="fa-solid fa-dumbbell"></i>
+          <span class="home-nav-text">          
+            <span>Exercises</span>
+            <span>Manage your exercises</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <button class="home-nav-item nav-button" data-screen="create-templates-screen">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span class="home-nav-text">
+            <span>Templates</span>
+            <span>Build reusable plans</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <button class="home-nav-item nav-button" data-screen="analyse-progress-screen">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span class="home-nav-text">
+            <span>Progress</span>
+            <span>Track performance over time</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
+
+<!-- START TRAINING -->
+    <section id="start-training-screen" class="hidden">
+        <div class="title-and-back-home">
+          <h1>Start training</h1>
+        <button class="home-button">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+    </section>
+
+<!-- CREATE EXERCISES -->
+    <section id="create-exercises-screen" class="hidden">
+      <div class="title-and-back-home">
+        <h1>Create exercises</h1>
+        <button class="home-button">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+
+      <input id="exercise-name-input" placeholder="Input an exercise...">  
+        <button id="add-setting" class="add-setting">
+          +
+        </button>
+      <div id="settings-container"></div>
+
+      <span>
+        <button id="save-exercise">
+          Save
+        </button>
+        <button id="delete-all-exercises">
+          Delete all
+        </button>
+      </span>
+
+      <ul id="exercise-list"></ul>
+    </section>
+
+<!-- CREATE TEMPLATES -->
+    <section id="create-templates-screen" class="hidden">
+      <div class="title-and-back-home">
+        <h1>Templates</h1>
+      </div>
+      <p>Templates will come later.</p>
+    </section>
+
+<!-- ANALYSE PROGRESS -->
+    <section id="analyse-progress-screen" class="hidden">
+      <div class="title-and-back-home">
+        <h1>Progress</h1>
+      </div>
+      <p>Progress will come later.</p>
+    </section>
+
+<!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="bottom-nav-item nav-button" data-screen="home-screen">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </button>
+
+      <button class="bottom-nav-item nav-button" data-screen="start-training-screen">
+        <i class="fa-solid fa-circle-play"></i>
+        <span>Training</span>
+      </button>
+
+      <button class="bottom-nav-item nav-button" data-screen="create-exercises-screen">
+        <i class="fa-solid fa-dumbbell"></i>
+        <span>Exercises</span>
+      </button>
+
+      <button class="bottom-nav-item nav-button" data-screen="create-templates-screen">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <span>Templates</span>
+      </button>
+
+      <button class="bottom-nav-item nav-button" data-screen="analyse-progress-screen">
+        <i class="fa-solid fa-chart-simple"></i>
+        <span>Progress</span>
+      </button>
+    </nav>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* ---------- Base ---------- */
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #111111;
+  color: floralwhite;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 90px;
+}
+
+
+/* ---------- Utilities ---------- */
+
+.hidden {
+  display: none;
+}
+
+
+/* ---------- Shared buttons ---------- */
+
+.nav-button {
+  border: none;
+  color: floralwhite;
+}
+
+.nav-button i {
+  color: inherit;
+}
+
+
+/* ---------- Top title rows ---------- */
+
+.title-and-back-home {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-right: 12px;
+  padding: 6px 10px;
+}
+
+.home-button {
+  width: 25%;
+  margin-left: 12px;
+  padding: 6px 10px;
+
+  font-size: 14px;
+  font-weight: bold;
+  color: blue;
+}
+
+
+/* ---------- Bottom nav ---------- */
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+
+  background: #111111;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  background: none;
+  border-top: 1px solid #333;
+
+  width: auto;
+  padding: 12px 0;
+
+  font-size: 14px;
+}
+
+.bottom-nav-item i {
+  font-size: 18px;
+}
+
+.bottom-nav-item.selected {
+  color: hotpink;
+}
+
+
+/* ---------- Home screen ---------- */
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* --- Welcome block --- */
+.home-welcome-block {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.home-welcome-block i {
+	width: 60px;
+  	height: 60px;
+	
+	font-size: 35px;
+	color: hotpink;
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	background: #333333;
+	border-radius: 999px;
+	border: 2px solid;
+
+}
+
+.home-welcome-block-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  flex: 1;
+}
+
+.home-welcome-block-text > span:first-child {
+	color: #999999;
+}
+
+.home-welcome-block-text > span:nth-child(even) {
+	font-size: 30px;
+}
+
+/* --- Nav items --- */
+.home-nav-header {
+	margin-top: 20px;
+	color: #999999;
+}
+
+.home-nav-item {
+  display: flex;
+  align-items: center;
+
+  background: #232323;
+  border-radius: 16px;
+
+  width: auto;
+  padding: 15px;
+
+  font-size: 12px;
+}
+
+.home-nav-item > i:first-child {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 22px;
+  background: hotpink;
+  border-radius: 999px;
+}
+
+.home-nav-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  flex: 1;
+  margin-left: 20px;
+}
+
+.home-nav-text > span:first-child {
+	font-size: 20px;
+}
+
+
+/* ---------- Exercise screen ---------- */
+
+.delete-button {
+  width: 10%;
+  margin-left: 12px;
+  padding: 6px 10px;
+
+  font-size: 14px;
+  color: red;
+}
+
+.add-setting {
+  width: 10%;
+  margin-left: 12px;
+  padding: 6px 10px;
+
+  font-size: 14px;
+  color: red;
+}
+
+.exercise-row,
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-right: 12px;
+  padding: 6px 10px;
+}
