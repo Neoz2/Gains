@@ -10,7 +10,15 @@ const goHomeButtons = document.querySelectorAll(".home-button");
 
 console.log("App started...");
 
-//---HOMEPAGE---//
+//---NAVIGATION---//
+
+const ROUTES = {
+	"home-screen": "#home",
+	"start-training-screen": "#start-training",
+	"create-exercises-screen": "#create-exercises",
+	"create-templates-screen": "#create-templates",
+	"analyse-progress-screen": "#analyse-progress"
+}
 
 function showScreen(screenId) {
   hideAllScreens();
@@ -24,6 +32,11 @@ for (let i = 0; i < navButtons.length; i++) {
   navButtons[i].addEventListener("click", function () {
     const screenId = navButtons[i].dataset.screen;
     showScreen(screenId);
+
+	const route = ROUTES[screenId];
+	if (route) {
+		history.pushState({ screenId: screenId }, "", route);
+	}
   });
 }
 
@@ -32,6 +45,14 @@ for (let i = 0; i < goHomeButtons.length; i++) {
     showScreen("home-screen");
   });
 }
+
+window.addEventListener("popstate", function (event) {
+  if (event.state && event.state.screenId) {
+	showScreen(event.state.screenId);	
+  } else {
+	showScreen("home-screen");
+  }
+});
 
 //---EXERCISE INPUT---//
 
@@ -257,4 +278,5 @@ function updateSelectedNavButton(screenId) {
 
 //---------------------//
 
+history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
