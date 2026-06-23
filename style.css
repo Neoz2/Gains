@@ -84,6 +84,27 @@ main {
   font-size: 18px;
 }
 
+.chevron-button {
+  background: none;
+  border: none;
+  color: #565656;
+  font-size: 18px;
+  margin-left: auto;
+}
+
+.dumbbell {
+  margin-left: 0;
+  margin-right: 12px;
+  width: auto;
+  padding: 0;
+
+  background: none;
+  border: none;
+  color: hotpink;
+  font-size: 20px;
+}
+
+
 
 /* =========================================================
    SHARED: Inputs / form fields
@@ -328,6 +349,28 @@ main {
    SCREEN: Create Exercises
 ========================================================= */
 
+#exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0 0;
+}
+
+.exercise-row-name {
+  font-weight: bold;
+  color: floralwhite;
+}
+
+.exercise-row-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.exercise-row-setting {
+  color: #999999;
+  font-size: 12px;
+}
+
 .add-setting {
   font-size: 18px;
   color: hotpink;
@@ -349,13 +392,23 @@ main {
   font-size: 14px;
 }
 
-.exercise-row,
+.exercise-row {
+  display: flex;
+  align-items: center;
+
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
 .settings-row {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 
-  margin-right: 12px;
   padding: 6px 10px;
   gap: 4px;
 }
