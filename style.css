@@ -1,4 +1,7 @@
-/* ---------- Base ---------- */
+/* =========================================================
+   BASE
+   Global defaults for the whole app
+========================================================= */
 
 body {
   margin: 0;
@@ -15,13 +18,20 @@ main {
 }
 
 
-/* ---------- Utilities ---------- */
+/* =========================================================
+   UTILITIES
+   Small reusable helper classes
+========================================================= */
 
 .hidden {
   display: none;
 }
 
-/* ---------- Shared containers ---------- */
+
+/* =========================================================
+   SHARED: Containers
+   Reusable visual boxes/cards
+========================================================= */
 
 .content-card {
   background: #232323;
@@ -35,7 +45,10 @@ main {
 }
 
 
-/* ---------- Shared buttons ---------- */
+/* =========================================================
+   SHARED: Buttons
+   Generic button styles used across screens
+========================================================= */
 
 .nav-button {
   border: none;
@@ -55,7 +68,7 @@ main {
 
   margin-top: 4px;
   margin-bottom: 4px;
-  padding: 10px; 
+  padding: 10px;
 
   font-size: 16px;
 }
@@ -71,7 +84,10 @@ main {
   font-size: 18px;
 }
 
-/* ---------- Shared inputs ---------- */
+
+/* =========================================================
+   SHARED: Inputs / form fields
+========================================================= */
 
 .text-input {
   width: 100%;
@@ -82,7 +98,7 @@ main {
 
   border: 0.5px solid #333;
   border-radius: 8px;
-  
+
   padding: 6px 12px;
   font-size: 16px;
 
@@ -91,6 +107,10 @@ main {
 
 .text-input::placeholder {
   color: #888;
+}
+
+.text-input.input-error {
+  border-color: red;
 }
 
 .text-input:focus {
@@ -104,18 +124,13 @@ main {
   font-size: 14px;
 }
 
-/* ---------- Top title rows ---------- */
 
-.title-and-back-home {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* =========================================================
+   SHARED: Page layout
+   Reusable page header / subtitle / back button pieces
+========================================================= */
 
-  margin-right: 12px;
-  padding: 6px 10px;
-}
-
-.home-button {
+.back-button {
   display: flex;
   align-items: flex-start;
   margin-top: 4px;
@@ -147,12 +162,18 @@ main {
   display: flex;
   align-items: flex-start;
   flex: 1;
-  
+
   color: #999999;
   font-size: 14px;
+
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
-/* ---------- Bottom nav ---------- */
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
 
 .bottom-nav {
   position: fixed;
@@ -193,37 +214,41 @@ main {
 }
 
 
-/* ---------- Home screen ---------- */
+/* =========================================================
+   SCREEN: Home
+========================================================= */
 
 .home-content {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-/* --- Welcome block --- */
+
+
+/* ---------- Home: welcome block ---------- */
+
 .home-welcome-block {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .home-welcome-block i {
-	width: 60px;
-  	height: 60px;
-	
-	font-size: 35px;
-	color: hotpink;
-	
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  width: 60px;
+  height: 60px;
 
-	flex-shrink: 0;
+  font-size: 35px;
+  color: hotpink;
 
-	background: #333333;
-	border-radius: 999px;
-	border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  flex-shrink: 0;
+
+  background: #333333;
+  border-radius: 999px;
+  border: 2px solid;
 }
 
 .home-welcome-block-text {
@@ -235,17 +260,19 @@ main {
 }
 
 .home-welcome-block-text > span:first-child {
-	color: #999999;
+  color: #999999;
 }
 
 .home-welcome-block-text > span:nth-child(even) {
-	font-size: 30px;
+  font-size: 30px;
 }
 
-/* --- Nav items --- */
+
+/* ---------- Home: main area buttons ---------- */
+
 .home-nav-header {
-	margin-top: 20px;
-	color: #999999;
+  margin-top: 20px;
+  color: #999999;
 }
 
 .home-nav-item {
@@ -286,11 +313,20 @@ main {
 }
 
 .home-nav-text > span:first-child {
-	font-size: 20px;
+  font-size: 20px;
 }
 
 
-/* ---------- Exercise screen ---------- */
+/* =========================================================
+   SCREEN: Start Training
+========================================================= */
+
+/* Empty for now */
+
+
+/* =========================================================
+   SCREEN: Create Exercises
+========================================================= */
 
 .add-setting {
   font-size: 18px;
@@ -304,7 +340,7 @@ main {
   color: black;
   border-radius: 999px;
   padding: 4px;
-  font-size:14px;
+  font-size: 14px;
 }
 
 .add-setting > span {
@@ -324,6 +360,12 @@ main {
   gap: 4px;
 }
 
+.settings-row:not(:last-child) {
+  border-bottom: 1px solid #333;
+  padding-bottom: 14px;
+  margin-bottom: 8px;
+}
+
 .setting-delete-button-row {
   display: flex;
   justify-content: space-between;
@@ -332,3 +374,17 @@ main {
 .settings-row .text-input {
   width: 88%;
 }
+
+
+/* =========================================================
+   SCREEN: Create Templates
+========================================================= */
+
+/* Empty for now */
+
+
+/* =========================================================
+   SCREEN: Analyse Progress
+========================================================= */
+
+/* Empty for now */
