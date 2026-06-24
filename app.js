@@ -48,19 +48,19 @@ function setupNavigation() {
     });
   }
 
-	for (let i = 0; i < goBackButtons.length; i++) {
-		goBackButtons[i].addEventListener("click", function () {
-		history.back();
-		});
-	}
+  for (let i = 0; i < goBackButtons.length; i++) {
+    goBackButtons[i].addEventListener("click", function () {
+      history.back();
+    });
+  }
 
   window.addEventListener("popstate", function (event) {
-		if (event.state && event.state.screenId) {
-		showScreen(event.state.screenId);
-		} else {
-		showScreen("home-screen");
-		}
-	});
+    if (event.state && event.state.screenId) {
+      showScreen(event.state.screenId);
+    } else {
+      showScreen("home-screen");
+    }
+  });
 }
 
 
@@ -69,50 +69,50 @@ function setupNavigation() {
 // =========================================================
 
 function navigateToScreen(screenId) {
-	showScreen(screenId);
+  showScreen(screenId);
 
-	const route = ROUTES[screenId];
+  const route = ROUTES[screenId];
 
-	if (route) {
-		history.pushState({ screenId: screenId }, "", route);
-	}
+  if (route) {
+    history.pushState({ screenId: screenId }, "", route);
+  }
 }
 
 function showScreen(screenId) {
-	hideAllScreens();
-	showSelectedScreen(screenId);
-	updateSelectedNavButton(screenId);
+  hideAllScreens();
+  showSelectedScreen(screenId);
+  updateSelectedNavButton(screenId);
 }
 
 function hideAllScreens() {
-	const screens = document.querySelectorAll("section");
+  const screens = document.querySelectorAll("section");
 
-	for (let i = 0; i < screens.length; i++) {
-		screens[i].classList.add("hidden");
-	}
+  for (let i = 0; i < screens.length; i++) {
+    screens[i].classList.add("hidden");
+  }
 }
 
 function showSelectedScreen(screenId) {
-	const screen = document.getElementById(screenId);
+  const screen = document.getElementById(screenId);
 
-	if (screen === null) {
-		console.log("Screen not found:", screenId);
-		return;
-	}
+  if (screen === null) {
+    console.log("Screen not found:", screenId);
+    return;
+  }
 
-	screen.classList.remove("hidden");
+  screen.classList.remove("hidden");
 }
 
 function updateSelectedNavButton(screenId) {
-	const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
+  const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
 
-	for (let i = 0; i < bottomNavButtons.length; i++) {
-		if (screenId === bottomNavButtons[i].dataset.screen) {
-		bottomNavButtons[i].classList.add("selected");
-		} else {
-		bottomNavButtons[i].classList.remove("selected");
-		}
-	}
+  for (let i = 0; i < bottomNavButtons.length; i++) {
+    if (screenId === bottomNavButtons[i].dataset.screen) {
+      bottomNavButtons[i].classList.add("selected");
+    } else {
+      bottomNavButtons[i].classList.remove("selected");
+    }
+  }
 }
 
 
@@ -121,42 +121,42 @@ function updateSelectedNavButton(screenId) {
 // =========================================================
 
 function setupExerciseForm() {
-	clearErrorWhenTyping(input);
+  clearErrorWhenTyping(input);
 
-  	saveButton.addEventListener("click", function () {
-		const exerciseName = input.value.trim();
-		const exercises = loadExercises();
+  saveButton.addEventListener("click", function () {
+    const exerciseName = input.value.trim();
+    const exercises = loadExercises();
 
-		let formIsValid = true;
+    let formIsValid = true;
 
-		if (exerciseName === "") {
-			showInputError(input);
-			formIsValid = false;
-		} else if (exerciseExists(exercises, exerciseName)) {
-			showInputError(input);
-			formIsValid = false;
-		} else {
-			clearInputError(input);
-		}
+    if (exerciseName === "") {
+      showInputError(input);
+      formIsValid = false;
+    } else if (exerciseExists(exercises, exerciseName)) {
+      showInputError(input);
+      formIsValid = false;
+    } else {
+      clearInputError(input);
+    }
 
-		const settings = readSettingsFromPage();
+    const settings = readSettingsFromPage();
 
-		if (settings === null) {
-			formIsValid = false;
-		}
+    if (settings === null) {
+      formIsValid = false;
+    }
 
-		if (!formIsValid) {
-			return;
-		}
+    if (!formIsValid) {
+      return;
+    }
 
-		const exercise = createExercise(exerciseName, settings);
+    const exercise = createExercise(exerciseName, settings);
 
-		exercises.push(exercise);
+    exercises.push(exercise);
 
-		updateExercises(exercises);
-		clearExerciseForm();
-		updateSettingsRowsVisibility();
-	});
+    updateExercises(exercises);
+    clearExerciseForm();
+    updateSettingsRowsVisibility();
+  });
 }
 
 
@@ -164,44 +164,44 @@ function setupExerciseForm() {
 // EXERCISE DATA / STORAGE
 // =========================================================
 
-function createExercise(name, settings) {	
-	return {
-		id: crypto.randomUUID(),
-		name: name,
-		settings: settings
-	};
+function createExercise(name, settings) {
+  return {
+    id: crypto.randomUUID(),
+    name: name,
+    settings: settings
+  };
 }
 
 function exerciseExists(exercises, exerciseName) {
-	return exercises.some(function (exercise) {
-		return exercise.name === exerciseName;
-	});
+  return exercises.some(function (exercise) {
+    return exercise.name === exerciseName;
+  });
 }
 
 function loadExercises() {
-	const savedExercises = localStorage.getItem(STORAGE_KEY);
+  const savedExercises = localStorage.getItem(STORAGE_KEY);
 
-	if (savedExercises === null) {
-		return [];
-	}
+  if (savedExercises === null) {
+    return [];
+  }
 
-	const exercises = JSON.parse(savedExercises);
+  const exercises = JSON.parse(savedExercises);
 
-	if (!Array.isArray(exercises)) {
-		return [];
-	}
+  if (!Array.isArray(exercises)) {
+    return [];
+  }
 
-	return exercises;
+  return exercises;
 }
 
 function saveExercises(exercises) {
-	const json = JSON.stringify(exercises);
-	localStorage.setItem(STORAGE_KEY, json);
+  const json = JSON.stringify(exercises);
+  localStorage.setItem(STORAGE_KEY, json);
 }
 
 function updateExercises(exercises) {
-	saveExercises(exercises);
-	renderExerciseList(exercises);
+  saveExercises(exercises);
+  renderExerciseList(exercises);
 }
 
 
@@ -210,12 +210,12 @@ function updateExercises(exercises) {
 // =========================================================
 
 function renderExerciseList(exercises) {
-	exerciseList.innerHTML = "";
+  exerciseList.innerHTML = "";
 
-	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-		const exerciseRow = createExerciseRow(exercises, exerciseIndex);
-		exerciseList.appendChild(exerciseRow);
-	}
+  for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+    const exerciseCard = createExerciseCard(exercises, exerciseIndex);
+    exerciseList.appendChild(exerciseCard);
+  }
 }
 
 
@@ -224,18 +224,18 @@ function renderExerciseList(exercises) {
 // =========================================================
 
 function setupSettingsForm() {
-	addSetting.addEventListener("click", function () {
-		const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+  addSetting.addEventListener("click", function () {
+    const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
-		if (settingsRows.length >= 3) {
-		return;
-		}
+    if (settingsRows.length >= 3) {
+      return;
+    }
 
-		const settingsRow = createSettingRow();
+    const settingsRow = createSettingRow();
 
-		settingsContainer.appendChild(settingsRow);
-		updateSettingsRowsVisibility();
-	});
+    settingsContainer.appendChild(settingsRow);
+    updateSettingsRowsVisibility();
+  });
 }
 
 
@@ -244,224 +244,299 @@ function setupSettingsForm() {
 // =========================================================
 
 function readSettingsFromPage() {
-	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
-	const settings = [];
-	let settingsAreValid = true;
+  const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+  const settings = [];
+  let settingsAreValid = true;
 
-	for (let i = 0; i < settingsRows.length; i++) {
-		const row = settingsRows[i];
+  for (let i = 0; i < settingsRows.length; i++) {
+    const row = settingsRows[i];
 
-		const nameInput = row.querySelector(".setting-name");
-		const valueInput = row.querySelector(".setting-value");
+    const nameInput = row.querySelector(".setting-name");
+    const valueInput = row.querySelector(".setting-value");
 
-		const name = nameInput.value.trim();
-		const value = valueInput.value.trim();
+    const name = nameInput.value.trim();
+    const value = valueInput.value.trim();
 
-		if (name === "") {
-		showInputError(nameInput);
-		settingsAreValid = false;
-		} else {
-		clearInputError(nameInput);
-		}
+    if (name === "") {
+      showInputError(nameInput);
+      settingsAreValid = false;
+    } else {
+      clearInputError(nameInput);
+    }
 
-		if (value === "") {
-		showInputError(valueInput);
-		settingsAreValid = false;
-		} else {
-		clearInputError(valueInput);
-		}
+    if (value === "") {
+      showInputError(valueInput);
+      settingsAreValid = false;
+    } else {
+      clearInputError(valueInput);
+    }
 
-		settings.push({
-		name: name,
-		value: value
-		});
-	}
+    settings.push({
+      name: name,
+      value: value
+    });
+  }
 
-	if (!settingsAreValid) {
-		return null;
-	}
+  if (!settingsAreValid) {
+    return null;
+  }
 
-	return settings;
+  return settings;
 }
 
 function clearExerciseForm() {
-	input.value = "";
-	settingsContainer.innerHTML = "";
+  input.value = "";
+  settingsContainer.innerHTML = "";
 }
 
 function updateSettingsRowsVisibility() {
-	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+  const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
-	if (settingsRows.length > 0) {
-		settingsContainer.classList.remove("hidden");
-	} else {
-		settingsContainer.classList.add("hidden");
-	}
+  if (settingsRows.length > 0) {
+    settingsContainer.classList.remove("hidden");
+  } else {
+    settingsContainer.classList.add("hidden");
+  }
 }
 
 
 // =========================================================
-// DOM BUILDERS
+// DOM BUILDERS: SETTINGS FORM
 // =========================================================
 
 function createSettingRow() {
-	const settingsRow = document.createElement("div");
-	settingsRow.classList.add("settings-row");
+  const settingsRow = document.createElement("div");
+  settingsRow.classList.add("settings-row");
 
-	const settingNameDeleteRow = document.createElement("div");
-	settingNameDeleteRow.classList.add("setting-delete-button-row");
+  const settingNameDeleteRow = document.createElement("div");
+  settingNameDeleteRow.classList.add("setting-delete-button-row");
 
-	const settingNameLabel = createText("Setting name", "field-name");
-	const settingNameInput = createTextInput("Name...", "setting-name");
+  const settingNameLabel = createText("Setting name", "field-name");
+  const settingNameInput = createTextInput("Name...", "setting-name");
 
-	const settingValueLabel = createText("Value", "field-name");
-	const settingValueInput = createTextInput("Setting value...", "setting-value");
+  const settingValueLabel = createText("Value", "field-name");
+  const settingValueInput = createTextInput("Setting value...", "setting-value");
 
-  	clearErrorWhenTyping(settingNameInput);
-	clearErrorWhenTyping(settingValueInput);
+  clearErrorWhenTyping(settingNameInput);
+  clearErrorWhenTyping(settingValueInput);
 
-  	const deleteButton = createIconButton("delete-button", "fa-regular", "fa-trash-can");
-  	deleteButton.addEventListener("click", function () {
-		settingsRow.remove();
-		updateSettingsRowsVisibility();
-  	});
+  const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
+  deleteButton.addEventListener("click", function () {
+    settingsRow.remove();
+    updateSettingsRowsVisibility();
+  });
 
-	settingNameDeleteRow.appendChild(settingNameLabel);
-	settingNameDeleteRow.appendChild(deleteButton);
+  settingNameDeleteRow.appendChild(settingNameLabel);
+  settingNameDeleteRow.appendChild(deleteButton);
 
-	settingsRow.appendChild(settingNameDeleteRow);
-	settingsRow.appendChild(settingNameInput);
-	settingsRow.appendChild(settingValueLabel);
-	settingsRow.appendChild(settingValueInput);
+  settingsRow.appendChild(settingNameDeleteRow);
+  settingsRow.appendChild(settingNameInput);
+  settingsRow.appendChild(settingValueLabel);
+  settingsRow.appendChild(settingValueInput);
 
-	return settingsRow;
+  return settingsRow;
 }
 
-function createExerciseRow(exercises, exerciseIndex) {
-	const exercise = exercises[exerciseIndex];
 
-	const li = document.createElement("li");
-	li.classList.add("exercise-row");
+// =========================================================
+// DOM BUILDERS: EXERCISE CARDS
+// =========================================================
 
-	const contentDiv = createExerciseRowContent(exercise);
+function createExerciseCard(exercises, exerciseIndex) {
+  const exercise = exercises[exerciseIndex];
 
-	const deleteButton = createIconButton("delete-button", "fa-regular", "fa-trash-can");
-	deleteButton.addEventListener("click", function () {
-		exercises.splice(exerciseIndex, 1);
-		updateExercises(exercises);
-	});
+  const card = document.createElement("li");
+  card.classList.add("exercise-card");
 
-	const dumbbell = createIcon("dumbbell", "fa-solid", "fa-dumbbell");
-	const chevron = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
+  const header = createExerciseCardHeader(exercise);
+  const details = createExerciseCardDetails(exercise);
+  const actions = createExerciseCardActions(exercises, exerciseIndex);
 
-	li.appendChild(dumbbell);
-	li.appendChild(contentDiv);
-	li.appendChild(deleteButton);
-	li.appendChild(chevron);
+  details.appendChild(actions);
 
-  return li;
+  const chevron = header.querySelector(".chevron-button");
+  chevron.addEventListener("click", function () {
+    rotateChevron(chevron);
+	changeVisibility(details);
+  });
+
+  card.appendChild(header);
+  card.appendChild(details);
+
+  return card;
 }
 
-function createExerciseRowContent(exercise) {
-  	const contentDiv = document.createElement("div");
-	contentDiv.classList.add("exercise-row-content");
+function createExerciseCardHeader(exercise) {
+  const header = document.createElement("div");
+  header.classList.add("exercise-card-header");
 
-	const nameSpan = document.createElement("span");
-	nameSpan.textContent = exercise.name;
-	nameSpan.classList.add("exercise-row-name");
-	contentDiv.appendChild(nameSpan);
+  const icon = createIcon("exercise-card-icon", "fa-solid", "fa-dumbbell");
+  const main = createExerciseCardMain(exercise);
+  const chevron = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
 
-	const expression = exercise.settings.length;
-	let pluralAdjuster = "";
+  header.appendChild(icon);
+  header.appendChild(main);
+  header.appendChild(chevron);
 
-	switch (expression){
-		case 0: pluralAdjuster = "s";
-			break;
-		case 1: pluralAdjuster = "";
-			break;
-		case 2: pluralAdjuster = "s";
-			break;
-	default:
-	}
-
-	const settingsCount = `${exercise.settings.length} machine setting${pluralAdjuster}`;
-	const settingsCountSpan = createText(settingsCount, "exercise-row-setting");	
-	contentDiv.appendChild(settingsCountSpan);
-
-  //for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
-   // const setting = exercise.settings[settingIndex];
-
-  //  const settingLine = createSettingSummaryLine(setting);
- //  contentDiv.appendChild(settingLine);
-  //}
-
-  return contentDiv;
+  return header;
 }
 
-function createSettingSummaryLine(setting) {
-	const settingLine = document.createElement("div");
-	settingLine.classList.add("exercise-row-setting");
-	settingLine.textContent = `${setting.name}: ${setting.value}`;
-	return settingLine;
+function createExerciseCardMain(exercise) {
+  const main = document.createElement("div");
+  main.classList.add("exercise-card-main");
+
+  const title = createText(exercise.name, "exercise-card-title");
+
+  const settingCount = exercise.settings.length;
+  const pluralAdjuster = settingCount === 1 ? "" : "s";
+  const subtitleText = `${settingCount} machine setting${pluralAdjuster}`;
+  const subtitle = createText(subtitleText, "exercise-card-subtitle");
+
+  main.appendChild(title);
+  main.appendChild(subtitle);
+
+  return main;
+}
+
+function createExerciseCardDetails(exercise) {
+  const details = document.createElement("div");
+  details.classList.add("exercise-card-details");
+  details.classList.add("hidden");
+
+  for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
+    const setting = exercise.settings[settingIndex];
+
+    const settingRow = createExerciseSettingRow(setting);
+    details.appendChild(settingRow);
+  }
+
+  return details;
+}
+
+function createExerciseSettingRow(setting) {
+  const settingRow = document.createElement("div");
+  settingRow.classList.add("exercise-setting-row");
+
+  const settingName = createText(setting.name, "setting-name");
+  const settingValue = createText(setting.value, "setting-value");
+
+  settingRow.appendChild(settingName);
+  settingRow.appendChild(settingValue);
+
+  return settingRow;
+}
+
+function createExerciseCardActions(exercises, exerciseIndex) {
+  const actions = document.createElement("div");
+  actions.classList.add("exercise-card-actions");
+
+  const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
+
+  const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
+  deleteButton.addEventListener("click", function () {
+    exercises.splice(exerciseIndex, 1);
+    updateExercises(exercises);
+  });
+
+  actions.appendChild(editButton);
+  actions.appendChild(deleteButton);
+
+  return actions;
+}
+
+
+// =========================================================
+// DOM BUILDERS: GENERIC
+// =========================================================
+
+function createActionButton(iconClassBase, iconClassIcon, text) {
+  const button = document.createElement("button");
+  button.classList.add("action-button");
+
+  const icon = document.createElement("i");
+  icon.classList.add(iconClassBase);
+  icon.classList.add(iconClassIcon);
+
+  const label = createText(text, "action-button-text");
+
+  button.appendChild(icon);
+  button.appendChild(label);
+
+  return button;
 }
 
 function createText(text, extraClass) {
-	const label = document.createElement("span");
-	label.textContent = text;
-	label.classList.add(extraClass);
-	return label;
+  const label = document.createElement("span");
+  label.textContent = text;
+  label.classList.add(extraClass);
+  return label;
 }
 
 function createTextInput(placeholder, extraClass) {
-	const input = document.createElement("input");
-	input.placeholder = placeholder;
-	input.classList.add("text-input");
-	input.classList.add(extraClass);
-	return input;
+  const input = document.createElement("input");
+  input.placeholder = placeholder;
+
+  input.classList.add("text-input");
+  input.classList.add(extraClass);
+
+  return input;
 }
 
 function createIconButton(buttonClass, iconClassBase, iconClassIcon) {
-	const button = document.createElement("button");
-	button.classList.add(buttonClass);
+  const button = document.createElement("button");
+  button.classList.add(buttonClass);
 
-	const icon = document.createElement("i");
-	icon.classList.add(iconClassBase);
-	icon.classList.add(iconClassIcon);
+  const icon = document.createElement("i");
+  icon.classList.add(iconClassBase);
+  icon.classList.add(iconClassIcon);
 
-	button.appendChild(icon);
+  button.appendChild(icon);
 
-	return button;
+  return button;
 }
 
 function createIcon(iconClass, iconClassBase, iconClassIcon) {
-	const icon = document.createElement("i");
-	icon.classList.add(iconClass);
-	icon.classList.add(iconClassBase);
-	icon.classList.add(iconClassIcon);
+  const icon = document.createElement("i");
+  icon.classList.add(iconClass);
+  icon.classList.add(iconClassBase);
+  icon.classList.add(iconClassIcon);
 
-	return icon;
+  return icon;
 }
+
 
 // =========================================================
 // HELPERS
 // =========================================================
 
 function showInputError(inputElement) {
-	inputElement.classList.add("input-error");
+  inputElement.classList.add("input-error");
 }
 
 function clearInputError(inputElement) {
-	inputElement.classList.remove("input-error");
+  inputElement.classList.remove("input-error");
 }
 
 function inputHasText(inputElement) {
-	return inputElement.value.trim().length > 0;
+  return inputElement.value.trim().length > 0;
 }
 
 function clearErrorWhenTyping(inputElement) {
-	inputElement.addEventListener("input", function () {
-		if (inputHasText(inputElement)) {
-		clearInputError(inputElement);
-		}
-	});
+  inputElement.addEventListener("input", function () {
+    if (inputHasText(inputElement)) {
+      clearInputError(inputElement);
+    }
+  });
+}
+
+function rotateChevron(chevron) {
+  chevron.classList.toggle("chevron-rotate");
+}
+
+function changeVisibility(item) {
+	if (item.classList.contains("hidden")){
+		item.classList.remove("hidden");
+	} else {
+		item.classList.add("hidden");
+	}
 }

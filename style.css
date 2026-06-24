@@ -30,7 +30,6 @@ main {
 
 /* =========================================================
    SHARED: Containers
-   Reusable visual boxes/cards
 ========================================================= */
 
 .content-card {
@@ -47,7 +46,6 @@ main {
 
 /* =========================================================
    SHARED: Buttons
-   Generic button styles used across screens
 ========================================================= */
 
 .nav-button {
@@ -73,37 +71,54 @@ main {
   font-size: 16px;
 }
 
-.delete-button {
-  margin-left: auto;
-  width: auto;
-  padding: 0;
-
+.icon-button {
   background: none;
   border: none;
   color: hotpink;
+
   font-size: 18px;
+  padding: 0;
+  margin: 0;
 }
 
 .chevron-button {
   background: none;
   border: none;
   color: #565656;
+
   font-size: 18px;
-  margin-left: auto;
+  padding: 0;
+  margin: 0;
+
+  transition: transform 0.2s ease;
 }
 
-.dumbbell {
-  margin-left: 0;
-  margin-right: 12px;
-  width: auto;
-  padding: 0;
+.chevron-rotate {
+  transform: rotate(90deg);
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 
   background: none;
   border: none;
   color: hotpink;
-  font-size: 20px;
+
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
 }
 
+.action-button i {
+  font-size: 18px;
+}
+
+.action-button-text {
+  color: inherit;
+}
 
 
 /* =========================================================
@@ -141,6 +156,7 @@ main {
 .field-name {
   display: block;
   text-align: left;
+
   color: floralwhite;
   font-size: 14px;
 }
@@ -148,12 +164,12 @@ main {
 
 /* =========================================================
    SHARED: Page layout
-   Reusable page header / subtitle / back button pieces
 ========================================================= */
 
 .back-button {
   display: flex;
   align-items: flex-start;
+
   margin-top: 4px;
 
   font-size: 18px;
@@ -176,6 +192,7 @@ main {
 .page-subtitle {
   font-size: 14px;
   color: #999999;
+
   margin-bottom: 20px;
 }
 
@@ -258,14 +275,14 @@ main {
   width: 60px;
   height: 60px;
 
-  font-size: 35px;
-  color: hotpink;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
+
+  font-size: 35px;
+  color: hotpink;
 
   background: #333333;
   border-radius: 999px;
@@ -320,6 +337,7 @@ main {
   flex-shrink: 0;
 
   font-size: 22px;
+
   background: hotpink;
   border-radius: 999px;
 }
@@ -349,59 +367,34 @@ main {
    SCREEN: Create Exercises
 ========================================================= */
 
-#exercise-list {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0 0 0;
-}
-
-.exercise-row-name {
-  font-weight: bold;
-  color: floralwhite;
-}
-
-.exercise-row-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.exercise-row-setting {
-  color: #999999;
-  font-size: 12px;
-}
+/* ---------- New exercise form ---------- */
 
 .add-setting {
-  font-size: 18px;
-  color: hotpink;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   background: none;
   border: none;
+  color: hotpink;
+
+  font-size: 14px;
+  padding: 4px 8px;
 }
 
 .add-setting > i {
-  background: hotpink;
-  color: black;
-  border-radius: 999px;
-  padding: 4px;
-  font-size: 14px;
-}
+  width: 22px;
+  height: 22px;
 
-.add-setting > span {
-  margin-left: 8px;
-  border-radius: 999px;
-  font-size: 14px;
-}
-
-.exercise-row {
   display: flex;
   align-items: center;
+  justify-content: center;
 
-  background: #232323;
-  border: 1px solid #333;
-  border-radius: 10px;
+  background: hotpink;
+  color: black;
 
-  padding: 10px 12px;
-  margin-top: 8px;
+  border-radius: 999px;
+  font-size: 14px;
 }
 
 .settings-row {
@@ -424,10 +417,87 @@ main {
   justify-content: space-between;
 }
 
-.settings-row .text-input {
-  width: 88%;
+
+/* ---------- Saved exercise list ---------- */
+
+#exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0 0;
 }
 
+.exercise-card {
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
+.exercise-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.exercise-card-icon {
+  color: hotpink;
+  font-size: 20px;
+
+  flex-shrink: 0;
+}
+
+.exercise-card-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.exercise-card-title {
+  font-weight: bold;
+  color: floralwhite;
+}
+
+.exercise-card-subtitle {
+  color: #999999;
+  font-size: 12px;
+}
+
+.exercise-card-details {
+  margin-top: 10px;
+  padding: 0 18px;
+
+  border-top: 1px solid #333;
+
+  color: #999999;
+  font-size: 14px;
+}
+
+.exercise-setting-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+}
+
+.exercise-setting-row:last-child {
+  border-bottom: none;
+}
+
+.exercise-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  width: 240px;
+  margin: 10px auto 0 auto;
+}
+
+.exercise-card-actions .action-button {
+  justify-self: center;
+}
 
 /* =========================================================
    SCREEN: Create Templates
