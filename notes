@@ -1,2 +1,7 @@
 in folder, run cmd server: python -m http.server 8000
 http://192.168.2.2:8000
+
+
+To do:
+-edit action: fill form
+-edit action: overwrite old value

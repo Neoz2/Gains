@@ -13,6 +13,8 @@ const settingsContainer = document.getElementById("settings-container");
 const navButtons = document.querySelectorAll(".nav-button");
 const goBackButtons = document.querySelectorAll(".back-button");
 
+let editingExerciseId = null;
+
 const ROUTES = {
   "home-screen": "#home",
   "start-training-screen": "#start-training",
@@ -121,9 +123,9 @@ function updateSelectedNavButton(screenId) {
 // =========================================================
 
 function setupExerciseForm() {
-  clearErrorWhenTyping(input);
+	clearErrorWhenTyping(input);
 
-  saveButton.addEventListener("click", function () {
+	saveButton.addEventListener("click", function () {
     const exerciseName = input.value.trim();
     const exercises = loadExercises();
 
@@ -200,8 +202,11 @@ function saveExercises(exercises) {
 }
 
 function updateExercises(exercises) {
-  saveExercises(exercises);
-  renderExerciseList(exercises);
+	saveExercises(exercises);
+	renderExerciseList(exercises);
+
+	editingExerciseId = null;
+	updateSaveButtonText();
 }
 
 
@@ -367,81 +372,97 @@ function createExerciseCard(exercises, exerciseIndex) {
 }
 
 function createExerciseCardHeader(exercise) {
-  const header = document.createElement("div");
-  header.classList.add("exercise-card-header");
+	const header = document.createElement("div");
+	header.classList.add("exercise-card-header");
 
-  const icon = createIcon("exercise-card-icon", "fa-solid", "fa-dumbbell");
-  const main = createExerciseCardMain(exercise);
-  const chevron = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
+	const icon = createIcon("exercise-card-icon", "fa-solid", "fa-dumbbell");
+	const main = createExerciseCardMain(exercise);
+	const chevron = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
 
-  header.appendChild(icon);
-  header.appendChild(main);
-  header.appendChild(chevron);
+	header.appendChild(icon);
+	header.appendChild(main);
+	header.appendChild(chevron);
 
-  return header;
+	return header;
 }
 
 function createExerciseCardMain(exercise) {
-  const main = document.createElement("div");
-  main.classList.add("exercise-card-main");
+	const main = document.createElement("div");
+	main.classList.add("exercise-card-main");
 
-  const title = createText(exercise.name, "exercise-card-title");
+	const title = createText(exercise.name, "exercise-card-title");
 
-  const settingCount = exercise.settings.length;
-  const pluralAdjuster = settingCount === 1 ? "" : "s";
-  const subtitleText = `${settingCount} machine setting${pluralAdjuster}`;
-  const subtitle = createText(subtitleText, "exercise-card-subtitle");
+	const settingCount = exercise.settings.length;
+	const pluralAdjuster = settingCount === 1 ? "" : "s";
+	const subtitleText = `${settingCount} machine setting${pluralAdjuster}`;
+	const subtitle = createText(subtitleText, "exercise-card-subtitle");
 
-  main.appendChild(title);
-  main.appendChild(subtitle);
+	main.appendChild(title);
+	main.appendChild(subtitle);
 
-  return main;
+	return main;
 }
 
 function createExerciseCardDetails(exercise) {
-  const details = document.createElement("div");
-  details.classList.add("exercise-card-details");
-  details.classList.add("hidden");
+	const details = document.createElement("div");
+	details.classList.add("exercise-card-details");
+	details.classList.add("hidden");
 
-  for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
-    const setting = exercise.settings[settingIndex];
+	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
+		const setting = exercise.settings[settingIndex];
 
-    const settingRow = createExerciseSettingRow(setting);
-    details.appendChild(settingRow);
-  }
+		const settingRow = createExerciseSettingRow(setting);
+		details.appendChild(settingRow);
+	}
 
-  return details;
+	return details;
 }
 
 function createExerciseSettingRow(setting) {
-  const settingRow = document.createElement("div");
-  settingRow.classList.add("exercise-setting-row");
+	const settingRow = document.createElement("div");
+	settingRow.classList.add("exercise-setting-row");
 
-  const settingName = createText(setting.name, "setting-name");
-  const settingValue = createText(setting.value, "setting-value");
+	const settingName = createText(setting.name, "setting-name");
+	const settingValue = createText(setting.value, "setting-value");
 
-  settingRow.appendChild(settingName);
-  settingRow.appendChild(settingValue);
+	settingRow.appendChild(settingName);
+	settingRow.appendChild(settingValue);
 
-  return settingRow;
+	return settingRow;
 }
 
 function createExerciseCardActions(exercises, exerciseIndex) {
-  const actions = document.createElement("div");
-  actions.classList.add("exercise-card-actions");
+	const actions = document.createElement("div");
+	actions.classList.add("exercise-card-actions");
 
-  const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
+	const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
+	editButton.addEventListener("click", function () {
+		enterEditExerciseMode(exercises[exerciseIndex]);
+	});
 
-  const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
-  deleteButton.addEventListener("click", function () {
-    exercises.splice(exerciseIndex, 1);
-    updateExercises(exercises);
-  });
+	const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
+	deleteButton.addEventListener("click", function () {
+		exercises.splice(exerciseIndex, 1);
+		updateExercises(exercises);
+	});
 
-  actions.appendChild(editButton);
-  actions.appendChild(deleteButton);
+	actions.appendChild(editButton);
+	actions.appendChild(deleteButton);
 
-  return actions;
+	return actions;
+}
+
+function updateSaveButtonText() {
+	if(editingExerciseId !== null){
+		saveButton.textContent = "Update exercise"
+	} else {
+		saveButton.textContent = "Save exercise"
+	};
+}
+
+function enterEditExerciseMode(exercise) {
+	editingExerciseId = exercise.id;
+	updateSaveButtonText();
 }
 
 
