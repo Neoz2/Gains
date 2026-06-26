@@ -169,10 +169,9 @@ function setupExerciseForm() {
 		name: exerciseName,
 		settings: settings
 	};
-
+	}
 	updateExercises(exercises);
 	exitEditExerciseMode();
-	}
 
     clearExerciseForm();
     updateSettingsRowsVisibility();
@@ -493,6 +492,7 @@ function enterEditExerciseMode(exercise) {
 		settingsContainer.appendChild(settingsRow);
 
 	}
+	window.scrollTo({top:0, behavior: "smooth"});
 	updateSettingsRowsVisibility();	
 	updateSaveButtonText();
 }
