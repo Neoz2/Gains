@@ -132,13 +132,13 @@ function setupExerciseForm() {
     let formIsValid = true;
 
     if (exerciseName === "") {
-      showInputError(input);
-      formIsValid = false;
-    } else if (exerciseExists(exercises, exerciseName)) {
-      showInputError(input);
-      formIsValid = false;
+      	showInputError(input);
+      	formIsValid = false;
+    } else if (exerciseExists(exercises, exerciseName) && editingExerciseId === null) {
+      	showInputError(input);
+      	formIsValid = false;
     } else {
-      clearInputError(input);
+      	clearInputError(input);
     }
 
     const settings = readSettingsFromPage();
@@ -151,11 +151,29 @@ function setupExerciseForm() {
       return;
     }
 
-    const exercise = createExercise(exerciseName, settings);
+	if (editingExerciseId === null){
+		const exercise = createExercise(exerciseName, settings);
+		exercises.push(exercise);
+	} else {
+	const exerciseIndex = exercises.findIndex(function (exercise) {
+		return exercise.id === editingExerciseId;
+	});
 
-    exercises.push(exercise);
+	if (exerciseIndex === -1) {
+		console.log("Exercise being edited was not found");
+		return;
+	}
 
-    updateExercises(exercises);
+	exercises[exerciseIndex] = {
+		id: editingExerciseId,
+		name: exerciseName,
+		settings: settings
+	};
+
+	updateExercises(exercises);
+	exitEditExerciseMode();
+	}
+
     clearExerciseForm();
     updateSettingsRowsVisibility();
   });
@@ -204,11 +222,7 @@ function saveExercises(exercises) {
 function updateExercises(exercises) {
 	saveExercises(exercises);
 	renderExerciseList(exercises);
-
-	editingExerciseId = null;
-	updateSaveButtonText();
 }
-
 
 // =========================================================
 // EXERCISE RENDERING
@@ -360,7 +374,7 @@ function createExerciseCard(exercises, exerciseIndex) {
   details.appendChild(actions);
 
   const chevron = header.querySelector(".chevron-button");
-  chevron.addEventListener("click", function () {
+  header.addEventListener("click", function () {
     rotateChevron(chevron);
 	changeVisibility(details);
   });
@@ -457,12 +471,37 @@ function updateSaveButtonText() {
 		saveButton.textContent = "Update exercise"
 	} else {
 		saveButton.textContent = "Save exercise"
-	};
+	}
 }
 
 function enterEditExerciseMode(exercise) {
 	editingExerciseId = exercise.id;
+
+	clearExerciseForm();
+
+	input.value = exercise.name;
+
+	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
+		const setting = exercise.settings[settingIndex];
+		const settingsRow = createSettingRow();
+
+		const settingNameInput = settingsRow.querySelector(".setting-name");
+		settingNameInput.value = setting.name;
+		const settingValueInput = settingsRow.querySelector(".setting-value");
+		settingValueInput.value = setting.value;
+
+		settingsContainer.appendChild(settingsRow);
+
+	}
+	updateSettingsRowsVisibility();	
 	updateSaveButtonText();
+}
+
+function exitEditExerciseMode() {
+	editingExerciseId = null;
+	updateSaveButtonText();
+	clearExerciseForm();
+	updateSettingsRowsVisibility();
 }
 
 
