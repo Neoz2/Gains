@@ -2,7 +2,11 @@
 // CONSTANTS + DOM REFERENCES
 // =========================================================
 
-const STORAGE_KEY = "gym-app-exercises";
+const STORAGE_KEYS = {
+	exercises: "gym-app-exercises",
+	templates: "gym-app-templates",
+	workouts: "gym-app-workouts"
+}
 
 const input = document.getElementById("exercise-name-input");
 const saveButton = document.getElementById("save-exercise");
@@ -119,6 +123,32 @@ function updateSelectedNavButton(screenId) {
 
 
 // =========================================================
+// DATABASE FUNCTIONS
+// =========================================================
+
+function loadItems(storageKey) {
+	const savedItems = localStorage.getItem(storageKey);
+
+	if (savedItems === null) {
+		return [];
+	}
+
+	const items = JSON.parse(savedItems);
+
+	if (!Array.isArray(items)) {
+		return [];
+	}
+
+	return items;
+}
+
+function saveItems(storageKey, items) {
+	const json = JSON.stringify(items);
+	localStorage.setItem(storageKey, json);
+}
+
+
+// =========================================================
 // EXERCISE FORM SETUP
 // =========================================================
 
@@ -184,38 +214,25 @@ function setupExerciseForm() {
 // =========================================================
 
 function createExercise(name, settings) {
-  return {
-    id: crypto.randomUUID(),
-    name: name,
-    settings: settings
-  };
+	return {
+		id: crypto.randomUUID(),
+		name: name,
+		settings: settings
+	};
 }
 
 function exerciseExists(exercises, exerciseName) {
-  return exercises.some(function (exercise) {
-    return exercise.name === exerciseName;
-  });
+	return exercises.some(function (exercise) {
+		return exercise.name === exerciseName;
+	});
 }
 
 function loadExercises() {
-  const savedExercises = localStorage.getItem(STORAGE_KEY);
-
-  if (savedExercises === null) {
-    return [];
-  }
-
-  const exercises = JSON.parse(savedExercises);
-
-  if (!Array.isArray(exercises)) {
-    return [];
-  }
-
-  return exercises;
+  	return loadItems(STORAGE_KEYS.exercises);
 }
 
 function saveExercises(exercises) {
-  const json = JSON.stringify(exercises);
-  localStorage.setItem(STORAGE_KEY, json);
+	saveItems(STORAGE_KEYS.exercises, exercises);
 }
 
 function updateExercises(exercises) {

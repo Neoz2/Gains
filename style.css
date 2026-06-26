@@ -17,14 +17,9 @@ main {
   padding-bottom: 90px;
 }
 
-@view-transition {
-  navigation: auto;
+:root {
+    --primary-color: hotpink; 
 }
-
-::view-transition-group(root) {
-  animation-duration: 1s;
-}
-
 
 /* =========================================================
    UTILITIES
@@ -67,7 +62,7 @@ main {
 
 .save-button {
   width: 100%;
-  background: hotpink;
+  background: var(--primary-color);
   color: floralwhite;
   border: none;
   border-radius: 8px;
@@ -82,7 +77,7 @@ main {
 .icon-button {
   background: none;
   border: none;
-  color: hotpink;
+  color: var(--primary-color);
 
   font-size: 18px;
   padding: 0;
@@ -113,7 +108,7 @@ main {
 
   background: none;
   border: none;
-  color: hotpink;
+  color: var(--primary-color);
 
   font-size: 13px;
   padding: 0;
@@ -128,6 +123,17 @@ main {
   color: inherit;
 }
 
+.button-large {
+  width: 100%;
+  padding: 10px 0px;
+  
+  background-color: var(--primary-color);  
+  color: floralwhite;
+  font-size: 20px;
+  
+  border-radius: 4px;
+  border: none;
+}
 
 /* =========================================================
    SHARED: Inputs / form fields
@@ -158,7 +164,7 @@ main {
 }
 
 .text-input:focus {
-  border-color: hotpink;
+  border-color: var(--primary-color);
 }
 
 .field-name {
@@ -181,7 +187,7 @@ main {
   margin-top: 4px;
 
   font-size: 18px;
-  color: hotpink;
+  color: var(--primary-color);
 
   background: none;
   border: none;
@@ -256,7 +262,7 @@ main {
 }
 
 .bottom-nav-item.selected {
-  color: hotpink;
+  color: var(--primary-color);
 }
 
 
@@ -290,7 +296,7 @@ main {
   flex-shrink: 0;
 
   font-size: 35px;
-  color: hotpink;
+  color: var(--primary-color);
 
   background: #333333;
   border-radius: 999px;
@@ -346,7 +352,7 @@ main {
 
   font-size: 22px;
 
-  background: hotpink;
+  background: var(--primary-color);
   border-radius: 999px;
 }
 
@@ -384,7 +390,7 @@ main {
 
   background: none;
   border: none;
-  color: hotpink;
+  color: var(--primary-color);
 
   font-size: 14px;
   padding: 4px 8px;
@@ -398,7 +404,7 @@ main {
   align-items: center;
   justify-content: center;
 
-  background: hotpink;
+  background: var(--primary-color);
   color: black;
 
   border-radius: 999px;
@@ -450,7 +456,7 @@ main {
 }
 
 .exercise-card-icon {
-  color: hotpink;
+  color: var(--primary-color);
   font-size: 20px;
 
   flex-shrink: 0;
@@ -511,8 +517,58 @@ main {
    SCREEN: Create Templates
 ========================================================= */
 
-/* Empty for now */
+/* =========================================================
+   SCREEN: Create Templates
+========================================================= */
 
+.templates-empty-state {
+  margin-top: 120px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 96px;
+  height: 96px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 24px;
+
+  border-radius: 999px;
+  background: #232323;
+  border: 1px solid #333;
+
+  color: var(--primary-color);
+  font-size: 42px;
+}
+
+.empty-state-title {
+  font-size: 24px;
+  font-weight: bold;
+
+  margin-bottom: 8px;
+}
+
+.empty-state-text {
+  max-width: 280px;
+
+  color: #999999;
+  font-size: 15px;
+  line-height: 1.4;
+
+  margin-bottom: 28px;
+}
+
+.templates-empty-state .button-large {
+  max-width: 320px;
+}
 
 /* =========================================================
    SCREEN: Analyse Progress
