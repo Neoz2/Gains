@@ -11,20 +11,27 @@ const STORAGE_KEYS = {
 const input = document.getElementById("exercise-name-input");
 const saveButton = document.getElementById("save-exercise");
 const exerciseList = document.getElementById("exercise-list");
+const selectedExercises = [];
+const unselectedExercises = [];
 const addSetting = document.getElementById("add-setting");
 const settingsContainer = document.getElementById("settings-container");
 
 const navButtons = document.querySelectorAll(".nav-button");
 const goBackButtons = document.querySelectorAll(".back-button");
 
+const exercisesEmptyState = document.querySelector(".exercises-empty-state");
+const exercisesDataState = document.querySelector(".exercises-data-state");
+const templatesEmptyState = document.querySelector(".templates-empty-state");
+const templatesDataState = document.querySelector(".templates-data-state");
+
 let editingExerciseId = null;
 
 const ROUTES = {
-  "home-screen": "#home",
-  "start-training-screen": "#start-training",
-  "create-exercises-screen": "#create-exercises",
-  "create-templates-screen": "#create-templates",
-  "analyse-progress-screen": "#analyse-progress"
+	"home-screen": "#home",
+	"start-training-screen": "#start-training",
+	"create-exercises-screen": "#create-exercises",
+	"create-templates-screen": "#create-templates",
+	"analyse-progress-screen": "#analyse-progress"
 };
 
 
@@ -36,7 +43,10 @@ setupNavigation();
 setupExerciseForm();
 setupSettingsForm();
 
-renderExerciseList(loadExercises());
+const exercises = loadExercises();
+renderExerciseList(exercises);
+setupTemplatesForm(exercises);
+updateExerciseScreenVisibility(exercises);
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
@@ -47,26 +57,28 @@ showScreen("home-screen");
 // =========================================================
 
 function setupNavigation() {
-  for (let i = 0; i < navButtons.length; i++) {
-    navButtons[i].addEventListener("click", function () {
-      const screenId = navButtons[i].dataset.screen;
-      navigateToScreen(screenId);
-    });
-  }
+	for (let i = 0; i < navButtons.length; i++) {
+		navButtons[i].addEventListener("click", function () {
+			const screenId = navButtons[i].dataset.screen;
+			navigateToScreen(screenId);
+		});
+	}
 
-  for (let i = 0; i < goBackButtons.length; i++) {
-    goBackButtons[i].addEventListener("click", function () {
-      history.back();
-    });
-  }
+	for (let i = 0; i < goBackButtons.length; i++) {
+		goBackButtons[i].addEventListener("click", function () {
+			history.back();
+		});
+	}
 
-  window.addEventListener("popstate", function (event) {
-    if (event.state && event.state.screenId) {
-      showScreen(event.state.screenId);
-    } else {
-      showScreen("home-screen");
-    }
-  });
+	window.addEventListener("popstate", function (event) {
+		if (event.state && event.state.screenId) {
+			showScreen(event.state.screenId);
+			refreshScreen(event.state.screenId);
+		} else {
+			showScreen("home-screen");
+			refreshScreen(event.state.screenId);
+		}
+	});
 }
 
 
@@ -75,52 +87,66 @@ function setupNavigation() {
 // =========================================================
 
 function navigateToScreen(screenId) {
-  showScreen(screenId);
+	showScreen(screenId);
 
-  const route = ROUTES[screenId];
+	const route = ROUTES[screenId];
 
-  if (route) {
-    history.pushState({ screenId: screenId }, "", route);
-  }
+	if (route) {
+		history.pushState({ screenId: screenId }, "", route);
+	}
+
+	refreshScreen(screenId);
 }
 
 function showScreen(screenId) {
-  hideAllScreens();
-  showSelectedScreen(screenId);
-  updateSelectedNavButton(screenId);
+	hideAllScreens();
+	showSelectedScreen(screenId);
+	updateSelectedNavButton(screenId);
 }
 
 function hideAllScreens() {
-  const screens = document.querySelectorAll("section");
+	const screens = document.querySelectorAll("section");
 
-  for (let i = 0; i < screens.length; i++) {
-    screens[i].classList.add("hidden");
-  }
+	for (let i = 0; i < screens.length; i++) {
+		screens[i].classList.add("hidden");
+	}
 }
 
 function showSelectedScreen(screenId) {
-  const screen = document.getElementById(screenId);
+	const screen = document.getElementById(screenId);
 
-  if (screen === null) {
-    console.log("Screen not found:", screenId);
-    return;
-  }
+	if (screen === null) {
+		console.log("Screen not found:", screenId);
+		return;
+	}
 
-  screen.classList.remove("hidden");
+	screen.classList.remove("hidden");
+}
+
+function refreshScreen(screenId) {
+	if (screenId === "create-exercises-screen") {
+		const exercises = loadExercises();
+
+		renderExerciseList(exercises);
+		updateExerciseScreenVisibility(exercises);
+	} else if (screenId === "create-templates-screen") {
+		const exercises = loadExercises();
+		renderAvailableExercises(exercises);
+		setupTemplatesForm(exercises);
+	}
 }
 
 function updateSelectedNavButton(screenId) {
-  const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
+	const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
 
-  for (let i = 0; i < bottomNavButtons.length; i++) {
-    if (screenId === bottomNavButtons[i].dataset.screen) {
-      bottomNavButtons[i].classList.add("selected");
-    } else {
-      bottomNavButtons[i].classList.remove("selected");
-    }
-  }
+	for (let i = 0; i < bottomNavButtons.length; i++) {
+		if (screenId === bottomNavButtons[i].dataset.screen) {
+			bottomNavButtons[i].classList.add("selected");
+		} else {
+			bottomNavButtons[i].classList.remove("selected");
+		}
+	}
 }
-
 
 // =========================================================
 // DATABASE FUNCTIONS
@@ -153,59 +179,67 @@ function saveItems(storageKey, items) {
 // =========================================================
 
 function setupExerciseForm() {
+	const showExerciseFormButton = document.getElementById("create-exercise");
+
+	showExerciseFormButton.addEventListener("click", function () {
+		exercisesEmptyState.classList.add("hidden");
+		exercisesDataState.classList.remove("hidden");
+	});
+
+	const exercises = loadExercises();
+
 	clearErrorWhenTyping(input);
 
 	saveButton.addEventListener("click", function () {
-    const exerciseName = input.value.trim();
-    const exercises = loadExercises();
+		const exerciseName = input.value.trim();
 
-    let formIsValid = true;
+		let formIsValid = true;
 
-    if (exerciseName === "") {
-      	showInputError(input);
-      	formIsValid = false;
-    } else if (exerciseExists(exercises, exerciseName) && editingExerciseId === null) {
-      	showInputError(input);
-      	formIsValid = false;
-    } else {
-      	clearInputError(input);
-    }
+		if (exerciseName === "") {
+			showInputError(input);
+			formIsValid = false;
+		} else if (exerciseExists(exercises, exerciseName) && editingExerciseId === null) {
+			showInputError(input);
+			formIsValid = false;
+		} else {
+			clearInputError(input);
+		}
 
-    const settings = readSettingsFromPage();
+		const settings = readSettingsFromPage();
 
-    if (settings === null) {
-      formIsValid = false;
-    }
+		if (settings === null) {
+			formIsValid = false;
+		}
 
-    if (!formIsValid) {
-      return;
-    }
+		if (!formIsValid) {
+			return;
+		}
 
-	if (editingExerciseId === null){
-		const exercise = createExercise(exerciseName, settings);
-		exercises.push(exercise);
-	} else {
-	const exerciseIndex = exercises.findIndex(function (exercise) {
-		return exercise.id === editingExerciseId;
+		if (editingExerciseId === null) {
+			const exercise = createExercise(exerciseName, settings);
+			exercises.push(exercise);
+		} else {
+			const exerciseIndex = exercises.findIndex(function (exercise) {
+				return exercise.id === editingExerciseId;
+			});
+
+			if (exerciseIndex === -1) {
+				console.log("Exercise being edited was not found");
+				return;
+			}
+
+			exercises[exerciseIndex] = {
+				id: editingExerciseId,
+				name: exerciseName,
+				settings: settings
+			};
+		}
+		updateExercises(exercises);
+		exitEditExerciseMode();
+
+		clearExerciseForm();
+		updateSettingsRowsVisibility();
 	});
-
-	if (exerciseIndex === -1) {
-		console.log("Exercise being edited was not found");
-		return;
-	}
-
-	exercises[exerciseIndex] = {
-		id: editingExerciseId,
-		name: exerciseName,
-		settings: settings
-	};
-	}
-	updateExercises(exercises);
-	exitEditExerciseMode();
-
-    clearExerciseForm();
-    updateSettingsRowsVisibility();
-  });
 }
 
 
@@ -228,7 +262,7 @@ function exerciseExists(exercises, exerciseName) {
 }
 
 function loadExercises() {
-  	return loadItems(STORAGE_KEYS.exercises);
+	return loadItems(STORAGE_KEYS.exercises);
 }
 
 function saveExercises(exercises) {
@@ -238,6 +272,7 @@ function saveExercises(exercises) {
 function updateExercises(exercises) {
 	saveExercises(exercises);
 	renderExerciseList(exercises);
+	updateExerciseScreenVisibility(exercises);
 }
 
 // =========================================================
@@ -245,12 +280,12 @@ function updateExercises(exercises) {
 // =========================================================
 
 function renderExerciseList(exercises) {
-  exerciseList.innerHTML = "";
+	exerciseList.innerHTML = "";
 
-  for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-    const exerciseCard = createExerciseCard(exercises, exerciseIndex);
-    exerciseList.appendChild(exerciseCard);
-  }
+	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+		const exerciseCard = createExerciseCard(exercises, exerciseIndex);
+		exerciseList.appendChild(exerciseCard);
+	}
 }
 
 
@@ -259,18 +294,18 @@ function renderExerciseList(exercises) {
 // =========================================================
 
 function setupSettingsForm() {
-  addSetting.addEventListener("click", function () {
-    const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+	addSetting.addEventListener("click", function () {
+		const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
-    if (settingsRows.length >= 3) {
-      return;
-    }
+		if (settingsRows.length >= 3) {
+			return;
+		}
 
-    const settingsRow = createSettingRow();
+		const settingsRow = createSettingRow();
 
-    settingsContainer.appendChild(settingsRow);
-    updateSettingsRowsVisibility();
-  });
+		settingsContainer.appendChild(settingsRow);
+		updateSettingsRowsVisibility();
+	});
 }
 
 
@@ -279,59 +314,59 @@ function setupSettingsForm() {
 // =========================================================
 
 function readSettingsFromPage() {
-  const settingsRows = settingsContainer.querySelectorAll(".settings-row");
-  const settings = [];
-  let settingsAreValid = true;
+	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+	const settings = [];
+	let settingsAreValid = true;
 
-  for (let i = 0; i < settingsRows.length; i++) {
-    const row = settingsRows[i];
+	for (let i = 0; i < settingsRows.length; i++) {
+		const row = settingsRows[i];
 
-    const nameInput = row.querySelector(".setting-name");
-    const valueInput = row.querySelector(".setting-value");
+		const nameInput = row.querySelector(".setting-name");
+		const valueInput = row.querySelector(".setting-value");
 
-    const name = nameInput.value.trim();
-    const value = valueInput.value.trim();
+		const name = nameInput.value.trim();
+		const value = valueInput.value.trim();
 
-    if (name === "") {
-      showInputError(nameInput);
-      settingsAreValid = false;
-    } else {
-      clearInputError(nameInput);
-    }
+		if (name === "") {
+			showInputError(nameInput);
+			settingsAreValid = false;
+		} else {
+			clearInputError(nameInput);
+		}
 
-    if (value === "") {
-      showInputError(valueInput);
-      settingsAreValid = false;
-    } else {
-      clearInputError(valueInput);
-    }
+		if (value === "") {
+			showInputError(valueInput);
+			settingsAreValid = false;
+		} else {
+			clearInputError(valueInput);
+		}
 
-    settings.push({
-      name: name,
-      value: value
-    });
-  }
+		settings.push({
+			name: name,
+			value: value
+		});
+	}
 
-  if (!settingsAreValid) {
-    return null;
-  }
+	if (!settingsAreValid) {
+		return null;
+	}
 
-  return settings;
+	return settings;
 }
 
 function clearExerciseForm() {
-  input.value = "";
-  settingsContainer.innerHTML = "";
+	input.value = "";
+	settingsContainer.innerHTML = "";
 }
 
 function updateSettingsRowsVisibility() {
-  const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
-  if (settingsRows.length > 0) {
-    settingsContainer.classList.remove("hidden");
-  } else {
-    settingsContainer.classList.add("hidden");
-  }
+	if (settingsRows.length > 0) {
+		settingsContainer.classList.remove("hidden");
+	} else {
+		settingsContainer.classList.add("hidden");
+	}
 }
 
 
@@ -340,36 +375,36 @@ function updateSettingsRowsVisibility() {
 // =========================================================
 
 function createSettingRow() {
-  const settingsRow = document.createElement("div");
-  settingsRow.classList.add("settings-row");
+	const settingsRow = document.createElement("div");
+	settingsRow.classList.add("settings-row");
 
-  const settingNameDeleteRow = document.createElement("div");
-  settingNameDeleteRow.classList.add("setting-delete-button-row");
+	const settingNameDeleteRow = document.createElement("div");
+	settingNameDeleteRow.classList.add("setting-delete-button-row");
 
-  const settingNameLabel = createText("Setting name", "field-name");
-  const settingNameInput = createTextInput("Name...", "setting-name");
+	const settingNameLabel = createText("Setting name", "field-name");
+	const settingNameInput = createTextInput("Name...", "setting-name");
 
-  const settingValueLabel = createText("Value", "field-name");
-  const settingValueInput = createTextInput("Setting value...", "setting-value");
+	const settingValueLabel = createText("Value", "field-name");
+	const settingValueInput = createTextInput("Setting value...", "setting-value");
 
-  clearErrorWhenTyping(settingNameInput);
-  clearErrorWhenTyping(settingValueInput);
+	clearErrorWhenTyping(settingNameInput);
+	clearErrorWhenTyping(settingValueInput);
 
-  const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
-  deleteButton.addEventListener("click", function () {
-    settingsRow.remove();
-    updateSettingsRowsVisibility();
-  });
+	const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
+	deleteButton.addEventListener("click", function () {
+		settingsRow.remove();
+		updateSettingsRowsVisibility();
+	});
 
-  settingNameDeleteRow.appendChild(settingNameLabel);
-  settingNameDeleteRow.appendChild(deleteButton);
+	settingNameDeleteRow.appendChild(settingNameLabel);
+	settingNameDeleteRow.appendChild(deleteButton);
 
-  settingsRow.appendChild(settingNameDeleteRow);
-  settingsRow.appendChild(settingNameInput);
-  settingsRow.appendChild(settingValueLabel);
-  settingsRow.appendChild(settingValueInput);
+	settingsRow.appendChild(settingNameDeleteRow);
+	settingsRow.appendChild(settingNameInput);
+	settingsRow.appendChild(settingValueLabel);
+	settingsRow.appendChild(settingValueInput);
 
-  return settingsRow;
+	return settingsRow;
 }
 
 
@@ -378,27 +413,27 @@ function createSettingRow() {
 // =========================================================
 
 function createExerciseCard(exercises, exerciseIndex) {
-  const exercise = exercises[exerciseIndex];
+	const exercise = exercises[exerciseIndex];
 
-  const card = document.createElement("li");
-  card.classList.add("exercise-card");
+	const card = document.createElement("li");
+	card.classList.add("exercise-card");
 
-  const header = createExerciseCardHeader(exercise);
-  const details = createExerciseCardDetails(exercise);
-  const actions = createExerciseCardActions(exercises, exerciseIndex);
+	const header = createExerciseCardHeader(exercise);
+	const details = createExerciseCardDetails(exercise);
+	const actions = createExerciseCardActions(exercises, exerciseIndex);
 
-  details.appendChild(actions);
+	details.appendChild(actions);
 
-  const chevron = header.querySelector(".chevron-button");
-  header.addEventListener("click", function () {
-    rotateChevron(chevron);
-	changeVisibility(details);
-  });
+	const chevron = header.querySelector(".chevron-button");
+	header.addEventListener("click", function () {
+		rotateChevron(chevron);
+		changeVisibility(details);
+	});
 
-  card.appendChild(header);
-  card.appendChild(details);
+	card.appendChild(header);
+	card.appendChild(details);
 
-  return card;
+	return card;
 }
 
 function createExerciseCardHeader(exercise) {
@@ -483,7 +518,7 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 }
 
 function updateSaveButtonText() {
-	if(editingExerciseId !== null){
+	if (editingExerciseId !== null) {
 		saveButton.textContent = "Update exercise"
 	} else {
 		saveButton.textContent = "Save exercise"
@@ -509,8 +544,8 @@ function enterEditExerciseMode(exercise) {
 		settingsContainer.appendChild(settingsRow);
 
 	}
-	window.scrollTo({top:0, behavior: "smooth"});
-	updateSettingsRowsVisibility();	
+	window.scrollTo({ top: 0, behavior: "smooth" });
+	updateSettingsRowsVisibility();
 	updateSaveButtonText();
 }
 
@@ -521,64 +556,204 @@ function exitEditExerciseMode() {
 	updateSettingsRowsVisibility();
 }
 
+function updateExerciseScreenVisibility(exercises) {
+	if (exercises.length === 0) {
+		exercisesEmptyState.classList.remove("hidden");
+		exercisesDataState.classList.add("hidden");
+	} else {
+		exercisesEmptyState.classList.add("hidden");
+		exercisesDataState.classList.remove("hidden");
+	}
+}
+
+// =========================================================
+// TEMPLATES SETUP
+// =========================================================
+
+function setupTemplatesForm(exercises) {
+	selectedExercises.length = 0;
+	unselectedExercises.length = 0;
+
+	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+		unselectedExercises.push(exercises[exerciseIndex]);
+	}
+
+	renderTemplateExerciseLists();
+}
+
+function renderTemplateExerciseLists() {
+	renderSelectedExercises();
+	renderAvailableExercises();
+}
+
+function renderAvailableExercises() {
+	const availableExercisesList = document.querySelector(".template-unselected-items");
+
+	availableExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < unselectedExercises.length; exerciseIndex++) {
+		const exercise = unselectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, false);
+
+		row.addEventListener("click", function () {
+			selectTemplateExercise(exercise);
+		});
+
+		availableExercisesList.appendChild(row);
+	}
+}
+
+function renderSelectedExercises() {
+	const selectedExercisesList = document.querySelector(".template-selected-items");
+
+	selectedExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
+		const exercise = selectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, true);
+
+		row.addEventListener("click", function () {
+			unselectTemplateExercise(exercise);
+		});
+
+		selectedExercisesList.appendChild(row);
+	}
+}
+
+function createTemplateExerciseRow(exercise, isSelected) {
+	const row = document.createElement("button");
+	row.type = "button";
+
+	if (isSelected) {
+		row.classList.add("selected-exercise-row");
+	} else {
+		row.classList.add("available-exercise-row");
+	}
+
+	const exerciseName = document.createElement("span");
+	exerciseName.textContent = exercise.name;
+
+	const checkIcon = document.createElement("i");
+
+	if (isSelected) {
+		checkIcon.classList.add("fa-solid", "fa-circle-check");
+	} else {
+		checkIcon.classList.add("fa-regular", "fa-circle");
+	}
+
+	row.appendChild(exerciseName);
+	row.appendChild(checkIcon);
+
+	return row;
+}
+
+function selectTemplateExercise(exercise) {
+	removeExerciseFromArray(unselectedExercises, exercise);
+	addExerciseToArray(selectedExercises, exercise);
+
+	renderTemplateExerciseLists();
+}
+
+function unselectTemplateExercise(exercise) {
+	removeExerciseFromArray(selectedExercises, exercise);
+	addExerciseToArray(unselectedExercises, exercise);
+
+	renderTemplateExerciseLists();
+}
+
+function addExerciseToArray(exercises, exercise) {
+	const exerciseAlreadyExists = exercises.some(function (existingExercise) {
+		return existingExercise.id === exercise.id;
+	});
+
+	if (!exerciseAlreadyExists) {
+		exercises.push(exercise);
+	}
+}
+
+function removeExerciseFromArray(exercises, exercise) {
+	const exerciseIndex = exercises.findIndex(function (existingExercise) {
+		return existingExercise.id === exercise.id;
+	});
+
+	if (exerciseIndex !== -1) {
+		exercises.splice(exerciseIndex, 1);
+	}
+}
+
+// =========================================================
+// DOM BUILDERS: TEMPLATES 
+// =========================================================
+
+function updateTemplateScreenVisibility(exercises) {
+	if (exercises.length === 0) {
+		templatesEmptyState.classList.remove("hidden");
+		templatesDataState.classList.add("hidden");
+	} else {
+		templatesEmptyState.classList.add("hidden");
+		templatesDataState.classList.remove("hidden");
+	}
+}
 
 // =========================================================
 // DOM BUILDERS: GENERIC
 // =========================================================
 
 function createActionButton(iconClassBase, iconClassIcon, text) {
-  const button = document.createElement("button");
-  button.classList.add("action-button");
+	const button = document.createElement("button");
+	button.classList.add("action-button");
 
-  const icon = document.createElement("i");
-  icon.classList.add(iconClassBase);
-  icon.classList.add(iconClassIcon);
+	const icon = document.createElement("i");
+	icon.classList.add(iconClassBase);
+	icon.classList.add(iconClassIcon);
 
-  const label = createText(text, "action-button-text");
+	const label = createText(text, "action-button-text");
 
-  button.appendChild(icon);
-  button.appendChild(label);
+	button.appendChild(icon);
+	button.appendChild(label);
 
-  return button;
+	return button;
 }
 
 function createText(text, extraClass) {
-  const label = document.createElement("span");
-  label.textContent = text;
-  label.classList.add(extraClass);
-  return label;
+	const label = document.createElement("span");
+	label.textContent = text;
+	label.classList.add(extraClass);
+	return label;
 }
 
 function createTextInput(placeholder, extraClass) {
-  const input = document.createElement("input");
-  input.placeholder = placeholder;
+	const input = document.createElement("input");
+	input.placeholder = placeholder;
 
-  input.classList.add("text-input");
-  input.classList.add(extraClass);
+	input.classList.add("text-input");
+	input.classList.add(extraClass);
 
-  return input;
+	return input;
 }
 
 function createIconButton(buttonClass, iconClassBase, iconClassIcon) {
-  const button = document.createElement("button");
-  button.classList.add(buttonClass);
+	const button = document.createElement("button");
+	button.classList.add(buttonClass);
 
-  const icon = document.createElement("i");
-  icon.classList.add(iconClassBase);
-  icon.classList.add(iconClassIcon);
+	const icon = document.createElement("i");
+	icon.classList.add(iconClassBase);
+	icon.classList.add(iconClassIcon);
 
-  button.appendChild(icon);
+	button.appendChild(icon);
 
-  return button;
+	return button;
 }
 
 function createIcon(iconClass, iconClassBase, iconClassIcon) {
-  const icon = document.createElement("i");
-  icon.classList.add(iconClass);
-  icon.classList.add(iconClassBase);
-  icon.classList.add(iconClassIcon);
+	const icon = document.createElement("i");
+	icon.classList.add(iconClass);
+	icon.classList.add(iconClassBase);
+	icon.classList.add(iconClassIcon);
 
-  return icon;
+	return icon;
 }
 
 
@@ -587,31 +762,31 @@ function createIcon(iconClass, iconClassBase, iconClassIcon) {
 // =========================================================
 
 function showInputError(inputElement) {
-  inputElement.classList.add("input-error");
+	inputElement.classList.add("input-error");
 }
 
 function clearInputError(inputElement) {
-  inputElement.classList.remove("input-error");
+	inputElement.classList.remove("input-error");
 }
 
 function inputHasText(inputElement) {
-  return inputElement.value.trim().length > 0;
+	return inputElement.value.trim().length > 0;
 }
 
 function clearErrorWhenTyping(inputElement) {
-  inputElement.addEventListener("input", function () {
-    if (inputHasText(inputElement)) {
-      clearInputError(inputElement);
-    }
-  });
+	inputElement.addEventListener("input", function () {
+		if (inputHasText(inputElement)) {
+			clearInputError(inputElement);
+		}
+	});
 }
 
 function rotateChevron(chevron) {
-  chevron.classList.toggle("chevron-rotate");
+	chevron.classList.toggle("chevron-rotate");
 }
 
 function changeVisibility(item) {
-	if (item.classList.contains("hidden")){
+	if (item.classList.contains("hidden")) {
 		item.classList.remove("hidden");
 	} else {
 		item.classList.add("hidden");

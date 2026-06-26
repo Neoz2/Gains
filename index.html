@@ -1,29 +1,31 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css?v=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ff2f92">
 
   <title>Gym App</title>
 </head>
+
 <body>
   <main>
 
-<!-- HOME -->
+    <!-- HOME -->
     <section id="home-screen">
       <div class="home-content">
-        <div class="home-welcome-block"> 
+        <div class="home-welcome-block">
           <span class="home-welcome-block-text">
             <span>Welcome back</span>
             <span>Ready to train?</span>
           </span>
           <i class="fa-solid fa-heart-pulse"></i>
         </div>
-        
+
         <span class="home-nav-header">MAIN AREAS</span>
         <button class="home-nav-item nav-button" data-screen="start-training-screen">
           <i class="fa-solid fa-circle-play"></i>
@@ -36,7 +38,7 @@
 
         <button class="home-nav-item nav-button" data-screen="create-exercises-screen">
           <i class="fa-solid fa-dumbbell"></i>
-          <span class="home-nav-text">          
+          <span class="home-nav-text">
             <span>Exercises</span>
             <span>Manage your exercises</span>
           </span>
@@ -63,89 +65,111 @@
       </div>
     </section>
 
-<!-- START TRAINING -->
+    <!-- START TRAINING -->
     <section id="start-training-screen" class="hidden">
-        <button class="back-button">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
+      <button class="back-button">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
 
-        <div class="page-header">
-          <span class="page-title">Start training</span>
-          <span class="page-subtitle">Start a new session</span>
-        </div>
+      <div class="page-header">
+        <span class="page-title">Start training</span>
+        <span class="page-subtitle">Start a new session</span>
+      </div>
 
-        <span class="content-header">SELECT METHOD</span>
+      <span class="content-header">SELECT METHOD</span>
     </section>
 
-<!-- CREATE EXERCISES -->
+    <!-- CREATE EXERCISES -->
     <section id="create-exercises-screen" class="hidden">
-        <button class="back-button">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
+      <button class="back-button">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
 
-        <div class="page-header">
-          <span class="page-title">Create exercises</span>
-          <span class="page-subtitle">Configure static machine settings for reuse</span>
+      <div class="page-header">
+        <span class="page-title">Create exercises</span>
+        <span class="page-subtitle">Configure static machine settings for reuse</span>
+      </div>
+
+      <div class="exercises-empty-state hidden">
+        <div class="empty-state-icon">
+          <i class="fa-solid fa-dumbbell"></i>
         </div>
 
-        <span class="content-header">NEW EXERCISE</span>        
+        <span class="empty-state-title">No exercises yet</span>
+        <span class="empty-state-text">Create your first exercise to use in your workouts</span>
+        <button id="create-exercise" class="button-large">
+          + Create exercise
+        </button>
+      </div>
 
-      <input id="exercise-name-input" class="text-input" placeholder="Exercise name">  
-        <span class="content-header">MACHINE SETTINGS</span>    
+      <div class="exercises-data-state hidden">
+        <span class="content-header">NEW EXERCISE</span>
+
+        <input id="exercise-name-input" class="text-input" placeholder="Exercise name">
+        <span class="content-header">MACHINE SETTINGS</span>
         <div class="content-card">
           <button id="add-setting" class="add-setting">
             <i class="fa-solid fa-plus"></i>
             <span>Add setting</span>
           </button>
         </div>
-      <div id="settings-container" class="content-card hidden"></div>
+        <div id="settings-container" class="content-card hidden"></div>
 
-      <span>
-        <button id="save-exercise" class="save-button">
-          Save exercise
-        </button>
-      </span>
-
-      <ul id="exercise-list"></ul>
-    </section>
-
-<!-- CREATE TEMPLATES -->
-    <section id="create-templates-screen" class="hidden">
-        <button class="back-button">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <div class="page-header">
-          <span class="page-title">Create templates</span>
-          <span class="page-subtitle">Combine exercises into reusable plans</span>
-        </div>
-
-        <div class="templates-empty-state">
-          <div class="empty-state-icon">
-            <i class="fa-solid fa-clipboard-list"></i>
-          </div>
-          
-          <span class="empty-state-title">No templates yet</span>
-          <span class="empty-state-text">Create your first workout template to quickly start future sessions</span>
-          <button id="create-template" class="button-large">
-            + Create template
+        <span>
+          <button id="save-exercise" class="save-button">
+            Save exercise
           </button>
-        </div>
+        </span>
+
+        <ul id="exercise-list"></ul>
+      </div>
     </section>
 
-<!-- ANALYSE PROGRESS -->
-    <section id="analyse-progress-screen" class="hidden">
-        <button class="back-button">
-          <i class="fa-solid fa-chevron-left"></i>
+    <!-- CREATE TEMPLATES -->
+    <section id="create-templates-screen" class="hidden">
+      <button class="back-button">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="page-header">
+        <span class="page-title">Create templates</span>
+        <span class="page-subtitle">Combine exercises into reusable plans</span>
+      </div>
+
+      <div class="templates-empty-state hidden">
+        <div class="empty-state-icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+
+        <span class="empty-state-title">No templates yet</span>
+        <span class="empty-state-text">Create your first workout template to quickly start future sessions</span>
+        <button id="create-template" class="button-large">
+          + Create template
         </button>
+      </div>
 
-        <div class="page-header">
-          <span class="page-title">Analyse progress</span>
-          <span class="page-subtitle">Track performance over time</span>
-        </div>
+      <div class="templates-data-state">
+        <span class="content-header">SELECTED EXERCISES</span>
+        <div class="template-selected-items"></div>
+
+        <span class="content-header">AVAILABLE EXERCISES</span>
+        <div class="template-unselected-items"></div>
+      </div>
     </section>
 
-<!-- BOTTOM NAVIGATION -->
+    <!-- ANALYSE PROGRESS -->
+    <section id="analyse-progress-screen" class="hidden">
+      <button class="back-button">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="page-header">
+        <span class="page-title">Analyse progress</span>
+        <span class="page-subtitle">Track performance over time</span>
+      </div>
+    </section>
+
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
       <button class="bottom-nav-item nav-button" data-screen="home-screen">
         <i class="fa-solid fa-house"></i>
@@ -176,4 +200,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>

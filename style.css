@@ -18,7 +18,7 @@ main {
 }
 
 :root {
-    --primary-color: hotpink; 
+  --primary-color: hotpink;
 }
 
 /* =========================================================
@@ -27,7 +27,7 @@ main {
 ========================================================= */
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 
@@ -126,11 +126,11 @@ main {
 .button-large {
   width: 100%;
   padding: 10px 0px;
-  
-  background-color: var(--primary-color);  
+
+  background-color: var(--primary-color);
   color: floralwhite;
   font-size: 20px;
-  
+
   border-radius: 4px;
   border: none;
 }
@@ -311,11 +311,11 @@ main {
   flex: 1;
 }
 
-.home-welcome-block-text > span:first-child {
+.home-welcome-block-text>span:first-child {
   color: #999999;
 }
 
-.home-welcome-block-text > span:nth-child(even) {
+.home-welcome-block-text>span:nth-child(even) {
   font-size: 30px;
 }
 
@@ -340,7 +340,7 @@ main {
   font-size: 12px;
 }
 
-.home-nav-item > i:first-child {
+.home-nav-item>i:first-child {
   width: 40px;
   height: 40px;
 
@@ -365,7 +365,7 @@ main {
   margin-left: 20px;
 }
 
-.home-nav-text > span:first-child {
+.home-nav-text>span:first-child {
   font-size: 20px;
 }
 
@@ -396,7 +396,7 @@ main {
   padding: 4px 8px;
 }
 
-.add-setting > i {
+.add-setting>i {
   width: 22px;
   height: 22px;
 
@@ -521,6 +521,13 @@ main {
    SCREEN: Create Templates
 ========================================================= */
 
+/* =========================================================
+   SCREEN: Create Templates
+========================================================= */
+
+/* ---------- Empty states ---------- */
+
+.exercises-empty-state,
 .templates-empty-state {
   margin-top: 120px;
 
@@ -566,8 +573,61 @@ main {
   margin-bottom: 28px;
 }
 
+.exercises-empty-state .button-large,
 .templates-empty-state .button-large {
   max-width: 320px;
+}
+
+
+/* ---------- Template exercise selector ---------- */
+
+.templates-data-state {
+  display: flex;
+  flex-direction: column;
+}
+
+.template-selected-items,
+.template-unselected-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.template-selected-items {
+  margin-bottom: 18px;
+}
+
+.available-exercise-row,
+.selected-exercise-row {
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  background: #232323;
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  color: floralwhite;
+  font-size: 16px;
+  text-align: left;
+}
+
+.available-exercise-row i,
+.selected-exercise-row i {
+  color: var(--primary-color);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.available-exercise-row span,
+.selected-exercise-row span {
+  flex: 1;
 }
 
 /* =========================================================
