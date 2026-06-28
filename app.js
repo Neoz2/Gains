@@ -8,7 +8,8 @@ const STORAGE_KEYS = {
 	workouts: "gym-app-workouts"
 }
 
-const exerciseNameinput = document.getElementById("exercise-name-input");
+const exerciseNameInput = document.getElementById("exercise-name-input");
+const templateNameInput = document.getElementById("template-name-input");
 const saveExerciseButton = document.getElementById("save-exercise");
 const saveTemplateButton = document.getElementById("save-template");
 const exerciseList = document.getElementById("exercise-list");
@@ -26,6 +27,7 @@ const templatesEmptyState = document.querySelector(".templates-empty-state");
 const templatesDataState = document.querySelector(".templates-data-state");
 
 let editingExerciseId = null;
+let editingTemplateId = null;
 
 const ROUTES = {
 	"home-screen": "#home",
@@ -47,6 +49,7 @@ setupSettingsForm();
 const exercises = loadExercises();
 renderExerciseList(exercises);
 setupTemplatesForm(exercises);
+setupTemplateSaveButton();
 updateExerciseScreenVisibility(exercises);
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
@@ -77,7 +80,7 @@ function setupNavigation() {
 			refreshScreen(event.state.screenId);
 		} else {
 			showScreen("home-screen");
-			refreshScreen(event.state.screenId);
+			refreshScreen("home-screen");
 		}
 	});
 }
@@ -132,7 +135,7 @@ function refreshScreen(screenId) {
 		updateExerciseScreenVisibility(exercises);
 	} else if (screenId === "create-templates-screen") {
 		const exercises = loadExercises();
-		renderAvailableExercises(exercises);
+
 		setupTemplatesForm(exercises);
 	}
 }
@@ -187,22 +190,22 @@ function setupExerciseForm() {
 		exercisesDataState.classList.remove("hidden");
 	});
 
-	clearErrorWhenTyping(exerciseNameinput);
+	clearErrorWhenTyping(exerciseNameInput);
 
 	saveExerciseButton.addEventListener("click", function () {
 		const exercises = loadExercises();
-		const exerciseName = exerciseNameinput.value.trim();
+		const exerciseName = exerciseNameInput.value.trim();
 
 		let formIsValid = true;
 
 		if (exerciseName === "") {
-			showInputError(exerciseNameinput);
+			showInputError(exerciseNameInput);
 			formIsValid = false;
-		} else if (exerciseExists(exercises, exerciseName) && editingExerciseId === null) {
-			showInputError(exerciseNameinput);
+		} else if (nameExistsInList(exercises, exerciseName) && editingExerciseId === null) {
+			showInputError(exerciseNameInput);
 			formIsValid = false;
 		} else {
-			clearInputError(exerciseNameinput);
+			clearInputError(exerciseNameInput);
 		}
 
 		const settings = readSettingsFromPage();
@@ -241,9 +244,8 @@ function setupExerciseForm() {
 	});
 }
 
-
 // =========================================================
-// EXERCISE DATA / STORAGE
+// DATA / STORAGE
 // =========================================================
 
 function createExercise(name, settings) {
@@ -254,24 +256,52 @@ function createExercise(name, settings) {
 	};
 }
 
-function exerciseExists(exercises, exerciseName) {
-	return exercises.some(function (exercise) {
-		return exercise.name === exerciseName;
-	});
+function createTemplate(name, selectedExercises) {
+	const exerciseIds = [];
+
+	for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
+		exerciseIds.push(selectedExercises[exerciseIndex].id);
+	}
+
+	return {
+		id: crypto.randomUUID(),
+		name: name,
+		exerciseIds: exerciseIds
+	};
+}
+
+function loadStorageItems(storageKey) {
+	return loadItems(storageKey);
+}
+
+function saveStorageItems(storageKey, items) {
+	saveItems(storageKey, items);
 }
 
 function loadExercises() {
-	return loadItems(STORAGE_KEYS.exercises);
+	return loadStorageItems(STORAGE_KEYS.exercises);
 }
 
 function saveExercises(exercises) {
-	saveItems(STORAGE_KEYS.exercises, exercises);
+	saveStorageItems(STORAGE_KEYS.exercises, exercises);
 }
 
 function updateExercises(exercises) {
 	saveExercises(exercises);
 	renderExerciseList(exercises);
 	updateExerciseScreenVisibility(exercises);
+}
+
+function loadTemplates() {
+	return loadStorageItems(STORAGE_KEYS.templates);
+}
+
+function saveTemplates(templates) {
+	saveStorageItems(STORAGE_KEYS.templates, templates);
+}
+
+function updateTemplates(templates) {
+	saveTemplates(templates);
 }
 
 // =========================================================
@@ -354,7 +384,7 @@ function readSettingsFromPage() {
 }
 
 function clearExerciseForm() {
-	exerciseNameinput.value = "";
+	exerciseNameInput.value = "";
 	settingsContainer.innerHTML = "";
 }
 
@@ -391,7 +421,7 @@ function createSettingRow() {
 
 	const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
 	deleteButton.addEventListener("click", function () {
-		settingsRow.remove();		
+		settingsRow.remove();
 		updateSettingsRowsVisibility();
 	});
 
@@ -529,7 +559,7 @@ function enterEditExerciseMode(exercise) {
 
 	clearExerciseForm();
 
-	exerciseNameinput.value = exercise.name;
+	exerciseNameInput.value = exercise.name;
 
 	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
 		const setting = exercise.settings[settingIndex];
@@ -580,6 +610,45 @@ function setupTemplatesForm(exercises) {
 	renderTemplateExerciseLists();
 }
 
+function setupTemplateSaveButton() {
+	clearErrorWhenTyping(templateNameInput);
+
+	saveTemplateButton.addEventListener("click", function () {
+		const templates = loadTemplates();
+		const templateName = templateNameInput.value.trim();
+
+		let formIsValid = true;
+
+		if (templateName === "") {
+			showInputError(templateNameInput);
+			formIsValid = false;
+		} else if (nameExistsInList(templates, templateName) && editingTemplateId === null) {
+			showInputError(templateNameInput);
+			formIsValid = false;
+		} else {
+			clearInputError(templateNameInput);
+		}
+
+		if (selectedExercises.length === 0) {
+			formIsValid = false;
+			console.log("Select at least one exercise");
+		}
+
+		if (!formIsValid) {
+			return;
+		}
+
+		const template = createTemplate(templateName, selectedExercises);
+
+		templates.push(template);
+		updateTemplates(templates);
+
+		clearTemplateForm();
+
+		console.log("Template saved:", template);
+	});
+}
+
 function renderTemplateExerciseLists() {
 	renderSelectedExercises();
 	renderAvailableExercises();
@@ -628,7 +697,7 @@ function createTemplateExerciseRow(exercise, isSelected) {
 
 	if (isSelected) {
 		row.classList.add("selected-exercise-row");
-		
+
 		const barsIcon = document.createElement("i");
 		barsIcon.classList.add("fa-solid", "fa-bars");
 		row.appendChild(barsIcon);
@@ -685,6 +754,21 @@ function removeExerciseFromArray(exercises, exercise) {
 	if (exerciseIndex !== -1) {
 		exercises.splice(exerciseIndex, 1);
 	}
+}
+
+function clearTemplateForm() {
+	templateNameInput.value = "";
+
+	selectedExercises.length = 0;
+	unselectedExercises.length = 0;
+
+	const exercises = loadExercises();
+
+	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+		unselectedExercises.push(exercises[exerciseIndex]);
+	}
+
+	renderTemplateExerciseLists();
 }
 
 // =========================================================
@@ -795,4 +879,10 @@ function changeVisibility(item) {
 	} else {
 		item.classList.add("hidden");
 	}
+}
+
+function nameExistsInList(list, nameInput) {
+	return list.some(function (item) {
+		return item.name === nameInput;
+	});
 }
