@@ -738,37 +738,6 @@ function renderSelectedExercises() {
 	}
 }
 
-function createTemplateExerciseRow(exercise, isSelected) {
-	const row = document.createElement("button");
-	row.type = "button";
-
-	if (isSelected) {
-		row.classList.add("selected-exercise-row");
-
-		const barsIcon = document.createElement("i");
-		barsIcon.classList.add("fa-solid", "fa-bars");
-		row.appendChild(barsIcon);
-	} else {
-		row.classList.add("available-exercise-row");
-	}
-
-	const exerciseName = document.createElement("span");
-	exerciseName.textContent = exercise.name;
-
-	const checkIcon = document.createElement("i");
-
-	if (isSelected) {
-		checkIcon.classList.add("fa-solid", "fa-circle-check");
-	} else {
-		checkIcon.classList.add("fa-regular", "fa-circle");
-	}
-
-	row.appendChild(exerciseName);
-	row.appendChild(checkIcon);
-
-	return row;
-}
-
 function selectTemplateExercise(exercise) {
 	removeExerciseFromArray(unselectedExercises, exercise);
 	addExerciseToArray(selectedExercises, exercise);
@@ -818,26 +787,39 @@ function clearTemplateForm() {
 	renderTemplateExerciseLists();
 }
 
+function enterEditTemplateMode(template) {
+	clearTemplateForm();
+	showTemplateMode("data");
+
+	editingTemplateId = template.id;
+	templateNameInput.value = template.name;
+
+	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+		const exerciseId = template.exerciseIds[exerciseIndex];
+		
+		const exercise = exercises.find(function (exercise) {
+			return exercise.id === exerciseId;
+		});
+		selectTemplateExercise(exercise);
+	}
+}
+
 // =========================================================
 // TEMPLATES NAVIGATION
 // =========================================================
 
 function showTemplateMode(mode) {
-  templatesEmptyState.classList.add("hidden");
-  templatesOverviewState.classList.add("hidden");
-  templatesDataState.classList.add("hidden");
+	templatesEmptyState.classList.add("hidden");
+	templatesOverviewState.classList.add("hidden");
+	templatesDataState.classList.add("hidden");
 
-  if (mode === "empty") {
-    templatesEmptyState.classList.remove("hidden");
-  }
-
-  if (mode === "overview") {
-    templatesOverviewState.classList.remove("hidden");
-  }
-
-  if (mode === "data") {
-    templatesDataState.classList.remove("hidden");
-  }
+	if (mode === "empty") {
+		templatesEmptyState.classList.remove("hidden");
+	} else if (mode === "overview") {
+		templatesOverviewState.classList.remove("hidden");
+	} else if (mode === "data") {
+		templatesDataState.classList.remove("hidden");
+	}
 }
 
 // =========================================================
@@ -865,14 +847,46 @@ function createSavedTemplateRow(template) {
 
 	const chevronIcon = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
 
-	chevronIcon.addEventListener("click", function () {
-		console.log(template.name);
+	row.addEventListener("click", function () {
+		console.log("Edit mode: ", template.name);
+		enterEditTemplateMode(template);
 	});
 
 	row.appendChild(templateIcon);
 	row.appendChild(templateText);
 
 	row.appendChild(chevronIcon);
+
+	return row;
+}
+
+function createTemplateExerciseRow(exercise, isSelected) {
+	const row = document.createElement("button");
+	row.type = "button";
+
+	if (isSelected) {
+		row.classList.add("selected-exercise-row");
+
+		const barsIcon = document.createElement("i");
+		barsIcon.classList.add("fa-solid", "fa-bars");
+		row.appendChild(barsIcon);
+	} else {
+		row.classList.add("available-exercise-row");
+	}
+
+	const exerciseName = document.createElement("span");
+	exerciseName.textContent = exercise.name;
+
+	const checkIcon = document.createElement("i");
+
+	if (isSelected) {
+		checkIcon.classList.add("fa-solid", "fa-circle-check");
+	} else {
+		checkIcon.classList.add("fa-regular", "fa-circle");
+	}
+
+	row.appendChild(exerciseName);
+	row.appendChild(checkIcon);
 
 	return row;
 }

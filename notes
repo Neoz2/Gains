@@ -3,5 +3,6 @@ http://192.168.2.2:8000
 
 
 To do:
--edit action: fill form
--edit action: overwrite old value
+-fix navigation with subpages
+-zero exercises validation templates
+-update save template to update template for edit mode. Allow save overwrite and delete
