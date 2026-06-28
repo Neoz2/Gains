@@ -10,11 +10,18 @@ const STORAGE_KEYS = {
 
 const exerciseNameInput = document.getElementById("exercise-name-input");
 const templateNameInput = document.getElementById("template-name-input");
+
 const saveExerciseButton = document.getElementById("save-exercise");
 const saveTemplateButton = document.getElementById("save-template");
+const createTemplateButton = document.getElementById("create-template");
+const createNewTemplateButton = document.getElementById("create-new-template");
+
 const exerciseList = document.getElementById("exercise-list");
+const templateList = document.getElementById("template-list");
+
 const selectedExercises = [];
 const unselectedExercises = [];
+
 const addSetting = document.getElementById("add-setting");
 const settingsContainer = document.getElementById("settings-container");
 
@@ -24,6 +31,7 @@ const goBackButtons = document.querySelectorAll(".back-button");
 const exercisesEmptyState = document.querySelector(".exercises-empty-state");
 const exercisesDataState = document.querySelector(".exercises-data-state");
 const templatesEmptyState = document.querySelector(".templates-empty-state");
+const templatesOverviewState = document.querySelector(".templates-overview-state");
 const templatesDataState = document.querySelector(".templates-data-state");
 
 let editingExerciseId = null;
@@ -48,9 +56,19 @@ setupSettingsForm();
 
 const exercises = loadExercises();
 renderExerciseList(exercises);
+updateExerciseScreenVisibility(exercises);
+
+const templates = loadTemplates();
+renderTemplateList(templates);
+setupCreateTemplateButton();
 setupTemplatesForm(exercises);
 setupTemplateSaveButton();
-updateExerciseScreenVisibility(exercises);
+if (templates.length > 0) {
+	showTemplateMode("overview");
+} else {
+	showTemplateMode("empty");
+}
+
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
@@ -135,8 +153,16 @@ function refreshScreen(screenId) {
 		updateExerciseScreenVisibility(exercises);
 	} else if (screenId === "create-templates-screen") {
 		const exercises = loadExercises();
+		const templates = loadTemplates();
 
+		renderTemplateList(templates);
 		setupTemplatesForm(exercises);
+
+		if (templates.length > 0) {
+			showTemplateMode("overview");
+		} else {
+			showTemplateMode("empty");
+		}
 	}
 }
 
@@ -302,6 +328,7 @@ function saveTemplates(templates) {
 
 function updateTemplates(templates) {
 	saveTemplates(templates);
+	renderTemplateList(templates);
 }
 
 // =========================================================
@@ -317,6 +344,15 @@ function renderExerciseList(exercises) {
 	}
 }
 
+function renderTemplateList(templates) {
+	templateList.innerHTML = "";
+
+	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+		const template = templates[templateIndex];
+		const savedTemplateRow = createSavedTemplateRow(template);
+		templateList.appendChild(savedTemplateRow);
+	}
+}
 
 // =========================================================
 // SETTINGS FORM SETUP
@@ -610,6 +646,16 @@ function setupTemplatesForm(exercises) {
 	renderTemplateExerciseLists();
 }
 
+function setupCreateTemplateButton() {
+	createNewTemplateButton.addEventListener("click", function () {
+		showTemplateMode("data");
+	});
+
+	createTemplateButton.addEventListener("click", function () {
+		showTemplateMode("data");
+	});
+}
+
 function setupTemplateSaveButton() {
 	clearErrorWhenTyping(templateNameInput);
 
@@ -644,6 +690,8 @@ function setupTemplateSaveButton() {
 		updateTemplates(templates);
 
 		clearTemplateForm();
+
+		showTemplateMode("overview");
 
 		console.log("Template saved:", template);
 	});
@@ -693,7 +741,6 @@ function renderSelectedExercises() {
 function createTemplateExerciseRow(exercise, isSelected) {
 	const row = document.createElement("button");
 	row.type = "button";
-
 
 	if (isSelected) {
 		row.classList.add("selected-exercise-row");
@@ -772,17 +819,62 @@ function clearTemplateForm() {
 }
 
 // =========================================================
+// TEMPLATES NAVIGATION
+// =========================================================
+
+function showTemplateMode(mode) {
+  templatesEmptyState.classList.add("hidden");
+  templatesOverviewState.classList.add("hidden");
+  templatesDataState.classList.add("hidden");
+
+  if (mode === "empty") {
+    templatesEmptyState.classList.remove("hidden");
+  }
+
+  if (mode === "overview") {
+    templatesOverviewState.classList.remove("hidden");
+  }
+
+  if (mode === "data") {
+    templatesDataState.classList.remove("hidden");
+  }
+}
+
+// =========================================================
 // DOM BUILDERS: TEMPLATES 
 // =========================================================
 
-function updateTemplateScreenVisibility(exercises) {
-	if (exercises.length === 0) {
-		templatesEmptyState.classList.remove("hidden");
-		templatesDataState.classList.add("hidden");
-	} else {
-		templatesEmptyState.classList.add("hidden");
-		templatesDataState.classList.remove("hidden");
-	}
+function createSavedTemplateRow(template) {
+	const row = document.createElement("button");
+	row.type = "button";
+	row.classList.add("saved-template-row");
+
+	const templateIcon = createIcon("template-row-icon", "fa-solid", "fa-clipboard-list");
+
+	const templateText = document.createElement("span");
+	templateText.classList.add("template-row-text");
+
+	const templateName = createText(template.name, "template-row-title");
+
+	const templateExerciseCount = template.exerciseIds.length;
+	const pluralAdjuster = templateExerciseCount === 1 ? "" : "s";
+	const templateExerciseCountText = `${templateExerciseCount} exercise${pluralAdjuster}`
+	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "template-row-subtitle");
+	templateText.appendChild(templateName);
+	templateText.appendChild(templateExerciseCountSubtitle);
+
+	const chevronIcon = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
+
+	chevronIcon.addEventListener("click", function () {
+		console.log(template.name);
+	});
+
+	row.appendChild(templateIcon);
+	row.appendChild(templateText);
+
+	row.appendChild(chevronIcon);
+
+	return row;
 }
 
 // =========================================================
