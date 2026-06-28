@@ -8,8 +8,9 @@ const STORAGE_KEYS = {
 	workouts: "gym-app-workouts"
 }
 
-const input = document.getElementById("exercise-name-input");
-const saveButton = document.getElementById("save-exercise");
+const exerciseNameinput = document.getElementById("exercise-name-input");
+const saveExerciseButton = document.getElementById("save-exercise");
+const saveTemplateButton = document.getElementById("save-template");
 const exerciseList = document.getElementById("exercise-list");
 const selectedExercises = [];
 const unselectedExercises = [];
@@ -186,23 +187,22 @@ function setupExerciseForm() {
 		exercisesDataState.classList.remove("hidden");
 	});
 
-	const exercises = loadExercises();
+	clearErrorWhenTyping(exerciseNameinput);
 
-	clearErrorWhenTyping(input);
-
-	saveButton.addEventListener("click", function () {
-		const exerciseName = input.value.trim();
+	saveExerciseButton.addEventListener("click", function () {
+		const exercises = loadExercises();
+		const exerciseName = exerciseNameinput.value.trim();
 
 		let formIsValid = true;
 
 		if (exerciseName === "") {
-			showInputError(input);
+			showInputError(exerciseNameinput);
 			formIsValid = false;
 		} else if (exerciseExists(exercises, exerciseName) && editingExerciseId === null) {
-			showInputError(input);
+			showInputError(exerciseNameinput);
 			formIsValid = false;
 		} else {
-			clearInputError(input);
+			clearInputError(exerciseNameinput);
 		}
 
 		const settings = readSettingsFromPage();
@@ -224,7 +224,6 @@ function setupExerciseForm() {
 			});
 
 			if (exerciseIndex === -1) {
-				console.log("Exercise being edited was not found");
 				return;
 			}
 
@@ -355,7 +354,7 @@ function readSettingsFromPage() {
 }
 
 function clearExerciseForm() {
-	input.value = "";
+	exerciseNameinput.value = "";
 	settingsContainer.innerHTML = "";
 }
 
@@ -392,7 +391,7 @@ function createSettingRow() {
 
 	const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
 	deleteButton.addEventListener("click", function () {
-		settingsRow.remove();
+		settingsRow.remove();		
 		updateSettingsRowsVisibility();
 	});
 
@@ -517,11 +516,11 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 	return actions;
 }
 
-function updateSaveButtonText() {
+function updateSaveExerciseButtonText() {
 	if (editingExerciseId !== null) {
-		saveButton.textContent = "Update exercise"
+		saveExerciseButton.textContent = "Update exercise"
 	} else {
-		saveButton.textContent = "Save exercise"
+		saveExerciseButton.textContent = "Save exercise"
 	}
 }
 
@@ -530,7 +529,7 @@ function enterEditExerciseMode(exercise) {
 
 	clearExerciseForm();
 
-	input.value = exercise.name;
+	exerciseNameinput.value = exercise.name;
 
 	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
 		const setting = exercise.settings[settingIndex];
@@ -546,12 +545,12 @@ function enterEditExerciseMode(exercise) {
 	}
 	window.scrollTo({ top: 0, behavior: "smooth" });
 	updateSettingsRowsVisibility();
-	updateSaveButtonText();
+	updateSaveExerciseButtonText();
 }
 
 function exitEditExerciseMode() {
 	editingExerciseId = null;
-	updateSaveButtonText();
+	updateSaveExerciseButtonText();
 	clearExerciseForm();
 	updateSettingsRowsVisibility();
 }
@@ -626,8 +625,13 @@ function createTemplateExerciseRow(exercise, isSelected) {
 	const row = document.createElement("button");
 	row.type = "button";
 
+
 	if (isSelected) {
 		row.classList.add("selected-exercise-row");
+		
+		const barsIcon = document.createElement("i");
+		barsIcon.classList.add("fa-solid", "fa-bars");
+		row.appendChild(barsIcon);
 	} else {
 		row.classList.add("available-exercise-row");
 	}

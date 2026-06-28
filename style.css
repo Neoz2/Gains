@@ -5,7 +5,7 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #111111;
   color: floralwhite;
 }
@@ -14,7 +14,7 @@ main {
   max-width: 480px;
   margin: 0 auto;
   padding: 16px;
-  padding-bottom: 90px;
+  padding-bottom: 70px;
 }
 
 :root {
@@ -69,7 +69,7 @@ main {
 
   margin-top: 4px;
   margin-bottom: 4px;
-  padding: 10px;
+  padding: 12px;
 
   font-size: 16px;
 }
@@ -434,10 +434,16 @@ main {
 
 /* ---------- Saved exercise list ---------- */
 
+.exercise-list-section {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 #exercise-list {
   list-style: none;
   padding: 0;
-  margin: 16px 0 0 0;
+  margin: 10px 0 0 0;
 }
 
 .exercise-card {
@@ -446,7 +452,7 @@ main {
   border-radius: 10px;
 
   padding: 10px 12px;
-  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .exercise-card-header {
@@ -594,7 +600,13 @@ main {
 }
 
 .template-selected-items {
-  margin-bottom: 18px;
+  padding-bottom: 18px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.template-unselected-items {
+  padding-bottom: 55px;
 }
 
 .available-exercise-row,
@@ -618,6 +630,11 @@ main {
   text-align: left;
 }
 
+.selected-exercise-row {
+  background: #4D0E26;
+  border: 1px solid var(--primary-color);  
+}
+
 .available-exercise-row i,
 .selected-exercise-row i {
   color: var(--primary-color);
@@ -628,6 +645,32 @@ main {
 .available-exercise-row span,
 .selected-exercise-row span {
   flex: 1;
+}
+
+.template-save-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 63px;
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+
+  padding: 30px 16px 10px 16px;
+
+  z-index: 20;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(17, 17, 17, 0),
+    #111111 45%,
+    #111111 100%
+  );
+}
+
+.template-save-bar .save-button {
+  margin: 0;
 }
 
 /* =========================================================

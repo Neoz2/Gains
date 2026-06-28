@@ -120,8 +120,10 @@
             Save exercise
           </button>
         </span>
-
-        <ul id="exercise-list"></ul>
+        <div class="exercise-list-section">
+          <span class="content-header">SAVED EXERCISES</span>
+          <ul id="exercise-list"></ul>
+        </div>
       </div>
     </section>
 
@@ -149,11 +151,20 @@
       </div>
 
       <div class="templates-data-state">
+        <span class="content-header">NEW TEMPLATE</span>
+        <input id="template-name-input" class="text-input" placeholder="Template name">
+
         <span class="content-header">SELECTED EXERCISES</span>
         <div class="template-selected-items"></div>
 
         <span class="content-header">AVAILABLE EXERCISES</span>
         <div class="template-unselected-items"></div>
+      </div>
+
+      <div class="template-save-bar">
+        <button id="save-template" class="save-button">
+          Save template
+        </button>
       </div>
     </section>
 
