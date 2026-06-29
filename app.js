@@ -13,6 +13,7 @@ const templateNameInput = document.getElementById("template-name-input");
 
 const saveExerciseButton = document.getElementById("save-exercise");
 const saveTemplateButton = document.getElementById("save-template");
+const deleteTemplateButton = document.getElementById("delete-template");
 const createTemplateButton = document.getElementById("create-template");
 const createNewTemplateButton = document.getElementById("create-new-template");
 
@@ -63,6 +64,7 @@ renderTemplateList(templates);
 setupCreateTemplateButton();
 setupTemplatesForm(exercises);
 setupTemplateSaveButton();
+setupTemplateDeleteButton();
 if (templates.length > 0) {
 	showTemplateMode("overview");
 } else {
@@ -729,6 +731,31 @@ function setupTemplateSaveButton() {
 		}
 		updateTemplates(templates);
 		exitEditTemplateMode();
+	});
+}
+
+function setupTemplateDeleteButton() {
+	deleteTemplateButton.addEventListener("click", function () {
+		const templates = loadTemplates();
+
+		const templateIndex = templates.findIndex(function (template) {
+			return template.id === editingTemplateId;
+		});
+
+		if (templateIndex === -1) {
+			return;
+		}
+
+		templates.splice(templateIndex, 1);
+
+		updateTemplates(templates);
+		exitEditTemplateMode();
+
+		if (templates.length === 0) {
+			showTemplateMode("empty");
+		} else {
+			showTemplateMode("overview");
+		}
 	});
 }
 
