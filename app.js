@@ -1,5 +1,5 @@
 // =========================================================
-// CONSTANTS + DOM REFERENCES
+// CONSTANTS
 // =========================================================
 
 const STORAGE_KEYS = {
@@ -7,6 +7,18 @@ const STORAGE_KEYS = {
 	templates: "gym-app-templates",
 	workouts: "gym-app-workouts"
 }
+
+const ROUTES = {
+	"home-screen": "#home",
+	"start-training-screen": "#start-training",
+	"create-exercises-screen": "#create-exercises",
+	"create-templates-screen": "#create-templates",
+	"analyse-progress-screen": "#analyse-progress"
+};
+
+// =========================================================
+// DOM REFERENCES
+// =========================================================
 
 const exerciseNameInput = document.getElementById("exercise-name-input");
 const templateNameInput = document.getElementById("template-name-input");
@@ -20,9 +32,6 @@ const createNewTemplateButton = document.getElementById("create-new-template");
 const exerciseList = document.getElementById("exercise-list");
 const templateList = document.getElementById("template-list");
 
-const selectedExercises = [];
-const unselectedExercises = [];
-
 const addSetting = document.getElementById("add-setting");
 const settingsContainer = document.getElementById("settings-container");
 
@@ -35,17 +44,16 @@ const templatesEmptyState = document.querySelector(".templates-empty-state");
 const templatesOverviewState = document.querySelector(".templates-overview-state");
 const templatesDataState = document.querySelector(".templates-data-state");
 
-let editingExerciseId = null;
-let editingTemplateId = null;
+// =========================================================
+// APP STATE
+// =========================================================
 
-const ROUTES = {
-	"home-screen": "#home",
-	"start-training-screen": "#start-training",
-	"create-exercises-screen": "#create-exercises",
-	"create-templates-screen": "#create-templates",
-	"analyse-progress-screen": "#analyse-progress"
+const appState = {
+	editingExerciseId: null,
+	editingTemplateId: null,
+	selectedExercises: [],
+	unselectedExercises: []
 };
-
 
 // =========================================================
 // APP STARTUP
@@ -59,17 +67,12 @@ const exercises = loadExercises();
 renderExerciseList(exercises);
 updateExerciseScreenVisibility(exercises);
 
-const templates = loadTemplates();
-renderTemplateList(templates);
+
 setupCreateTemplateButton();
-setupTemplatesForm(exercises);
 setupTemplateSaveButton();
 setupTemplateDeleteButton();
-if (templates.length > 0) {
-	showTemplateMode("overview");
-} else {
-	showTemplateMode("empty");
-}
+clearTemplateForm();
+renderTemplateOverview();
 
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
@@ -150,7 +153,7 @@ function showSelectedScreen(screenId) {
 function refreshScreen(screenId) {
 	if (screenId === "create-exercises-screen") {
 		clearExerciseForm();
-		editingExerciseId = null;
+		appState.editingExerciseId = null;
 		updateSaveExerciseButtonText();
 
 		const exercises = loadExercises();
@@ -158,21 +161,10 @@ function refreshScreen(screenId) {
 		renderExerciseList(exercises);
 		updateExerciseScreenVisibility(exercises);
 	} else if (screenId === "create-templates-screen") {
+		appState.editingTemplateId = null;
 		clearTemplateForm();
-		editingTemplateId = null;
 		updateSaveTemplateButtonText();
-
-		const exercises = loadExercises();
-		const templates = loadTemplates();
-
-		renderTemplateList(templates);
-		setupTemplatesForm(exercises);
-
-		if (templates.length > 0) {
-			showTemplateMode("overview");
-		} else {
-			showTemplateMode("empty");
-		}
+		renderTemplateOverview();
 	}
 }
 
@@ -215,158 +207,20 @@ function saveItems(storageKey, items) {
 
 
 // =========================================================
-// EXERCISE FORM SETUP
+// EXERCISE CONTROLLER
 // =========================================================
+
+// --- Setup --- //
 
 function setupExerciseForm() {
 	const showExerciseFormButton = document.getElementById("create-exercise");
 
-	showExerciseFormButton.addEventListener("click", function () {
-		exercisesEmptyState.classList.add("hidden");
-		exercisesDataState.classList.remove("hidden");
-	});
+	showExerciseFormButton.addEventListener("click", showExerciseCreateMode);
 
 	clearErrorWhenTyping(exerciseNameInput);
 
-	saveExerciseButton.addEventListener("click", function () {
-		const exercises = loadExercises();
-		const exerciseName = exerciseNameInput.value.trim();
-
-		let formIsValid = true;
-
-		if (exerciseName === "") {
-			showInputError(exerciseNameInput);
-			formIsValid = false;
-		} else if (nameExistsInList(exercises, exerciseName) && editingExerciseId === null) {
-			showInputError(exerciseNameInput);
-			formIsValid = false;
-		} else {
-			clearInputError(exerciseNameInput);
-		}
-
-		const settings = readSettingsFromPage();
-
-		if (settings === null) {
-			formIsValid = false;
-		}
-
-		if (!formIsValid) {
-			return;
-		}
-
-		if (editingExerciseId === null) {
-			const exercise = createExercise(exerciseName, settings);
-			exercises.push(exercise);
-		} else {
-			const exerciseIndex = exercises.findIndex(function (exercise) {
-				return exercise.id === editingExerciseId;
-			});
-
-			if (exerciseIndex === -1) {
-				return;
-			}
-
-			exercises[exerciseIndex] = {
-				id: editingExerciseId,
-				name: exerciseName,
-				settings: settings
-			};
-		}
-		updateExercises(exercises);
-		exitEditExerciseMode();
-
-		clearExerciseForm();
-		updateSettingsRowsVisibility();
-	});
+	saveExerciseButton.addEventListener("click", saveExerciseFromForm);
 }
-
-// =========================================================
-// DATA / STORAGE
-// =========================================================
-
-function createExercise(name, settings) {
-	return {
-		id: crypto.randomUUID(),
-		name: name,
-		settings: settings
-	};
-}
-
-function createTemplate(name, selectedExercises) {
-	const exerciseIds = [];
-
-	for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
-		exerciseIds.push(selectedExercises[exerciseIndex].id);
-	}
-
-	return {
-		id: crypto.randomUUID(),
-		name: name,
-		exerciseIds: exerciseIds
-	};
-}
-
-function loadStorageItems(storageKey) {
-	return loadItems(storageKey);
-}
-
-function saveStorageItems(storageKey, items) {
-	saveItems(storageKey, items);
-}
-
-function loadExercises() {
-	return loadStorageItems(STORAGE_KEYS.exercises);
-}
-
-function saveExercises(exercises) {
-	saveStorageItems(STORAGE_KEYS.exercises, exercises);
-}
-
-function updateExercises(exercises) {
-	saveExercises(exercises);
-	renderExerciseList(exercises);
-	updateExerciseScreenVisibility(exercises);
-}
-
-function loadTemplates() {
-	return loadStorageItems(STORAGE_KEYS.templates);
-}
-
-function saveTemplates(templates) {
-	saveStorageItems(STORAGE_KEYS.templates, templates);
-}
-
-function updateTemplates(templates) {
-	saveTemplates(templates);
-	renderTemplateList(templates);
-}
-
-// =========================================================
-// EXERCISE RENDERING
-// =========================================================
-
-function renderExerciseList(exercises) {
-	exerciseList.innerHTML = "";
-
-	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-		const exerciseCard = createExerciseCard(exercises, exerciseIndex);
-		exerciseList.appendChild(exerciseCard);
-	}
-}
-
-function renderTemplateList(templates) {
-	templateList.innerHTML = "";
-
-	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
-		const template = templates[templateIndex];
-		const savedTemplateRow = createSavedTemplateRow(template);
-		templateList.appendChild(savedTemplateRow);
-	}
-}
-
-// =========================================================
-// SETTINGS FORM SETUP
-// =========================================================
 
 function setupSettingsForm() {
 	addSetting.addEventListener("click", function () {
@@ -383,10 +237,111 @@ function setupSettingsForm() {
 	});
 }
 
+// --- Modes --- //
 
-// =========================================================
-// SETTINGS FORM FUNCTIONS
-// =========================================================
+function showExerciseCreateMode() {
+	appState.editingExerciseId = null;
+
+	clearExerciseForm();
+	updateSettingsRowsVisibility();
+	updateSaveExerciseButtonText();
+
+	exercisesEmptyState.classList.add("hidden");
+	exercisesDataState.classList.remove("hidden");
+}
+
+function enterEditExerciseMode(exercise) {
+	appState.editingExerciseId = exercise.id;
+
+	clearExerciseForm();
+
+	exerciseNameInput.value = exercise.name;
+
+	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
+		const setting = exercise.settings[settingIndex];
+		const settingsRow = createSettingRow();
+
+		const settingNameInput = settingsRow.querySelector(".setting-name");
+		settingNameInput.value = setting.name;
+		const settingValueInput = settingsRow.querySelector(".setting-value");
+		settingValueInput.value = setting.value;
+
+		settingsContainer.appendChild(settingsRow);
+
+	}
+	window.scrollTo({ top: 0, behavior: "smooth" });
+	updateSettingsRowsVisibility();
+	updateSaveExerciseButtonText();
+}
+
+function exitEditExerciseMode() {
+	appState.editingExerciseId = null;
+	updateSaveExerciseButtonText();
+	clearExerciseForm();
+	updateSettingsRowsVisibility();
+}
+
+// --- Mutate actions --- //
+
+function saveExerciseFromForm() {
+	const exercises = loadExercises();
+	const exerciseName = exerciseNameInput.value.trim();
+
+	let formIsValid = true;
+
+	if (exerciseName === "") {
+		showInputError(exerciseNameInput);
+		formIsValid = false;
+	} else if (nameExistsInList(exercises, exerciseName) && appState.editingExerciseId === null) {
+		showInputError(exerciseNameInput);
+		formIsValid = false;
+	} else {
+		clearInputError(exerciseNameInput);
+	}
+
+	const settings = readSettingsFromPage();
+
+	if (settings === null) {
+		formIsValid = false;
+	}
+
+	if (!formIsValid) {
+		return;
+	}
+
+	if (appState.editingExerciseId === null) {
+		const exercise = createExercise(exerciseName, settings);
+		exercises.push(exercise);
+	} else {
+		const exerciseIndex = exercises.findIndex(function (exercise) {
+			return exercise.id === appState.editingExerciseId;
+		});
+
+		if (exerciseIndex === -1) {
+			return;
+		}
+
+		exercises[exerciseIndex] = {
+			id: appState.editingExerciseId,
+			name: exerciseName,
+			settings: settings
+		};
+	}
+
+	updateExercises(exercises);
+	exitEditExerciseMode();
+}
+
+function deleteExercise(exercises, exerciseIndex) {
+	const deletedExerciseId = exercises[exerciseIndex].id;
+
+	exercises.splice(exerciseIndex, 1);
+	updateExercises(exercises);
+
+	removeExerciseFromTemplates(deletedExerciseId);
+}
+
+// --- Form helpers --- //
 
 function readSettingsFromPage() {
 	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
@@ -434,6 +389,14 @@ function clearExerciseForm() {
 	settingsContainer.innerHTML = "";
 }
 
+function updateSaveExerciseButtonText() {
+	if (appState.editingExerciseId !== null) {
+		saveExerciseButton.textContent = "Update exercise"
+	} else {
+		saveExerciseButton.textContent = "Save exercise"
+	}
+}
+
 function updateSettingsRowsVisibility() {
 	const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
@@ -445,9 +408,28 @@ function updateSettingsRowsVisibility() {
 }
 
 
-// =========================================================
-// DOM BUILDERS: SETTINGS FORM
-// =========================================================
+// --- Rendering --- //
+
+function renderExerciseList(exercises) {
+	exerciseList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+		const exerciseCard = createExerciseCard(exercises, exerciseIndex);
+		exerciseList.appendChild(exerciseCard);
+	}
+}
+
+function updateExerciseScreenVisibility(exercises) {
+	if (exercises.length === 0) {
+		exercisesEmptyState.classList.remove("hidden");
+		exercisesDataState.classList.add("hidden");
+	} else {
+		exercisesEmptyState.classList.add("hidden");
+		exercisesDataState.classList.remove("hidden");
+	}
+}
+
+// --- DOM builders --- //
 
 function createSettingRow() {
 	const settingsRow = document.createElement("div");
@@ -467,12 +449,8 @@ function createSettingRow() {
 
 	const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
 	deleteButton.addEventListener("click", function () {
-		const deletedExerciseId = exercises[exerciseIndex].id;
-
-		exercises.splice(exerciseIndex, 1);
-		updateExercises(exercises);
-
-		removeExerciseFromTemplates(deletedExerciseId);
+		settingsRow.remove();
+		updateSettingsRowsVisibility();
 	});
 
 	settingNameDeleteRow.appendChild(settingNameLabel);
@@ -485,11 +463,6 @@ function createSettingRow() {
 
 	return settingsRow;
 }
-
-
-// =========================================================
-// DOM BUILDERS: EXERCISE CARDS
-// =========================================================
 
 function createExerciseCard(exercises, exerciseIndex) {
 	const exercise = exercises[exerciseIndex];
@@ -555,14 +528,14 @@ function createExerciseCardDetails(exercise) {
 	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
 		const setting = exercise.settings[settingIndex];
 
-		const settingRow = createExerciseSettingRow(setting);
+		const settingRow = createSavedExerciseSettingRow(setting);
 		details.appendChild(settingRow);
 	}
 
 	return details;
 }
 
-function createExerciseSettingRow(setting) {
+function createSavedExerciseSettingRow(setting) {
 	const settingRow = document.createElement("div");
 	settingRow.classList.add("exercise-setting-row");
 
@@ -586,12 +559,7 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 
 	const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
 	deleteButton.addEventListener("click", function () {
-		const deletedExerciseId = exercises[exerciseIndex].id;
-
-		exercises.splice(exerciseIndex, 1);
-		updateExercises(exercises);
-
-		removeExerciseFromTemplates(deletedExerciseId);
+		deleteExercise(exercises, exerciseIndex);
 	});
 
 	actions.appendChild(editButton);
@@ -600,216 +568,175 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 	return actions;
 }
 
-function updateSaveExerciseButtonText() {
-	if (editingExerciseId !== null) {
-		saveExerciseButton.textContent = "Update exercise"
-	} else {
-		saveExerciseButton.textContent = "Save exercise"
-	}
-}
-
-function enterEditExerciseMode(exercise) {
-	editingExerciseId = exercise.id;
-
-	clearExerciseForm();
-
-	exerciseNameInput.value = exercise.name;
-
-	for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
-		const setting = exercise.settings[settingIndex];
-		const settingsRow = createSettingRow();
-
-		const settingNameInput = settingsRow.querySelector(".setting-name");
-		settingNameInput.value = setting.name;
-		const settingValueInput = settingsRow.querySelector(".setting-value");
-		settingValueInput.value = setting.value;
-
-		settingsContainer.appendChild(settingsRow);
-
-	}
-	window.scrollTo({ top: 0, behavior: "smooth" });
-	updateSettingsRowsVisibility();
-	updateSaveExerciseButtonText();
-}
-
-function exitEditExerciseMode() {
-	editingExerciseId = null;
-	updateSaveExerciseButtonText();
-	clearExerciseForm();
-	updateSettingsRowsVisibility();
-}
-
-function updateExerciseScreenVisibility(exercises) {
-	if (exercises.length === 0) {
-		exercisesEmptyState.classList.remove("hidden");
-		exercisesDataState.classList.add("hidden");
-	} else {
-		exercisesEmptyState.classList.add("hidden");
-		exercisesDataState.classList.remove("hidden");
-	}
-}
-
 // =========================================================
-// TEMPLATES SETUP
+// TEMPLATE CONTROLLER
 // =========================================================
 
-function setupTemplatesForm(exercises) {
-	selectedExercises.length = 0;
-	unselectedExercises.length = 0;
-
-	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-		unselectedExercises.push(exercises[exerciseIndex]);
-	}
-
-	renderTemplateExerciseLists();
-}
+// --- Setup --- //
 
 function setupCreateTemplateButton() {
-	createNewTemplateButton.addEventListener("click", function () {
-		showTemplateMode("data");
-	});
-
-	createTemplateButton.addEventListener("click", function () {
-		showTemplateMode("data");
-	});
+	createNewTemplateButton.addEventListener("click", enterCreateTemplateMode);
+	createTemplateButton.addEventListener("click", enterCreateTemplateMode);
 }
 
 function setupTemplateSaveButton() {
 	clearErrorWhenTyping(templateNameInput);
 
-	saveTemplateButton.addEventListener("click", function () {
-		updateSaveTemplateButtonText();
-		const templates = loadTemplates();
-		const templateName = templateNameInput.value.trim();
-
-		let formIsValid = true;
-
-		if (templateName === "") {
-			showInputError(templateNameInput);
-			formIsValid = false;
-		} else if (nameExistsInList(templates, templateName) && editingTemplateId === null) {
-			showInputError(templateNameInput);
-			formIsValid = false;
-		} else {
-			clearInputError(templateNameInput);
-		}
-
-		if (selectedExercises.length === 0) {
-			formIsValid = false;
-			console.log("Select at least one exercise");
-		}
-
-		if (!formIsValid) {
-			return;
-		}
-
-		if (editingTemplateId === null) {
-			const template = createTemplate(templateName, selectedExercises);
-			templates.push(template);
-		} else {
-			const templateIndex = templates.findIndex(function (template) {
-				return template.id === editingTemplateId;
-			});
-
-
-			if (templateIndex === -1) {
-				return;
-			}
-
-			const exerciseIds = [];
-
-			for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
-				exerciseIds.push(selectedExercises[exerciseIndex].id);
-			}
-
-			templates[templateIndex] = {
-				id: editingTemplateId,
-				name: templateName,
-				exerciseIds: exerciseIds
-			};
-
-		}
-		updateTemplates(templates);
-		exitEditTemplateMode();
-	});
+	saveTemplateButton.addEventListener("click", saveTemplateFromForm);
 }
 
 function setupTemplateDeleteButton() {
-	deleteTemplateButton.addEventListener("click", function () {
-		const templates = loadTemplates();
+	deleteTemplateButton.addEventListener("click", deleteCurrentTemplate);
+}
 
-		const templateIndex = templates.findIndex(function (template) {
-			return template.id === editingTemplateId;
+// --- Modes --- //
+
+function showTemplateMode(mode) {
+	templatesEmptyState.classList.add("hidden");
+	templatesOverviewState.classList.add("hidden");
+	templatesDataState.classList.add("hidden");
+
+	if (mode === "empty") {
+		templatesEmptyState.classList.remove("hidden");
+	} else if (mode === "overview") {
+		templatesOverviewState.classList.remove("hidden");
+	} else if (mode === "data") {
+		templatesDataState.classList.remove("hidden");
+	}
+}
+
+function enterCreateTemplateMode() {
+	appState.editingTemplateId = null;
+
+	clearTemplateForm();
+	updateSaveTemplateButtonText();
+	showTemplateMode("data");
+}
+
+function enterEditTemplateMode(template) {
+	clearTemplateForm();
+	showTemplateMode("data");
+
+	appState.editingTemplateId = template.id;
+	templateNameInput.value = template.name;
+
+	const exercises = loadExercises();
+
+	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+		const exerciseId = template.exerciseIds[exerciseIndex];
+
+		const exercise = exercises.find(function (exercise) {
+			return exercise.id === exerciseId;
 		});
+
+		if (exercise !== undefined) {
+			selectTemplateExercise(exercise);
+		}
+	}
+
+	updateSaveTemplateButtonText();
+}
+
+function exitEditTemplateMode() {
+	appState.editingTemplateId = null;
+	clearTemplateForm();
+	updateSaveTemplateButtonText();
+	renderTemplateOverview();
+}
+
+// --- Mutate actions --- //
+
+function saveTemplateFromForm() {
+	const templates = loadTemplates();
+	const templateName = templateNameInput.value.trim();
+
+	let formIsValid = true;
+
+	if (templateName === "") {
+		showInputError(templateNameInput);
+		formIsValid = false;
+	} else if (nameExistsInList(templates, templateName) && appState.editingTemplateId === null) {
+		showInputError(templateNameInput);
+		formIsValid = false;
+	} else {
+		clearInputError(templateNameInput);
+	}
+
+	if (appState.selectedExercises.length === 0) {
+		formIsValid = false;
+		console.log("Select at least one exercise");
+	}
+
+	if (!formIsValid) {
+		return;
+	}
+
+	if (appState.editingTemplateId === null) {
+		const template = createTemplate(templateName, appState.selectedExercises);
+		templates.push(template);
+	} else {
+		const templateIndex = templates.findIndex(function (template) {
+			return template.id === appState.editingTemplateId;
+		});
+
 
 		if (templateIndex === -1) {
 			return;
 		}
 
-		templates.splice(templateIndex, 1);
+		const updatedTemplate = createTemplate(templateName, appState.selectedExercises);
+		updatedTemplate.id = appState.editingTemplateId;
 
-		updateTemplates(templates);
-		exitEditTemplateMode();
+		templates[templateIndex] = updatedTemplate;
+	}
 
-		if (templates.length === 0) {
-			showTemplateMode("empty");
-		} else {
-			showTemplateMode("overview");
-		}
+	updateTemplates(templates);
+	exitEditTemplateMode();
+}
+
+function deleteCurrentTemplate() {
+	const templates = loadTemplates();
+
+	const templateIndex = templates.findIndex(function (template) {
+		return template.id === appState.editingTemplateId;
 	});
-}
 
-function renderTemplateExerciseLists() {
-	renderSelectedExercises();
-	renderAvailableExercises();
-}
-
-function renderAvailableExercises() {
-	const availableExercisesList = document.querySelector(".template-unselected-items");
-
-	availableExercisesList.innerHTML = "";
-
-	for (let exerciseIndex = 0; exerciseIndex < unselectedExercises.length; exerciseIndex++) {
-		const exercise = unselectedExercises[exerciseIndex];
-
-		const row = createTemplateExerciseRow(exercise, false);
-
-		row.addEventListener("click", function () {
-			selectTemplateExercise(exercise);
-		});
-
-		availableExercisesList.appendChild(row);
+	if (templateIndex === -1) {
+		return;
 	}
+
+	templates.splice(templateIndex, 1);
+
+	updateTemplates(templates);
+	exitEditTemplateMode();
 }
 
-function renderSelectedExercises() {
-	const selectedExercisesList = document.querySelector(".template-selected-items");
+function removeExerciseFromTemplates(deletedExerciseId) {
+	const templates = loadTemplates();
 
-	selectedExercisesList.innerHTML = "";
+	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+		const template = templates[templateIndex];
 
-	for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
-		const exercise = selectedExercises[exerciseIndex];
-
-		const row = createTemplateExerciseRow(exercise, true);
-
-		row.addEventListener("click", function () {
-			unselectTemplateExercise(exercise);
+		template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
+			return exerciseId !== deletedExerciseId;
 		});
-
-		selectedExercisesList.appendChild(row);
 	}
+
+	updateTemplates(templates);
 }
+
+// --- Selection actions --- //
 
 function selectTemplateExercise(exercise) {
-	removeExerciseFromArray(unselectedExercises, exercise);
-	addExerciseToArray(selectedExercises, exercise);
+	removeExerciseFromArray(appState.unselectedExercises, exercise);
+	addExerciseToArray(appState.selectedExercises, exercise);
 
 	renderTemplateExerciseLists();
 }
 
 function unselectTemplateExercise(exercise) {
-	removeExerciseFromArray(selectedExercises, exercise);
-	addExerciseToArray(unselectedExercises, exercise);
+	removeExerciseFromArray(appState.selectedExercises, exercise);
+	addExerciseToArray(appState.unselectedExercises, exercise);
 
 	renderTemplateExerciseLists();
 }
@@ -834,92 +761,97 @@ function removeExerciseFromArray(exercises, exercise) {
 	}
 }
 
+// --- Form helpers --- //
+
 function clearTemplateForm() {
 	templateNameInput.value = "";
 
-	selectedExercises.length = 0;
-	unselectedExercises.length = 0;
+	appState.selectedExercises.length = 0;
+	appState.unselectedExercises.length = 0;
 
 	const exercises = loadExercises();
 
 	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-		unselectedExercises.push(exercises[exerciseIndex]);
+		appState.unselectedExercises.push(exercises[exerciseIndex]);
 	}
 
 	renderTemplateExerciseLists();
 }
 
-function enterEditTemplateMode(template) {
-	clearTemplateForm();
-	showTemplateMode("data");
-
-	editingTemplateId = template.id;
-	templateNameInput.value = template.name;
-
-	const exercises = loadExercises();
-
-	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
-		const exerciseId = template.exerciseIds[exerciseIndex];
-
-		const exercise = exercises.find(function (exercise) {
-			return exercise.id === exerciseId;
-		});
-
-		if (exercise !== undefined) {
-			selectTemplateExercise(exercise);
-		}
-	}
-}
-
-function exitEditTemplateMode() {
-	editingTemplateId = null;
-	clearTemplateForm();
-	showTemplateMode("overview");
-}
-
 function updateSaveTemplateButtonText() {
-	if (editingTemplateId !== null) {
+	if (appState.editingTemplateId !== null) {
 		saveTemplateButton.textContent = "Update template"
 	} else {
 		saveTemplateButton.textContent = "Save template"
 	}
 }
 
-function removeExerciseFromTemplates(deletedExerciseId) {
+// --- Rendering --- //
+
+function renderTemplateOverview() {
 	const templates = loadTemplates();
+
+	renderTemplateList(templates);
+
+	if (templates.length === 0) {
+		showTemplateMode("empty");
+	} else {
+		showTemplateMode("overview");
+	}
+}
+
+function renderTemplateList(templates) {
+	templateList.innerHTML = "";
 
 	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
 		const template = templates[templateIndex];
+		const savedTemplateRow = createSavedTemplateRow(template);
+		templateList.appendChild(savedTemplateRow);
+	}
+}
 
-		template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
-			return exerciseId !== deletedExerciseId;
+function renderTemplateExerciseLists() {
+	renderSelectedExercises();
+	renderAvailableExercises();
+}
+
+function renderAvailableExercises() {
+	const availableExercisesList = document.querySelector(".template-unselected-items");
+
+	availableExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < appState.unselectedExercises.length; exerciseIndex++) {
+		const exercise = appState.unselectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, false);
+
+		row.addEventListener("click", function () {
+			selectTemplateExercise(exercise);
 		});
-	}
 
-	updateTemplates(templates);
-}
-
-// =========================================================
-// TEMPLATES NAVIGATION
-// =========================================================
-
-function showTemplateMode(mode) {
-	templatesEmptyState.classList.add("hidden");
-	templatesOverviewState.classList.add("hidden");
-	templatesDataState.classList.add("hidden");
-
-	if (mode === "empty") {
-		templatesEmptyState.classList.remove("hidden");
-	} else if (mode === "overview") {
-		templatesOverviewState.classList.remove("hidden");
-	} else if (mode === "data") {
-		templatesDataState.classList.remove("hidden");
+		availableExercisesList.appendChild(row);
 	}
 }
 
-// =========================================================
-// DOM BUILDERS: TEMPLATES 
-// =========================================================
+function renderSelectedExercises() {
+	const selectedExercisesList = document.querySelector(".template-selected-items");
+
+	selectedExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < appState.selectedExercises.length; exerciseIndex++) {
+		const exercise = appState.selectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, true);
+
+		row.addEventListener("click", function () {
+			unselectTemplateExercise(exercise);
+		});
+
+		selectedExercisesList.appendChild(row);
+	}
+}
+
+// --- DOM builders --- //
 
 function createSavedTemplateRow(template) {
 	const row = document.createElement("button");
@@ -943,9 +875,7 @@ function createSavedTemplateRow(template) {
 	const chevronIcon = createIconButton("chevron-button", "fa-solid", "fa-chevron-right");
 
 	row.addEventListener("click", function () {
-		console.log("Edit mode: ", template.name);
 		enterEditTemplateMode(template);
-		updateSaveTemplateButtonText();
 	});
 
 	row.appendChild(templateIcon);
@@ -985,6 +915,67 @@ function createTemplateExerciseRow(exercise, isSelected) {
 	row.appendChild(checkIcon);
 
 	return row;
+}
+
+// =========================================================
+// DATA / STORAGE
+// =========================================================
+
+function createExercise(name, settings) {
+	return {
+		id: crypto.randomUUID(),
+		name: name,
+		settings: settings
+	};
+}
+
+function createTemplate(name, selectedExercises) {
+	const exerciseIds = [];
+
+	for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
+		exerciseIds.push(selectedExercises[exerciseIndex].id);
+	}
+
+	return {
+		id: crypto.randomUUID(),
+		name: name,
+		exerciseIds: exerciseIds
+	};
+}
+
+function loadStorageItems(storageKey) {
+	return loadItems(storageKey);
+}
+
+function saveStorageItems(storageKey, items) {
+	saveItems(storageKey, items);
+}
+
+function loadExercises() {
+	return loadStorageItems(STORAGE_KEYS.exercises);
+}
+
+function saveExercises(exercises) {
+	saveStorageItems(STORAGE_KEYS.exercises, exercises);
+}
+
+function updateExercises(exercises) {
+	saveExercises(exercises);
+	renderExerciseList(exercises);
+	updateExerciseScreenVisibility(exercises);
+}
+
+function loadTemplates() {
+	return loadStorageItems(STORAGE_KEYS.templates);
+}
+
+function saveTemplates(templates) {
+	saveStorageItems(STORAGE_KEYS.templates, templates);
+}
+
+function updateTemplates(templates) {
+	saveTemplates(templates);
+	renderTemplateList(templates);
 }
 
 // =========================================================
