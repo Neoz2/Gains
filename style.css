@@ -283,6 +283,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 20px;
 }
 
 .home-welcome-block i {
@@ -323,7 +324,7 @@ main {
 /* ---------- Home: main area buttons ---------- */
 
 .home-nav-header {
-  margin-top: 20px;
+  margin-top: 35px;
   color: #999999;
 }
 
@@ -688,6 +689,7 @@ main {
   margin: 0;
 }
 
+.delete-template-button,
 .new-template-button {
   display: flex;
   align-items: center;
@@ -702,9 +704,15 @@ main {
   padding: 6px 0;
 }
 
+.delete-template-button i,
 .new-template-button i {
   font-size: 18px;
   padding-right: 6px;
+}
+
+.delete-template-button,
+.delete-template-button i {
+  color: hotpink; 
 }
 
 /* =========================================================

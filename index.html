@@ -151,7 +151,14 @@
       </div>
 
       <div class="templates-data-state hidden">
-        <span class="content-header">NEW TEMPLATE</span>
+        <div class="content-header-create-button">
+          <span class="content-header">NEW TEMPLATE</span>
+          <button id="delete-template" class="delete-template-button">
+            <i class="fa-regular fa-trash-can"></i>
+            <span>Delete</span>
+          </button>
+        </div>
+
         <input id="template-name-input" class="text-input" placeholder="Template name">
 
         <span class="content-header">SELECTED EXERCISES</span>
@@ -167,7 +174,7 @@
         </div>
       </div>
 
-      <div class="templates-overview-state">
+      <div class="templates-overview-state hidden">
         <div class="content-header-create-button">
           <span class="content-header">SAVED TEMPLATES</span>
           <button id="create-new-template" class="new-template-button">
@@ -176,7 +183,7 @@
           </button>
         </div>
 
-        <ul id="template-list"></ul>      
+        <ul id="template-list"></ul>
       </div>
 
     </section>

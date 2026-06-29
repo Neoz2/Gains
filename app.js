@@ -147,11 +147,19 @@ function showSelectedScreen(screenId) {
 
 function refreshScreen(screenId) {
 	if (screenId === "create-exercises-screen") {
+		clearExerciseForm();
+		editingExerciseId = null;
+		updateSaveExerciseButtonText();
+
 		const exercises = loadExercises();
 
 		renderExerciseList(exercises);
 		updateExerciseScreenVisibility(exercises);
 	} else if (screenId === "create-templates-screen") {
+		clearTemplateForm();
+		editingTemplateId = null;
+		updateSaveTemplateButtonText();
+
 		const exercises = loadExercises();
 		const templates = loadTemplates();
 
@@ -457,8 +465,12 @@ function createSettingRow() {
 
 	const deleteButton = createIconButton("icon-button", "fa-regular", "fa-trash-can");
 	deleteButton.addEventListener("click", function () {
-		settingsRow.remove();
-		updateSettingsRowsVisibility();
+		const deletedExerciseId = exercises[exerciseIndex].id;
+
+		exercises.splice(exerciseIndex, 1);
+		updateExercises(exercises);
+
+		removeExerciseFromTemplates(deletedExerciseId);
 	});
 
 	settingNameDeleteRow.appendChild(settingNameLabel);
@@ -572,8 +584,12 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 
 	const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
 	deleteButton.addEventListener("click", function () {
+		const deletedExerciseId = exercises[exerciseIndex].id;
+
 		exercises.splice(exerciseIndex, 1);
 		updateExercises(exercises);
+
+		removeExerciseFromTemplates(deletedExerciseId);
 	});
 
 	actions.appendChild(editButton);
@@ -660,6 +676,7 @@ function setupTemplateSaveButton() {
 	clearErrorWhenTyping(templateNameInput);
 
 	saveTemplateButton.addEventListener("click", function () {
+		updateSaveTemplateButtonText();
 		const templates = loadTemplates();
 		const templateName = templateNameInput.value.trim();
 
@@ -684,16 +701,34 @@ function setupTemplateSaveButton() {
 			return;
 		}
 
-		const template = createTemplate(templateName, selectedExercises);
+		if (editingTemplateId === null) {
+			const template = createTemplate(templateName, selectedExercises);
+			templates.push(template);
+		} else {
+			const templateIndex = templates.findIndex(function (template) {
+				return template.id === editingTemplateId;
+			});
 
-		templates.push(template);
+
+			if (templateIndex === -1) {
+				return;
+			}
+
+			const exerciseIds = [];
+
+			for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
+				exerciseIds.push(selectedExercises[exerciseIndex].id);
+			}
+
+			templates[templateIndex] = {
+				id: editingTemplateId,
+				name: templateName,
+				exerciseIds: exerciseIds
+			};
+
+		}
 		updateTemplates(templates);
-
-		clearTemplateForm();
-
-		showTemplateMode("overview");
-
-		console.log("Template saved:", template);
+		exitEditTemplateMode();
 	});
 }
 
@@ -794,14 +829,47 @@ function enterEditTemplateMode(template) {
 	editingTemplateId = template.id;
 	templateNameInput.value = template.name;
 
+	const exercises = loadExercises();
+
 	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
 		const exerciseId = template.exerciseIds[exerciseIndex];
-		
+
 		const exercise = exercises.find(function (exercise) {
 			return exercise.id === exerciseId;
 		});
-		selectTemplateExercise(exercise);
+
+		if (exercise !== undefined) {
+			selectTemplateExercise(exercise);
+		}
 	}
+}
+
+function exitEditTemplateMode() {
+	editingTemplateId = null;
+	clearTemplateForm();
+	showTemplateMode("overview");
+}
+
+function updateSaveTemplateButtonText() {
+	if (editingTemplateId !== null) {
+		saveTemplateButton.textContent = "Update template"
+	} else {
+		saveTemplateButton.textContent = "Save template"
+	}
+}
+
+function removeExerciseFromTemplates(deletedExerciseId) {
+	const templates = loadTemplates();
+
+	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+		const template = templates[templateIndex];
+
+		template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
+			return exerciseId !== deletedExerciseId;
+		});
+	}
+
+	updateTemplates(templates);
 }
 
 // =========================================================
@@ -850,6 +918,7 @@ function createSavedTemplateRow(template) {
 	row.addEventListener("click", function () {
 		console.log("Edit mode: ", template.name);
 		enterEditTemplateMode(template);
+		updateSaveTemplateButtonText();
 	});
 
 	row.appendChild(templateIcon);
