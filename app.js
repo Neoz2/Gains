@@ -61,15 +61,11 @@ const appState = {
 
 setupNavigation();
 
-setupExerciseForm();
-setupSettingsForm();
-renderExerciseScreen();
+setupExerciseController();
+setupTemplateController();
 
-setupCreateTemplateButton();
-setupTemplateSaveButton();
-setupTemplateDeleteButton();
-clearTemplateForm();
-renderTemplateOverview();
+refreshExerciseScreen();
+refreshTemplateScreen();
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
@@ -165,36 +161,15 @@ function updateSelectedNavButton(screenId) {
 }
 
 // =========================================================
-// DATABASE FUNCTIONS
-// =========================================================
-
-function loadItems(storageKey) {
-	const savedItems = localStorage.getItem(storageKey);
-
-	if (savedItems === null) {
-		return [];
-	}
-
-	const items = JSON.parse(savedItems);
-
-	if (!Array.isArray(items)) {
-		return [];
-	}
-
-	return items;
-}
-
-function saveItems(storageKey, items) {
-	const json = JSON.stringify(items);
-	localStorage.setItem(storageKey, json);
-}
-
-
-// =========================================================
 // EXERCISE CONTROLLER
 // =========================================================
 
 // --- Setup --- //
+
+function setupExerciseController() {
+	setupExerciseForm();
+	setupSettingsForm();
+}
 
 function setupExerciseForm() {
 	const showExerciseFormButton = document.getElementById("create-exercise");
@@ -574,6 +549,12 @@ function createExerciseCardActions(exercises, exerciseIndex) {
 
 // --- Setup --- //
 
+function setupTemplateController() {
+	setupCreateTemplateButton();
+	setupTemplateSaveButton();
+	setupTemplateDeleteButton();
+}
+
 function setupCreateTemplateButton() {
 	createNewTemplateButton.addEventListener("click", enterCreateTemplateMode);
 	createTemplateButton.addEventListener("click", enterCreateTemplateMode);
@@ -926,8 +907,33 @@ function createTemplateExerciseRow(exercise, isSelected) {
 }
 
 // =========================================================
-// DATA / STORAGE
+// DATA STORAGE
 // =========================================================
+
+// --- Data storage functions --- //
+
+function loadItems(storageKey) {
+	const savedItems = localStorage.getItem(storageKey);
+
+	if (savedItems === null) {
+		return [];
+	}
+
+	const items = JSON.parse(savedItems);
+
+	if (!Array.isArray(items)) {
+		return [];
+	}
+
+	return items;
+}
+
+function saveItems(storageKey, items) {
+	const json = JSON.stringify(items);
+	localStorage.setItem(storageKey, json);
+}
+
+// --- Data models + storage --- //
 
 function createExercise(name, settings) {
 	return {
@@ -951,28 +957,20 @@ function createTemplate(name, selectedExercises) {
 	};
 }
 
-function loadStorageItems(storageKey) {
-	return loadItems(storageKey);
-}
-
-function saveStorageItems(storageKey, items) {
-	saveItems(storageKey, items);
-}
-
 function loadExercises() {
-	return loadStorageItems(STORAGE_KEYS.exercises);
+	return loadItems(STORAGE_KEYS.exercises);
 }
 
 function saveExercises(exercises) {
-	saveStorageItems(STORAGE_KEYS.exercises, exercises);
+	saveItems(STORAGE_KEYS.exercises, exercises);
 }
 
 function loadTemplates() {
-	return loadStorageItems(STORAGE_KEYS.templates);
+	return loadItems(STORAGE_KEYS.templates);
 }
 
 function saveTemplates(templates) {
-	saveStorageItems(STORAGE_KEYS.templates, templates);
+	saveItems(STORAGE_KEYS.templates, templates);
 }
 
 // =========================================================
@@ -1033,7 +1031,6 @@ function createIcon(iconClass, iconClassBase, iconClassIcon) {
 
 	return icon;
 }
-
 
 // =========================================================
 // HELPERS
