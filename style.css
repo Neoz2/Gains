@@ -690,7 +690,7 @@ main {
 }
 
 .delete-template-button,
-.new-template-button {
+.overview-create-template-button {
   display: flex;
   align-items: center;
   
@@ -705,7 +705,7 @@ main {
 }
 
 .delete-template-button i,
-.new-template-button i {
+.overview-create-template-button i {
   font-size: 18px;
   padding-right: 6px;
 }

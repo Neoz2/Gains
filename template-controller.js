@@ -1,0 +1,368 @@
+// =========================================================
+// DOM REFERENCES
+// =========================================================
+
+const templateNameInput = document.getElementById("template-name-input");
+const saveTemplateButton = document.getElementById("save-template");
+const emptyCreateTemplateButton = document.getElementById("empty-create-template");
+const overviewCreateTemplateButton = document.getElementById("overview-create-template");
+const deleteTemplateButton = document.getElementById("delete-template");
+const templateList = document.getElementById("template-list");
+const templatesEmptyState = document.querySelector(".templates-empty-state");
+const templatesOverviewState = document.querySelector(".templates-overview-state");
+const templatesFormState = document.querySelector(".templates-form-state");
+
+// =========================================================
+// TEMPLATE CONTROLLER
+// =========================================================
+
+// --- Controller entry points --- //
+
+function setupTemplateController() {
+	setupCreateTemplateButton();
+	setupTemplateSaveButton();
+	setupTemplateDeleteButton();
+}
+
+function refreshTemplateScreen() {
+	appState.editingTemplateId = null;
+	clearTemplateForm();
+	updateSaveTemplateButtonText();
+	renderTemplateOverview();
+}
+
+// --- Setup --- //
+
+function setupCreateTemplateButton() {
+	overviewCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
+	emptyCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
+}
+
+function setupTemplateSaveButton() {
+	clearErrorWhenTyping(templateNameInput);
+
+	saveTemplateButton.addEventListener("click", saveTemplateFromForm);
+}
+
+function setupTemplateDeleteButton() {
+	deleteTemplateButton.addEventListener("click", deleteCurrentTemplate);
+}
+
+// --- Modes --- //
+
+function showTemplateMode(mode) {
+	templatesEmptyState.classList.add("hidden");
+	templatesOverviewState.classList.add("hidden");
+	templatesFormState.classList.add("hidden");
+
+	if (mode === "empty") {
+		templatesEmptyState.classList.remove("hidden");
+	} else if (mode === "overview") {
+		templatesOverviewState.classList.remove("hidden");
+	} else if (mode === "form") {
+		templatesFormState.classList.remove("hidden");
+	}
+}
+
+function enterCreateTemplateMode() {
+	appState.editingTemplateId = null;
+
+	clearTemplateForm();
+	updateSaveTemplateButtonText();
+	showTemplateMode("form");
+}
+
+function enterEditTemplateMode(template) {
+	clearTemplateForm();
+	showTemplateMode("form");
+
+	appState.editingTemplateId = template.id;
+	templateNameInput.value = template.name;
+
+	const exercises = loadExercises();
+
+	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+		const exerciseId = template.exerciseIds[exerciseIndex];
+
+		const exercise = exercises.find(function (exercise) {
+			return exercise.id === exerciseId;
+		});
+
+		if (exercise !== undefined) {
+			selectTemplateExercise(exercise);
+		}
+	}
+
+	updateSaveTemplateButtonText();
+}
+
+function exitEditTemplateMode() {
+	appState.editingTemplateId = null;
+	clearTemplateForm();
+	updateSaveTemplateButtonText();
+	renderTemplateOverview();
+}
+
+// --- Mutate actions --- //
+
+function saveTemplateFromForm() {
+	const templates = loadTemplates();
+	const templateName = templateNameInput.value.trim();
+
+	let formIsValid = true;
+
+	if (templateName === "") {
+		showInputError(templateNameInput);
+		formIsValid = false;
+	} else if (nameExistsInList(templates, templateName) && appState.editingTemplateId === null) {
+		showInputError(templateNameInput);
+		formIsValid = false;
+	} else {
+		clearInputError(templateNameInput);
+	}
+
+	if (appState.selectedExercises.length === 0) {
+		formIsValid = false;
+		console.log("Select at least one exercise");
+	}
+
+	if (!formIsValid) {
+		return;
+	}
+
+	if (appState.editingTemplateId === null) {
+		const template = createTemplate(templateName, appState.selectedExercises);
+		templates.push(template);
+	} else {
+		const templateIndex = templates.findIndex(function (template) {
+			return template.id === appState.editingTemplateId;
+		});
+
+
+		if (templateIndex === -1) {
+			return;
+		}
+
+		const updatedTemplate = createTemplate(templateName, appState.selectedExercises);
+		updatedTemplate.id = appState.editingTemplateId;
+
+		templates[templateIndex] = updatedTemplate;
+	}
+
+	saveTemplates(templates);
+	exitEditTemplateMode();
+}
+
+function deleteCurrentTemplate() {
+	const templates = loadTemplates();
+
+	const templateIndex = templates.findIndex(function (template) {
+		return template.id === appState.editingTemplateId;
+	});
+
+	if (templateIndex === -1) {
+		return;
+	}
+
+	templates.splice(templateIndex, 1);
+
+	saveTemplates(templates);
+	exitEditTemplateMode();
+}
+
+function removeExerciseFromTemplates(deletedExerciseId) {
+	const templates = loadTemplates();
+
+	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+		const template = templates[templateIndex];
+
+		template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
+			return exerciseId !== deletedExerciseId;
+		});
+	}
+
+	saveTemplates(templates);
+	renderTemplateOverview();
+}
+
+// --- Selection actions --- //
+
+function selectTemplateExercise(exercise) {
+	removeExerciseFromArray(appState.unselectedExercises, exercise);
+	addExerciseToArray(appState.selectedExercises, exercise);
+
+	renderTemplateExerciseLists();
+}
+
+function unselectTemplateExercise(exercise) {
+	removeExerciseFromArray(appState.selectedExercises, exercise);
+	addExerciseToArray(appState.unselectedExercises, exercise);
+
+	renderTemplateExerciseLists();
+}
+
+function addExerciseToArray(exercises, exercise) {
+	const exerciseAlreadyExists = exercises.some(function (existingExercise) {
+		return existingExercise.id === exercise.id;
+	});
+
+	if (!exerciseAlreadyExists) {
+		exercises.push(exercise);
+	}
+}
+
+function removeExerciseFromArray(exercises, exercise) {
+	const exerciseIndex = exercises.findIndex(function (existingExercise) {
+		return existingExercise.id === exercise.id;
+	});
+
+	if (exerciseIndex !== -1) {
+		exercises.splice(exerciseIndex, 1);
+	}
+}
+
+// --- Form helpers --- //
+
+function clearTemplateForm() {
+	templateNameInput.value = "";
+
+	appState.selectedExercises.length = 0;
+	appState.unselectedExercises.length = 0;
+
+	const exercises = loadExercises();
+
+	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+		appState.unselectedExercises.push(exercises[exerciseIndex]);
+	}
+
+	renderTemplateExerciseLists();
+}
+
+function updateSaveTemplateButtonText() {
+	if (appState.editingTemplateId !== null) {
+		saveTemplateButton.textContent = "Update template"
+	} else {
+		saveTemplateButton.textContent = "Save template"
+	}
+}
+
+// --- Rendering --- //
+
+function renderTemplateOverview() {
+	const templates = loadTemplates();
+
+	renderTemplateList(templates);
+
+	if (templates.length === 0) {
+		showTemplateMode("empty");
+	} else {
+		showTemplateMode("overview");
+	}
+}
+
+function renderTemplateList(templates) {
+	templateList.innerHTML = "";
+
+	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+		const template = templates[templateIndex];
+		const savedTemplateRow = createSavedTemplateRow(template);
+		templateList.appendChild(savedTemplateRow);
+	}
+}
+
+function renderTemplateExerciseLists() {
+	renderSelectedExercises();
+	renderAvailableExercises();
+}
+
+function renderAvailableExercises() {
+	const availableExercisesList = document.querySelector(".template-unselected-items");
+
+	availableExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < appState.unselectedExercises.length; exerciseIndex++) {
+		const exercise = appState.unselectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, false);
+
+		row.addEventListener("click", function () {
+			selectTemplateExercise(exercise);
+		});
+
+		availableExercisesList.appendChild(row);
+	}
+}
+
+function renderSelectedExercises() {
+	const selectedExercisesList = document.querySelector(".template-selected-items");
+
+	selectedExercisesList.innerHTML = "";
+
+	for (let exerciseIndex = 0; exerciseIndex < appState.selectedExercises.length; exerciseIndex++) {
+		const exercise = appState.selectedExercises[exerciseIndex];
+
+		const row = createTemplateExerciseRow(exercise, true);
+
+		row.addEventListener("click", function () {
+			unselectTemplateExercise(exercise);
+		});
+
+		selectedExercisesList.appendChild(row);
+	}
+}
+
+// --- DOM builders --- //
+
+function createSavedTemplateRow(template) {
+	const row = createButton("saved-template-row");
+	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "template-row-icon");
+	const templateText = createElement("span", "template-row-text");
+	const templateName = createText(template.name, "template-row-title");
+	const chevronIcon = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+
+	const templateExerciseCount = template.exerciseIds.length;
+	const pluralAdjuster = templateExerciseCount === 1 ? "" : "s";
+	const templateExerciseCountText = `${templateExerciseCount} exercise${pluralAdjuster}`;
+	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "template-row-subtitle");
+
+	row.addEventListener("click", function () {
+		enterEditTemplateMode(template);
+	});
+
+	templateText.appendChild(templateName);
+	templateText.appendChild(templateExerciseCountSubtitle);
+
+	row.appendChild(templateIcon);
+	row.appendChild(templateText);
+	row.appendChild(chevronIcon);
+
+	return row;
+}
+
+function createTemplateExerciseRow(exercise, isSelected) {
+	const row = createButton();
+
+	if (isSelected) {
+		row.classList.add("selected-exercise-row");
+
+		const barsIcon = createIcon("fa-solid", "fa-bars");
+		row.appendChild(barsIcon);
+	} else {
+		row.classList.add("available-exercise-row");
+	}
+
+	const exerciseName = createText(exercise.name);
+
+	let checkIcon;
+
+	if (isSelected) {
+		checkIcon = createIcon("fa-solid", "fa-circle-check");
+	} else {
+		checkIcon = createIcon("fa-regular", "fa-circle");
+	}
+
+	row.appendChild(exerciseName);
+	row.appendChild(checkIcon);
+
+	return row;
+}

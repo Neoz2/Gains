@@ -97,12 +97,12 @@
 
         <span class="empty-state-title">No exercises yet</span>
         <span class="empty-state-text">Create your first exercise to use in your workouts</span>
-        <button id="create-exercise" class="button-large">
+        <button id="empty-create-exercise" class="button-large">
           + Create exercise
         </button>
       </div>
 
-      <div class="exercises-data-state hidden">
+      <div class="exercises-form-state hidden">
         <span class="content-header">NEW EXERCISE</span>
 
         <input id="exercise-name-input" class="text-input" placeholder="Exercise name">
@@ -145,12 +145,12 @@
 
         <span class="empty-state-title">No templates yet</span>
         <span class="empty-state-text">Create your first workout template to quickly start future sessions</span>
-        <button id="create-template" class="button-large">
+        <button id="empty-create-template" class="button-large">
           + Create template
         </button>
       </div>
 
-      <div class="templates-data-state hidden">
+      <div class="templates-form-state hidden">
         <div class="content-header-create-button">
           <span class="content-header">NEW TEMPLATE</span>
           <button id="delete-template" class="delete-template-button">
@@ -177,7 +177,7 @@
       <div class="templates-overview-state hidden">
         <div class="content-header-create-button">
           <span class="content-header">SAVED TEMPLATES</span>
-          <button id="create-new-template" class="new-template-button">
+          <button id="overview-create-template" class="overview-create-template-button">
             <i class="fa-solid fa-plus"></i>
             <span>New template</span>
           </button>
@@ -229,6 +229,12 @@
     </nav>
   </main>
 
+  <script src="storage.js"></script>
+  <script src="helpers.js"></script>
+  <script src="dom-builder.js"></script>
+  <script src="navigation.js"></script>
+  <script src="exercise-controller.js"></script>
+  <script src="template-controller.js"></script>
   <script src="app.js"></script>
 </body>
 
