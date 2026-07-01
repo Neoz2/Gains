@@ -1,59 +1,153 @@
 /* =========================================================
+   1. DESIGN TOKENS
+========================================================= */
+
+:root {
+  --primary-color: hotpink;
+
+  --background-color: #111111;
+  --card-color: #232323;
+  --border-color: #333333;
+  --divider-color: rgba(255, 255, 255, 0.08);
+
+  --text-color: floralwhite;
+  --muted-text-color: #999999;
+
+  --subtle-icon-color: #565656;
+  --text-on-primary-color: black;
+
+  --danger-color: red;
+  --selected-template-color: #4D0E26;
+
+  --radius-small: 4px;
+  --radius-medium: 8px;
+  --radius-large: 10px;
+  --radius-pill: 999px;
+}
+
+/* =========================================================
    BASE
-   Global defaults for the whole app
 ========================================================= */
 
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #111111;
-  color: floralwhite;
+  background: var(--background-color);
+  color: var(--text-color);
 }
 
-main {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 16px;
-  padding-bottom: 70px;
-}
-
-:root {
-  --primary-color: hotpink;
+button,
+input {
+  font: inherit;
 }
 
 /* =========================================================
    UTILITIES
-   Small reusable helper classes
 ========================================================= */
 
 .hidden {
   display: none !important;
 }
 
-
 /* =========================================================
-   SHARED: Containers
+   SHARED LAYOUT
 ========================================================= */
 
-.content-card {
-  background: #232323;
-  border: 0.5px solid #333;
-  border-radius: 10px;
-
-  margin-top: 2px;
-  margin-bottom: 2px;
-
-  padding: 4px;
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 70px;
 }
 
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 24px;
+}
+
+.page-subtitle {
+  color: var(--muted-text-color);
+  font-size: 14px;
+
+  margin-bottom: 20px;
+}
+
+.content-header {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+
+  color: var(--muted-text-color);
+  font-size: 14px;
+
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
 
 /* =========================================================
-   SHARED: Buttons
+   SHARED COMPONENTS
 ========================================================= */
+
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-top: 120px;
+
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 96px;
+  height: 96px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 24px;
+
+  border-radius: var(--radius-pill);
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
+  color: var(--primary-color);
+  font-size: 42px;
+}
+
+.empty-state-title {
+  font-size: 24px;
+  font-weight: bold;
+
+  margin-bottom: 8px;
+}
+
+.empty-state-text {
+  max-width: 280px;
+
+  color: var(--muted-text-color);
+  font-size: 15px;
+  line-height: 1.4;
+
+  margin-bottom: 28px;
+}
+
+.exercises-empty-state .button-large,
+.templates-empty-state .button-large {
+  max-width: 320px;
+}
+
+/* ---------- Buttons ---------- */
 
 .nav-button {
   border: none;
-  color: floralwhite;
+  color: var(--text-color);
 }
 
 .nav-button i {
@@ -63,9 +157,9 @@ main {
 .save-button {
   width: 100%;
   background: var(--primary-color);
-  color: floralwhite;
+  color: var(--text-color);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-medium);
 
   margin-top: 4px;
   margin-bottom: 4px;
@@ -87,7 +181,7 @@ main {
 .chevron-button {
   background: none;
   border: none;
-  color: #565656;
+  color: var(--subtle-icon-color);
 
   font-size: 18px;
   padding: 0;
@@ -128,26 +222,24 @@ main {
   padding: 10px 0px;
 
   background-color: var(--primary-color);
-  color: floralwhite;
+  color: var(--text-color);
   font-size: 20px;
 
-  border-radius: 4px;
+  border-radius: var(--radius-small);
   border: none;
 }
 
-/* =========================================================
-   SHARED: Inputs / form fields
-========================================================= */
+/* ---------- Text inputs ---------- */
 
 .text-input {
   width: 100%;
   box-sizing: border-box;
 
-  background-color: #232323;
-  color: floralwhite;
+  background-color: var(--card-color);
+  color: var(--text-color);
 
-  border: 0.5px solid #333;
-  border-radius: 8px;
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-medium);
 
   padding: 6px 12px;
   font-size: 16px;
@@ -160,7 +252,7 @@ main {
 }
 
 .text-input.input-error {
-  border-color: red;
+  border-color: var(--danger-color);
 }
 
 .text-input:focus {
@@ -171,14 +263,26 @@ main {
   display: block;
   text-align: left;
 
-  color: floralwhite;
+  color: var(--text-color);
   font-size: 14px;
 }
 
+/* ---------- Content card ---------- */
+
+.content-card {
+  background: var(--card-color);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-large);
+
+  margin: 2px 0;
+  padding: 4px;
+}
 
 /* =========================================================
-   SHARED: Page layout
+   NAVIGATION
 ========================================================= */
+
+/* ---------- Top navigation ---------- */
 
 .back-button {
   display: flex;
@@ -193,40 +297,7 @@ main {
   border: none;
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-.page-title {
-  font-size: 24px;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: #999999;
-
-  margin-bottom: 20px;
-}
-
-.content-header {
-  display: flex;
-  align-items: flex-start;
-  flex: 1;
-
-  color: #999999;
-  font-size: 14px;
-
-  margin-top: 10px;
-  margin-bottom: 4px;
-}
-
-
-/* =========================================================
-   BOTTOM NAVIGATION
-========================================================= */
-
+/* ---------- Bottom navigation ---------- */
 .bottom-nav {
   position: fixed;
   left: 0;
@@ -236,7 +307,7 @@ main {
   display: flex;
   align-items: center;
 
-  background: #111111;
+  background: var(--background-color);
 }
 
 .bottom-nav-item {
@@ -249,7 +320,7 @@ main {
   gap: 4px;
 
   background: none;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-color);
 
   width: auto;
   padding: 12px 0;
@@ -265,9 +336,8 @@ main {
   color: var(--primary-color);
 }
 
-
 /* =========================================================
-   SCREEN: Home
+   SCREEN: HOME
 ========================================================= */
 
 .home-content {
@@ -276,8 +346,7 @@ main {
   gap: 12px;
 }
 
-
-/* ---------- Home: welcome block ---------- */
+/* ---------- Welcome block ---------- */
 
 .home-welcome-block {
   display: flex;
@@ -299,8 +368,8 @@ main {
   font-size: 35px;
   color: var(--primary-color);
 
-  background: #333333;
-  border-radius: 999px;
+  background: var(--border-color);
+  border-radius: var(--radius-pill);
   border: 2px solid;
 }
 
@@ -313,26 +382,25 @@ main {
 }
 
 .home-welcome-block-text>span:first-child {
-  color: #999999;
+  color: var(--muted-text-color);
 }
 
 .home-welcome-block-text>span:nth-child(even) {
   font-size: 30px;
 }
 
-
 /* ---------- Home: main area buttons ---------- */
 
 .home-nav-header {
   margin-top: 35px;
-  color: #999999;
+  color: var(--muted-text-color);
 }
 
 .home-nav-item {
   display: flex;
   align-items: center;
 
-  background: #232323;
+  background: var(--card-color);
   border-radius: 16px;
 
   width: auto;
@@ -354,7 +422,7 @@ main {
   font-size: 22px;
 
   background: var(--primary-color);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .home-nav-text {
@@ -372,14 +440,14 @@ main {
 
 
 /* =========================================================
-   SCREEN: Start Training
+   SCREEN: START TRAINING
 ========================================================= */
 
 /* Empty for now */
 
 
 /* =========================================================
-   SCREEN: Create Exercises
+   SCREEN: CREATE EXERCISES
 ========================================================= */
 
 /* ---------- New exercise form ---------- */
@@ -406,9 +474,9 @@ main {
   justify-content: center;
 
   background: var(--primary-color);
-  color: black;
+  color: var(--text-on-primary-color);
 
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 14px;
 }
 
@@ -422,7 +490,7 @@ main {
 }
 
 .settings-row:not(:last-child) {
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 14px;
   margin-bottom: 8px;
 }
@@ -432,13 +500,12 @@ main {
   justify-content: space-between;
 }
 
-
 /* ---------- Saved exercise list ---------- */
 
 .exercise-list-section {
   margin-top: 20px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--divider-color);
 }
 
 #template-list,
@@ -450,9 +517,9 @@ main {
 
 .saved-template-row,
 .exercise-card {
-  background: #232323;
-  border: 1px solid #333;
-  border-radius: 10px;
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-large);
 
   padding: 10px 12px;
   margin-bottom: 8px;
@@ -482,12 +549,12 @@ main {
 .template-row-title,
 .exercise-card-title {
   font-weight: bold;
-  color: floralwhite;
+  color: var(--text-color);
 }
 
 .template-row-subtitle,
 .exercise-card-subtitle {
-  color: #999999;
+  color: var(--muted-text-color);
   font-size: 12px;
 }
 
@@ -495,9 +562,9 @@ main {
   margin-top: 10px;
   padding: 0 18px;
 
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-color);
 
-  color: #999999;
+  color: var(--muted-text-color);
   font-size: 14px;
 }
 
@@ -507,7 +574,7 @@ main {
   gap: 12px;
 
   padding: 8px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .exercise-setting-row:last-child {
@@ -527,71 +594,14 @@ main {
 }
 
 /* =========================================================
-   SCREEN: Create Templates
+   SCREEN: CREATE TEMPLATES
 ========================================================= */
-
-/* ---------- Empty states ---------- */
-
-.exercises-empty-state,
-.templates-empty-state {
-  margin-top: 120px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  text-align: center;
-}
-
-.empty-state-icon {
-  width: 96px;
-  height: 96px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 24px;
-
-  border-radius: 999px;
-  background: #232323;
-  border: 1px solid #333;
-
-  color: var(--primary-color);
-  font-size: 42px;
-}
-
-.empty-state-title {
-  font-size: 24px;
-  font-weight: bold;
-
-  margin-bottom: 8px;
-}
-
-.empty-state-text {
-  max-width: 280px;
-
-  color: #999999;
-  font-size: 15px;
-  line-height: 1.4;
-
-  margin-bottom: 28px;
-}
-
-.exercises-empty-state .button-large,
-.templates-empty-state .button-large {
-  max-width: 320px;
-}
 
 /* ---------- Template exercise selector ---------- */
 
-.templates-data-state {
+.templates-form-state {
   display: flex;
   flex-direction: column;
-}
-
-.templates-empty-state.page-header {
-  justify-content: stretch;
 }
 
 .template-selected-items,
@@ -604,7 +614,7 @@ main {
 .template-selected-items {
   padding-bottom: 18px;
   margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--divider-color);
 }
 
 .template-unselected-items {
@@ -624,18 +634,18 @@ main {
 
   padding: 10px 12px;
 
-  background: #232323;
-  border: 1px solid #333;
-  border-radius: 10px;
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-large);
 
-  color: floralwhite;
+  color: var(--text-color);
   font-size: 16px;
   text-align: left;
 }
 
 .selected-exercise-row {
-  background: #4D0E26;
-  border: 1px solid var(--primary-color);  
+  background: var(--selected-template-color);
+  border: 1px solid var(--primary-color);
 }
 
 .available-exercise-row i,
@@ -664,12 +674,10 @@ main {
 
   z-index: 20;
 
-  background: linear-gradient(
-    to bottom,
-    rgba(17, 17, 17, 0),
-    #111111 45%,
-    #111111 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(17, 17, 17, 0),
+      var(--background-color) 45%,
+      var(--background-color) 100%);
 }
 
 .template-save-bar .save-button {
@@ -693,7 +701,7 @@ main {
 .overview-create-template-button {
   display: flex;
   align-items: center;
-  
+
   background: none;
   border: none;
   color: var(--primary-color);
@@ -712,11 +720,11 @@ main {
 
 .delete-template-button,
 .delete-template-button i {
-  color: hotpink; 
+  color: var(--primary-color);
 }
 
 /* =========================================================
-   SCREEN: Analyse Progress
+   SCREEN: ANALYSE PROGRESS
 ========================================================= */
 
 /* Empty for now */
