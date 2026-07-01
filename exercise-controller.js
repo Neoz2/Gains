@@ -298,7 +298,7 @@ function createSettingRow() {
 function createExerciseCard(exercises, exerciseIndex) {
 	const exercise = exercises[exerciseIndex];
 
-	const card = createElement("li", "exercise-card");
+	const card = createElement("li", "item-card");
 	const header = createExerciseCardHeader(exercise);
 	const details = createExerciseCardDetails(exercise);
 	const actions = createExerciseCardActions(exercises, exerciseIndex);
@@ -319,7 +319,8 @@ function createExerciseCard(exercises, exerciseIndex) {
 
 function createExerciseCardHeader(exercise) {
 	const header = createElement("div", "exercise-card-header");
-	const icon = createIcon("fa-solid", "fa-dumbbell", "exercise-card-icon");
+	const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
+
 	const main = createExerciseCardMain(exercise);
 	const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
@@ -331,14 +332,15 @@ function createExerciseCardHeader(exercise) {
 }
 
 function createExerciseCardMain(exercise) {
-	const main = createElement("div", "exercise-card-main");
-	const title = createText(exercise.name, "exercise-card-title");
-
+	const main = createElement("div", "item-text");
+    
+	const title = createText(exercise.name, "item-title");
+    
 	const settingCount = exercise.settings.length;
 	const pluralAdjuster = settingCount === 1 ? "" : "s";
 	const subtitleText = `${settingCount} machine setting${pluralAdjuster}`;
-	const subtitle = createText(subtitleText, "exercise-card-subtitle");
-
+	const subtitle = createText(subtitleText, "item-subtitle");
+    
 	main.appendChild(title);
 	main.appendChild(subtitle);
 

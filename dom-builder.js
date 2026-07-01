@@ -15,29 +15,27 @@ function createActionButton(iconClassBase, iconClassIcon, text) {
 	return button;
 }
 
-function createText(text, extraClass) {
+function createText(text, ...classes) {
 	const label = document.createElement("span");
 	label.textContent = text;
 
-	if (extraClass !== undefined) {
-		label.classList.add(extraClass);
-	}
+	addClasses(label, classes);
 
 	return label;
 }
 
-function createTextInput(placeholder, extraClass) {
+function createTextInput(placeholder, ...classes) {
 	const input = document.createElement("input");
 	input.placeholder = placeholder;
 
 	input.classList.add("text-input");
-	input.classList.add(extraClass);
+	addClasses(input, classes);
 
 	return input;
 }
 
-function createIconButton(iconClassBase, iconClassIcon, extraClass) {
-	const button = createButton(extraClass);
+function createIconButton(iconClassBase, iconClassIcon, ...classes) {
+	const button = createButton(...classes);
 	const icon = createIcon(iconClassBase, iconClassIcon);
 
 	button.appendChild(icon);
@@ -45,36 +43,39 @@ function createIconButton(iconClassBase, iconClassIcon, extraClass) {
 	return button;
 }
 
-function createIcon(iconClassBase, iconClassIcon, extraClass) {
+function createIcon(iconClassBase, iconClassIcon, ...classes) {
 	const icon = document.createElement("i");
 
 	icon.classList.add(iconClassBase);
 	icon.classList.add(iconClassIcon);
-
-	if (extraClass !== undefined) {
-		icon.classList.add(extraClass);
-	}
+	addClasses(icon, classes);
 
 	return icon;
 }
 
-function createElement(type, extraClass) {
+function createElement(type, ...classes) {
 	const element = document.createElement(type);
 
-	if (extraClass !== undefined) {
-		element.classList.add(extraClass);
-	}
+	addClasses(element, classes);
 
 	return element;
 }
 
-function createButton(className) {
+function createButton(...classes) {
 	const button = document.createElement("button");
 	button.type = "button";
 
-	if (className !== undefined) {
-		button.classList.add(className);
-	}
+	addClasses(button, classes);
 
 	return button;
+}
+
+function addClasses(element, classes) {
+	for (let classIndex = 0; classIndex < classes.length; classIndex++) {
+		const className = classes[classIndex];
+
+		if (className !== undefined) {
+			element.classList.add(className);
+		}
+	}
 }

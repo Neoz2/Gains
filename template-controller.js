@@ -316,16 +316,22 @@ function renderSelectedExercises() {
 // --- DOM builders --- //
 
 function createSavedTemplateRow(template) {
+    const item = createElement("li", "item-card");
+    
 	const row = createButton("saved-template-row");
-	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "template-row-icon");
-	const templateText = createElement("span", "template-row-text");
-	const templateName = createText(template.name, "template-row-title");
+
+	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+   
+	const templateText = createElement("span", "item-text");
+
+	const templateName = createText(template.name, "item-title");
+
 	const chevronIcon = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
 	const templateExerciseCount = template.exerciseIds.length;
 	const pluralAdjuster = templateExerciseCount === 1 ? "" : "s";
 	const templateExerciseCountText = `${templateExerciseCount} exercise${pluralAdjuster}`;
-	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "template-row-subtitle");
+	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "item-subtitle");
 
 	row.addEventListener("click", function () {
 		enterEditTemplateMode(template);
@@ -338,7 +344,9 @@ function createSavedTemplateRow(template) {
 	row.appendChild(templateText);
 	row.appendChild(chevronIcon);
 
-	return row;
+    item.appendChild(row);
+
+	return item;
 }
 
 function createTemplateExerciseRow(exercise, isSelected) {
