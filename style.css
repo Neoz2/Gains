@@ -89,6 +89,19 @@ main {
   margin-bottom: 4px;
 }
 
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.section-header-row .content-header {
+  margin: 0;
+}
+
 /* =========================================================
    SHARED COMPONENTS
 ========================================================= */
@@ -334,6 +347,7 @@ main {
 }
 
 /* ---------- Bottom navigation ---------- */
+
 .bottom-nav {
   position: fixed;
   left: 50%;
@@ -700,19 +714,6 @@ main {
 }
 
 .template-save-bar .save-button {
-  margin: 0;
-}
-
-.section-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  margin-top: 10px;
-  margin-bottom: 6px;
-}
-
-.section-header-row .content-header {
   margin: 0;
 }
 
