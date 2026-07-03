@@ -8,7 +8,6 @@ const templateNameInput = document.getElementById("template-name-input");
 const saveTemplateButton = document.getElementById("save-template");
 const emptyCreateTemplateButton = document.getElementById("empty-create-template");
 const overviewCreateTemplateButton = document.getElementById("overview-create-template");
-const deleteTemplateButton = document.getElementById("delete-template");
 const templateList = document.getElementById("template-list");
 const templatesEmptyState = document.querySelector(".templates-empty-state");
 const templatesOverviewState = document.querySelector(".templates-overview-state");
@@ -21,353 +20,425 @@ const templatesFormState = document.querySelector(".templates-form-state");
 // --- Controller entry points --- //
 
 function setupTemplateController() {
-	setupCreateTemplateButton();
-	setupTemplateSaveButton();
-	setupTemplateDeleteButton();
+    setupCreateTemplateButton();
+    setupTemplateSaveButton();
 }
 
 function refreshTemplateScreen() {
-	appState.editingTemplateId = null;
-	clearTemplateForm();
-	updateSaveTemplateButtonText();
-	renderTemplateOverview();
+    appState.editingTemplateId = null;
+    clearTemplateForm();
+    updateSaveTemplateButtonText();
+    renderTemplateOverview();
 }
 
 // --- Setup --- //
 
 function setupCreateTemplateButton() {
-	overviewCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
-	emptyCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
+    overviewCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
+    emptyCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
 }
 
 function setupTemplateSaveButton() {
-	clearErrorWhenTyping(templateNameInput);
+    clearErrorWhenTyping(templateNameInput);
 
-	saveTemplateButton.addEventListener("click", saveTemplateFromForm);
-}
-
-function setupTemplateDeleteButton() {
-	deleteTemplateButton.addEventListener("click", deleteCurrentTemplate);
+    saveTemplateButton.addEventListener("click", saveTemplateFromForm);
 }
 
 // --- Modes --- //
 
 function showTemplateMode(mode) {
-	templatesEmptyState.classList.add("hidden");
-	templatesOverviewState.classList.add("hidden");
-	templatesFormState.classList.add("hidden");
+    templatesEmptyState.classList.add("hidden");
+    templatesOverviewState.classList.add("hidden");
+    templatesFormState.classList.add("hidden");
 
-	if (mode === "empty") {
-		templatesEmptyState.classList.remove("hidden");
-	} else if (mode === "overview") {
-		templatesOverviewState.classList.remove("hidden");
-	} else if (mode === "form") {
-		templatesFormState.classList.remove("hidden");
-	}
+    if (mode === "empty") {
+        templatesEmptyState.classList.remove("hidden");
+    } else if (mode === "overview") {
+        templatesOverviewState.classList.remove("hidden");
+    } else if (mode === "form") {
+        templatesFormState.classList.remove("hidden");
+    }
 }
 
 function enterCreateTemplateMode() {
-	appState.editingTemplateId = null;
+    appState.editingTemplateId = null;
 
-	clearTemplateForm();
-	updateSaveTemplateButtonText();
-	showTemplateMode("form");
+    clearTemplateForm();
+    updateSaveTemplateButtonText();
+    showTemplateMode("form");
 }
 
 function enterEditTemplateMode(template) {
-	clearTemplateForm();
-	showTemplateMode("form");
+    clearTemplateForm();
+    showTemplateMode("form");
 
-	appState.editingTemplateId = template.id;
-	templateNameInput.value = template.name;
+    appState.editingTemplateId = template.id;
+    templateNameInput.value = template.name;
 
-	const exercises = loadExercises();
+    const exercises = loadExercises();
 
-	for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
-		const exerciseId = template.exerciseIds[exerciseIndex];
+    for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+        const exerciseId = template.exerciseIds[exerciseIndex];
 
-		const exercise = exercises.find(function (exercise) {
-			return exercise.id === exerciseId;
-		});
+        const exercise = exercises.find(function (exercise) {
+            return exercise.id === exerciseId;
+        });
 
-		if (exercise !== undefined) {
-			selectTemplateExercise(exercise);
-		}
-	}
+        if (exercise !== undefined) {
+            selectTemplateExercise(exercise);
+        }
+    }
 
-	updateSaveTemplateButtonText();
+    updateSaveTemplateButtonText();
 }
 
 function exitEditTemplateMode() {
-	appState.editingTemplateId = null;
-	clearTemplateForm();
-	updateSaveTemplateButtonText();
-	renderTemplateOverview();
+    appState.editingTemplateId = null;
+    clearTemplateForm();
+    updateSaveTemplateButtonText();
+    renderTemplateOverview();
 }
 
 // --- Mutate actions --- //
 
 function saveTemplateFromForm() {
-	const templates = loadTemplates();
-	const templateName = templateNameInput.value.trim();
+    const templates = loadTemplates();
+    const templateName = templateNameInput.value.trim();
 
-	let formIsValid = true;
+    let formIsValid = true;
 
-	if (templateName === "") {
-		showInputError(templateNameInput);
-		formIsValid = false;
-	} else if (nameExistsInList(templates, templateName) && appState.editingTemplateId === null) {
-		showInputError(templateNameInput);
-		formIsValid = false;
-	} else {
-		clearInputError(templateNameInput);
-	}
+    if (templateName === "") {
+        showInputError(templateNameInput);
+        formIsValid = false;
+    } else if (nameExistsInList(templates, templateName) && appState.editingTemplateId === null) {
+        showInputError(templateNameInput);
+        formIsValid = false;
+    } else {
+        clearInputError(templateNameInput);
+    }
 
-	if (appState.selectedExercises.length === 0) {
-		formIsValid = false;
-		console.log("Select at least one exercise");
-	}
+    if (appState.selectedExercises.length === 0) {
+        formIsValid = false;
+        console.log("Select at least one exercise");
+    }
 
-	if (!formIsValid) {
-		return;
-	}
+    if (!formIsValid) {
+        return;
+    }
 
-	if (appState.editingTemplateId === null) {
-		const template = createTemplate(templateName, appState.selectedExercises);
-		templates.push(template);
-	} else {
-		const templateIndex = templates.findIndex(function (template) {
-			return template.id === appState.editingTemplateId;
-		});
+    if (appState.editingTemplateId === null) {
+        const template = createTemplate(templateName, appState.selectedExercises);
+        templates.push(template);
+    } else {
+        const templateIndex = templates.findIndex(function (template) {
+            return template.id === appState.editingTemplateId;
+        });
 
 
-		if (templateIndex === -1) {
-			return;
-		}
+        if (templateIndex === -1) {
+            return;
+        }
 
-		const updatedTemplate = createTemplate(templateName, appState.selectedExercises);
-		updatedTemplate.id = appState.editingTemplateId;
+        const updatedTemplate = createTemplate(templateName, appState.selectedExercises);
+        updatedTemplate.id = appState.editingTemplateId;
 
-		templates[templateIndex] = updatedTemplate;
-	}
+        templates[templateIndex] = updatedTemplate;
+    }
 
-	saveTemplates(templates);
-	exitEditTemplateMode();
+    saveTemplates(templates);
+    exitEditTemplateMode();
 }
 
 function deleteCurrentTemplate() {
-	const templates = loadTemplates();
+    const templates = loadTemplates();
 
-	const templateIndex = templates.findIndex(function (template) {
-		return template.id === appState.editingTemplateId;
-	});
+    const templateIndex = templates.findIndex(function (template) {
+        return template.id === appState.editingTemplateId;
+    });
 
-	if (templateIndex === -1) {
-		return;
-	}
+    if (templateIndex === -1) {
+        return;
+    }
 
-	templates.splice(templateIndex, 1);
+    templates.splice(templateIndex, 1);
 
-	saveTemplates(templates);
-	exitEditTemplateMode();
+    saveTemplates(templates);
+    exitEditTemplateMode();
+}
+
+function deleteTemplate(templates, templateIndex) {
+    const deletedTemplateId = templates[templateIndex].id;
+
+    templates.splice(templateIndex, 1);
+    saveTemplates(templates);
+    renderTemplateOverview();
 }
 
 function removeExerciseFromTemplates(deletedExerciseId) {
-	const templates = loadTemplates();
+    const templates = loadTemplates();
 
-	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
-		const template = templates[templateIndex];
+    for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+        const template = templates[templateIndex];
 
-		template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
-			return exerciseId !== deletedExerciseId;
-		});
-	}
+        template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
+            return exerciseId !== deletedExerciseId;
+        });
+    }
 
-	saveTemplates(templates);
-	renderTemplateOverview();
+    saveTemplates(templates);
+    renderTemplateOverview();
 }
 
 // --- Selection actions --- //
 
 function selectTemplateExercise(exercise) {
-	removeExerciseFromArray(appState.unselectedExercises, exercise);
-	addExerciseToArray(appState.selectedExercises, exercise);
+    removeExerciseFromArray(appState.unselectedExercises, exercise);
+    addExerciseToArray(appState.selectedExercises, exercise);
 
-	renderTemplateExerciseLists();
+    renderTemplateExerciseLists();
 }
 
 function unselectTemplateExercise(exercise) {
-	removeExerciseFromArray(appState.selectedExercises, exercise);
-	addExerciseToArray(appState.unselectedExercises, exercise);
+    removeExerciseFromArray(appState.selectedExercises, exercise);
+    addExerciseToArray(appState.unselectedExercises, exercise);
 
-	renderTemplateExerciseLists();
+    renderTemplateExerciseLists();
 }
 
 function addExerciseToArray(exercises, exercise) {
-	const exerciseAlreadyExists = exercises.some(function (existingExercise) {
-		return existingExercise.id === exercise.id;
-	});
+    const exerciseAlreadyExists = exercises.some(function (existingExercise) {
+        return existingExercise.id === exercise.id;
+    });
 
-	if (!exerciseAlreadyExists) {
-		exercises.push(exercise);
-	}
+    if (!exerciseAlreadyExists) {
+        exercises.push(exercise);
+    }
 }
 
 function removeExerciseFromArray(exercises, exercise) {
-	const exerciseIndex = exercises.findIndex(function (existingExercise) {
-		return existingExercise.id === exercise.id;
-	});
+    const exerciseIndex = exercises.findIndex(function (existingExercise) {
+        return existingExercise.id === exercise.id;
+    });
 
-	if (exerciseIndex !== -1) {
-		exercises.splice(exerciseIndex, 1);
-	}
+    if (exerciseIndex !== -1) {
+        exercises.splice(exerciseIndex, 1);
+    }
 }
 
 // --- Form helpers --- //
 
 function clearTemplateForm() {
-	templateNameInput.value = "";
+    templateNameInput.value = "";
 
-	appState.selectedExercises.length = 0;
-	appState.unselectedExercises.length = 0;
+    appState.selectedExercises.length = 0;
+    appState.unselectedExercises.length = 0;
 
-	const exercises = loadExercises();
+    const exercises = loadExercises();
 
-	for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-		appState.unselectedExercises.push(exercises[exerciseIndex]);
-	}
+    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+        appState.unselectedExercises.push(exercises[exerciseIndex]);
+    }
 
-	renderTemplateExerciseLists();
+    renderTemplateExerciseLists();
 }
 
 function updateSaveTemplateButtonText() {
-	if (appState.editingTemplateId !== null) {
-		saveTemplateButton.textContent = "Update template"
-	} else {
-		saveTemplateButton.textContent = "Save template"
-	}
+    if (appState.editingTemplateId !== null) {
+        saveTemplateButton.textContent = "Update template"
+    } else {
+        saveTemplateButton.textContent = "Save template"
+    }
 }
 
 // --- Rendering --- //
 
 function renderTemplateOverview() {
-	const templates = loadTemplates();
+    const templates = loadTemplates();
 
-	renderTemplateList(templates);
+    renderTemplateList(templates);
 
-	if (templates.length === 0) {
-		showTemplateMode("empty");
-	} else {
-		showTemplateMode("overview");
-	}
+    if (templates.length === 0) {
+        showTemplateMode("empty");
+    } else {
+        showTemplateMode("overview");
+    }
 }
 
 function renderTemplateList(templates) {
-	templateList.innerHTML = "";
+    templateList.innerHTML = "";
 
-	for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
-		const template = templates[templateIndex];
-		const savedTemplateRow = createSavedTemplateRow(template);
-		templateList.appendChild(savedTemplateRow);
-	}
+    for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+        const savedTemplateCard = createTemplateCard(templates, templateIndex);
+        templateList.appendChild(savedTemplateCard);
+    }
 }
 
 function renderTemplateExerciseLists() {
-	renderSelectedExercises();
-	renderAvailableExercises();
+    renderSelectedExercises();
+    renderAvailableExercises();
 }
 
 function renderAvailableExercises() {
-	const availableExercisesList = document.querySelector(".template-unselected-items");
+    const availableExercisesList = document.querySelector(".template-unselected-items");
 
-	availableExercisesList.innerHTML = "";
+    availableExercisesList.innerHTML = "";
 
-	for (let exerciseIndex = 0; exerciseIndex < appState.unselectedExercises.length; exerciseIndex++) {
-		const exercise = appState.unselectedExercises[exerciseIndex];
+    for (let exerciseIndex = 0; exerciseIndex < appState.unselectedExercises.length; exerciseIndex++) {
+        const exercise = appState.unselectedExercises[exerciseIndex];
 
-		const row = createTemplateExerciseRow(exercise, false);
+        const row = createTemplateExerciseRow(exercise, false);
 
-		row.addEventListener("click", function () {
-			selectTemplateExercise(exercise);
-		});
+        row.addEventListener("click", function () {
+            selectTemplateExercise(exercise);
+        });
 
-		availableExercisesList.appendChild(row);
-	}
+        availableExercisesList.appendChild(row);
+    }
 }
 
 function renderSelectedExercises() {
-	const selectedExercisesList = document.querySelector(".template-selected-items");
+    const selectedExercisesList = document.querySelector(".template-selected-items");
 
-	selectedExercisesList.innerHTML = "";
+    selectedExercisesList.innerHTML = "";
 
-	for (let exerciseIndex = 0; exerciseIndex < appState.selectedExercises.length; exerciseIndex++) {
-		const exercise = appState.selectedExercises[exerciseIndex];
+    for (let exerciseIndex = 0; exerciseIndex < appState.selectedExercises.length; exerciseIndex++) {
+        const exercise = appState.selectedExercises[exerciseIndex];
 
-		const row = createTemplateExerciseRow(exercise, true);
+        const row = createTemplateExerciseRow(exercise, true);
 
-		row.addEventListener("click", function () {
-			unselectTemplateExercise(exercise);
-		});
+        row.addEventListener("click", function () {
+            unselectTemplateExercise(exercise);
+        });
 
-		selectedExercisesList.appendChild(row);
-	}
+        selectedExercisesList.appendChild(row);
+    }
 }
 
 // --- DOM builders --- //
 
-function createSavedTemplateRow(template) {
-    const item = createElement("li", "item-card");    
-	const row = createButton("saved-template-row");
+function createTemplateExerciseRow(exercise, isSelected) {
+    const row = createButton();
 
-	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");   
-	const templateText = createElement("span", "item-text");
-	const templateName = createText(template.name, "item-title");
-	const chevronIcon = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+    if (isSelected) {
+        row.classList.add("selected-exercise-row");
 
-	const templateExerciseCount = template.exerciseIds.length;
-	const templateExerciseCountText = formatCountLabel(templateExerciseCount, "exercise");
-	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "item-subtitle");
+        const barsIcon = createIcon("fa-solid", "fa-bars");
+        row.appendChild(barsIcon);
+    } else {
+        row.classList.add("available-exercise-row");
+    }
 
-	row.addEventListener("click", function () {
-		//enterEditTemplateMode(template);
-	});
+    const exerciseName = createText(exercise.name);
 
-	templateText.appendChild(templateName);
-	templateText.appendChild(templateExerciseCountSubtitle);
+    let checkIcon;
 
-	row.appendChild(templateIcon);
-	row.appendChild(templateText);
-	row.appendChild(chevronIcon);
+    if (isSelected) {
+        checkIcon = createIcon("fa-solid", "fa-circle-check");
+    } else {
+        checkIcon = createIcon("fa-regular", "fa-circle");
+    }
 
-    item.appendChild(row);
+    row.appendChild(exerciseName);
+    row.appendChild(checkIcon);
 
-	return item;
+    return row;
 }
 
-function createTemplateExerciseRow(exercise, isSelected) {
-	const row = createButton();
+function createTemplateCard(templates, templateIndex) {
+    const template = templates[templateIndex];
 
-	if (isSelected) {
-		row.classList.add("selected-exercise-row");
+    const card = createElement("li", "item-card");
+    const header = createTemplateCardHeader(template);
+    const details = createTemplateCardDetails(template);
+    const actions = createTemplateCardActions(templates, templateIndex);
 
-		const barsIcon = createIcon("fa-solid", "fa-bars");
-		row.appendChild(barsIcon);
-	} else {
-		row.classList.add("available-exercise-row");
-	}
+    const chevron = header.querySelector(".chevron-button");
+    header.addEventListener("click", function () {
+        rotateChevron(chevron);
+        changeVisibility(details);
+    });
 
-	const exerciseName = createText(exercise.name);
+    details.appendChild(actions);
 
-	let checkIcon;
+    card.appendChild(header);
+    card.appendChild(details);
 
-	if (isSelected) {
-		checkIcon = createIcon("fa-solid", "fa-circle-check");
-	} else {
-		checkIcon = createIcon("fa-regular", "fa-circle");
-	}
+    return card;
+}
 
-	row.appendChild(exerciseName);
-	row.appendChild(checkIcon);
+function createTemplateCardHeader(template) {
+	const header = createElement("div", "card-header");
+	const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+	const main = createTemplateCardMain(template);
+	const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-	return row;
+	header.appendChild(icon);
+	header.appendChild(main);
+	header.appendChild(chevron);
+
+	return header;
+}
+
+function createTemplateCardMain(template) {
+	const main = createElement("div", "item-text");
+
+	const title = createText(template.name, "item-title");
+
+	const exerciseCount = template.exerciseIds.length;
+	const subtitleText = formatCountLabel(exerciseCount, "exercise");
+	const subtitle = createText(subtitleText, "item-subtitle");
+
+	main.appendChild(title);
+	main.appendChild(subtitle);
+
+	return main;
+}
+
+function createTemplateCardDetails(template) {
+    const details = createElement("div", "card-details");
+    details.classList.add("hidden");
+
+    const exercises = loadExercises();
+
+    for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+        const exerciseId = template.exerciseIds[exerciseIndex];
+
+        const exercise = exercises.find(function (exercise) {
+            return exercise.id === exerciseId;
+        });
+
+        if (exercise !== undefined) {
+            const templateExerciseRow = createSavedTemplateExerciseRow(exercise);
+            details.appendChild(templateExerciseRow);
+        }
+    }
+
+    return details;
+}
+
+function createSavedTemplateExerciseRow(exercise) {
+    const templateExerciseRow = createElement("div", "card-row");
+    const templateExerciseName = createText(exercise.name, "setting-name");
+    templateExerciseRow.appendChild(templateExerciseName);
+
+    return templateExerciseRow;
+}
+
+function createTemplateCardActions(templates, exerciseIndex) {
+    const actions = createElement("div", "card-actions");
+    const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
+
+    editButton.addEventListener("click", function () {
+        enterEditTemplateMode(templates[exerciseIndex]);
+    });
+
+    const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
+    deleteButton.addEventListener("click", function () {
+        deleteTemplate(templates, exerciseIndex);
+    });
+
+    actions.appendChild(editButton);
+    actions.appendChild(deleteButton);
+
+    return actions;
 }

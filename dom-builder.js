@@ -79,3 +79,4 @@ function addClasses(element, classes) {
 		}
 	}
 }
+

@@ -341,17 +341,16 @@ function createExerciseCard(exercises, exerciseIndex) {
 }
 
 function createExerciseCardHeader(exercise) {
-    const header = createElement("div", "exercise-card-header");
-    const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
+	const header = createElement("div", "card-header");
+	const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
+	const main = createExerciseCardMain(exercise);
+	const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    const main = createExerciseCardMain(exercise);
-    const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+	header.appendChild(icon);
+	header.appendChild(main);
+	header.appendChild(chevron);
 
-    header.appendChild(icon);
-    header.appendChild(main);
-    header.appendChild(chevron);
-
-    return header;
+	return header;
 }
 
 function createExerciseCardMain(exercise) {
@@ -370,7 +369,7 @@ function createExerciseCardMain(exercise) {
 }
 
 function createExerciseCardDetails(exercise) {
-    const details = createElement("div", "exercise-card-details");
+    const details = createElement("div", "card-details");
     details.classList.add("hidden");
 
     for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
@@ -383,7 +382,7 @@ function createExerciseCardDetails(exercise) {
 }
 
 function createSavedExerciseSettingRow(setting) {
-    const settingRow = createElement("div", "exercise-setting-row");
+    const settingRow = createElement("div", "card-row");
     const settingName = createText(setting.name, "setting-name");
     const settingValue = createText(setting.value, "setting-value");
 
@@ -394,7 +393,7 @@ function createSavedExerciseSettingRow(setting) {
 }
 
 function createExerciseCardActions(exercises, exerciseIndex) {
-    const actions = createElement("div", "exercise-card-actions");
+    const actions = createElement("div", "card-actions");
     const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
 
     editButton.addEventListener("click", function () {

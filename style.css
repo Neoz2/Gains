@@ -305,7 +305,12 @@ main {
 }
 
 .item-icon {
+  width: 24px;
   flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   color: var(--primary-color);
   font-size: 20px;
@@ -325,6 +330,66 @@ main {
 .item-subtitle {
   color: var(--muted-text-color);
   font-size: 12px;
+}
+
+.header-action-button {
+  display: flex;
+  align-items: center;
+
+  background: none;
+  border: none;
+  color: var(--primary-color);
+
+  font-size: 14px;
+  font-weight: bold;
+
+  padding: 6px 0;
+}
+
+.header-action-button i {
+  font-size: 18px;
+  padding-right: 6px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-details {
+  margin-top: 10px;
+  padding: 0 18px;
+
+  border-top: 1px solid var(--border-color);
+
+  color: var(--muted-text-color);
+  font-size: 14px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-row:last-child {
+  border-bottom: none;
+}
+
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  width: 240px;
+  margin: 10px auto 0;
+}
+
+.card-actions .action-button {
+  justify-self: center;
 }
 
 /* =========================================================
@@ -559,55 +624,6 @@ main {
   justify-content: space-between;
 }
 
-/* ---------- Saved exercise list ---------- */
-
-.exercise-list-section {
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 1px solid var(--divider-color);
-}
-
-.exercise-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.exercise-card-details {
-  margin-top: 10px;
-  padding: 0 18px;
-
-  border-top: 1px solid var(--border-color);
-
-  color: var(--muted-text-color);
-  font-size: 14px;
-}
-
-.exercise-setting-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.exercise-setting-row:last-child {
-  border-bottom: none;
-}
-
-.exercise-card-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  width: 240px;
-  margin: 10px auto 0;
-}
-
-.exercise-card-actions .action-button {
-  justify-self: center;
-}
-
 /* =========================================================
    SCREEN: CREATE TEMPLATES
 ========================================================= */
@@ -715,25 +731,6 @@ main {
 
 .template-save-bar .save-button {
   margin: 0;
-}
-
-.header-action-button {
-  display: flex;
-  align-items: center;
-
-  background: none;
-  border: none;
-  color: var(--primary-color);
-
-  font-size: 14px;
-  font-weight: bold;
-
-  padding: 6px 0;
-}
-
-.header-action-button i {
-  font-size: 18px;
-  padding-right: 6px;
 }
 
 /* =========================================================
