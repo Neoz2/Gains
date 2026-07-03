@@ -316,16 +316,12 @@ function renderSelectedExercises() {
 // --- DOM builders --- //
 
 function createSavedTemplateRow(template) {
-    const item = createElement("li", "item-card");
-    
+    const item = createElement("li", "item-card");    
 	const row = createButton("saved-template-row");
 
-	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
-   
+	const templateIcon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");   
 	const templateText = createElement("span", "item-text");
-
 	const templateName = createText(template.name, "item-title");
-
 	const chevronIcon = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
 	const templateExerciseCount = template.exerciseIds.length;
@@ -333,7 +329,7 @@ function createSavedTemplateRow(template) {
 	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "item-subtitle");
 
 	row.addEventListener("click", function () {
-		enterEditTemplateMode(template);
+		//enterEditTemplateMode(template);
 	});
 
 	templateText.appendChild(templateName);

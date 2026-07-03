@@ -120,10 +120,18 @@
             Save exercise
           </button>
         </span>
-        <div class="exercise-list-section">
+      </div>
+
+      <div class="exercises-overview-state hidden">
+        <div class="section-header-row">
           <span class="content-header">SAVED EXERCISES</span>
-          <ul id="exercise-list" class="content-list"></ul>
+          <button id="overview-create-exercise" class="header-action-button">
+            <i class="fa-solid fa-plus"></i>
+            <span>New exercise</span>
+          </button>
         </div>
+
+        <ul id="exercise-list" class="content-list"></ul>
       </div>
     </section>
 
@@ -153,7 +161,7 @@
       <div class="templates-form-state hidden">
         <div class="section-header-row">
           <span class="content-header">NEW TEMPLATE</span>
-          <button id="delete-template" class="delete-template-button">
+          <button id="delete-template" class="header-action-button">
             <i class="fa-regular fa-trash-can"></i>
             <span>Delete</span>
           </button>
@@ -177,7 +185,7 @@
       <div class="templates-overview-state hidden">
         <div class="section-header-row">
           <span class="content-header">SAVED TEMPLATES</span>
-          <button id="overview-create-template" class="overview-create-template-button">
+          <button id="overview-create-template" class="header-action-button">
             <i class="fa-solid fa-plus"></i>
             <span>New template</span>
           </button>

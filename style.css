@@ -717,8 +717,7 @@ main {
   margin: 0;
 }
 
-.delete-template-button,
-.overview-create-template-button {
+.header-action-button {
   display: flex;
   align-items: center;
 
@@ -732,8 +731,7 @@ main {
   padding: 6px 0;
 }
 
-.delete-template-button i,
-.overview-create-template-button i {
+.header-action-button i {
   font-size: 18px;
   padding-right: 6px;
 }
