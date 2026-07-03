@@ -41,3 +41,8 @@ function nameExistsInList(list, nameInput) {
 		return item.name === nameInput;
 	});
 }
+
+function formatCountLabel(count, string) {
+    const pluralAdjuster = count === 1 ? "" : "s";
+    return `${count} ${string}${pluralAdjuster}`;
+}

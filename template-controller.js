@@ -329,8 +329,7 @@ function createSavedTemplateRow(template) {
 	const chevronIcon = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
 	const templateExerciseCount = template.exerciseIds.length;
-	const pluralAdjuster = templateExerciseCount === 1 ? "" : "s";
-	const templateExerciseCountText = `${templateExerciseCount} exercise${pluralAdjuster}`;
+	const templateExerciseCountText = formatCountLabel(templateExerciseCount, "exercise");
 	const templateExerciseCountSubtitle = createText(templateExerciseCountText, "item-subtitle");
 
 	row.addEventListener("click", function () {

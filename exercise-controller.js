@@ -337,8 +337,7 @@ function createExerciseCardMain(exercise) {
 	const title = createText(exercise.name, "item-title");
     
 	const settingCount = exercise.settings.length;
-	const pluralAdjuster = settingCount === 1 ? "" : "s";
-	const subtitleText = `${settingCount} machine setting${pluralAdjuster}`;
+    const subtitleText = formatCountLabel(settingCount, "machine setting");
 	const subtitle = createText(subtitleText, "item-subtitle");
     
 	main.appendChild(title);
