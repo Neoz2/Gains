@@ -77,7 +77,7 @@
       </div>
 
       <div class="start-training-content training-overview-state">
-        <button id="start-training" class="choice-card">
+        <button id="choice-start-training" class="choice-card">
           <i class="choice-card-icon fa-solid fa-plus"></i>
           <span class="choice-card-text">
             <span class="choice-card-title">Start training</span>
@@ -86,13 +86,25 @@
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
         </button>
 
-        <button id="from-template" class="choice-card">
+        <button id="choice-from-template" class="choice-card">
           <i class="choice-card-icon fa-solid fa-clipboard-list"></i>
           <span class="choice-card-text">
             <span class="choice-card-title">From template</span>
             <span class="choice-card-subtitle">Use a saved tempalte to get started</span>
           </span>
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="empty-state training-empty-state hidden">
+        <div class="empty-state-icon">
+          <i class="fa-solid fa-dumbbell"></i>
+        </div>
+
+        <span class="empty-state-title">Your workout is empty</span>
+        <span class="empty-state-text">Add exercises to get started</span>
+        <button id="empty-create-exercise" class="button-large">
+          + Add exercise
         </button>
       </div>
     </section>
@@ -255,6 +267,7 @@
   <script src="helpers.js"></script>
   <script src="dom-builder.js"></script>
   <script src="navigation.js"></script>
+  <script src="training-controller.js"></script>
   <script src="exercise-controller.js"></script>
   <script src="template-controller.js"></script>
   <script src="app.js"></script>

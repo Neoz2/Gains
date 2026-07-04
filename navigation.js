@@ -90,7 +90,9 @@ function refreshScreen(screenId) {
 		refreshExerciseScreen();
 	} else if (screenId === "create-templates-screen") {
 		refreshTemplateScreen();
-	}
+	} else if (screenId === "start-training-screen") {
+        refreshTrainingScreen();
+    }
 }
 
 function updateSelectedNavButton(screenId) {

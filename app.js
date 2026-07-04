@@ -17,9 +17,11 @@ const appState = {
 
 setupNavigation();
 
+setupTrainingController();
 setupExerciseController();
 setupTemplateController();
 
+refreshTrainingScreen();
 refreshExerciseScreen();
 refreshTemplateScreen();
 
