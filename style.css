@@ -651,26 +651,31 @@ main {
 
 .workout-card {
   display: grid;
-  grid-template-columns: 20px 24px 1fr auto 20px;
-  align-items: start;
-  column-gap: 10px;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  column-gap: 12px;
 }
 
-.workout-card-main {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.workout-card>.chevron-button {
-  color: var(--primary-color);
-  font-size: 20px;
-}
-
-.workout-card>i:first-child {
+.workout-card > i:first-child {
   color: var(--muted-text-color);
   font-size: 25px;
+}
+
+.workout-card-body {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 24px 1fr auto 20px;
+  align-items: center;
+  column-gap: 12px;
+
+  background: none;
+  border: none;
+  color: var(--text-color);
+
+  padding: 0;
+  text-align: left;
 }
 
 .workout-exercise-index {
@@ -689,55 +694,32 @@ main {
   font-weight: bold;
 }
 
-.workout-card .item-title {
-  height: 24px;
+.workout-exercise-title {
+  min-width: 0;
 
-  display: flex;
-  align-items: center;
-
-  margin-top: 2px;
-}
-
-.workout-set-count {
-  height: 24px;
-
-  color: var(--muted-text-color);
-  font-size: 12px;
+  color: var(--text-color);
   font-weight: bold;
-
-  white-space: nowrap;
-  margin-top: 6px;
-}
-
-.workout-card-settings {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 8px;
-  row-gap: 2px;
-
-  overflow: hidden;
-}
-
-.workout-card-setting {
-  color: var(--muted-text-color);
-  font-size: 12px;
-  line-height: 1.25;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.workout-card-setting:not(:last-child)::after {
-  content: "|";
-  color: var(--divider-color);
-  margin-left: 8px;
+.workout-set-count {
+  color: var(--muted-text-color);
+  font-size: 11px;
+  font-weight: bold;
+
+  white-space: nowrap;
 }
 
-.workout-card>i:first-child,
-.workout-exercise-index,
-.workout-card>.chevron-button {
-  margin-top: 2px;
+.workout-set-count.has-sets {
+  color: var(--primary-color);
+}
+
+.workout-card-body .chevron-button {
+  color: var(--primary-color);
+  font-size: 20px;
 }
 
 /* =========================================================

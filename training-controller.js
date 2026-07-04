@@ -174,21 +174,25 @@ function renderWorkoutExerciseList(workout) {
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const card = createElement("li", "item-card", "workout-card");
     const dragIcon = createIcon("fa-solid", "fa-grip-vertical", "drag-handle");
+    const body = createElement("div", "workout-card-body");
     const index = createText(exerciseIndex + 1, "workout-exercise-index");
-    const main = createElement("div", "workout-card-main");
-    const title = createText(exercise.name, "item-title");
-    const settings = createWorkoutExerciseCardSettings(exercise);
+    const title = createText(exercise.name, "workout-exercise-title");
     const numberOfSets = createText("0 sets", "workout-set-count");
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    main.appendChild(title);
-    main.appendChild(settings);
+    body.addEventListener("click", function () {
+        rotateChevron(chevron);
+        //changeVisibility(details);
+    });
 
+    body.appendChild(index);
+    body.appendChild(title);
+    body.appendChild(numberOfSets);
+    body.appendChild(chevron);
+    
     card.appendChild(dragIcon);
-    card.appendChild(index);
-    card.appendChild(main);
-    card.appendChild(numberOfSets);
-    card.appendChild(chevron);
+    card.appendChild(body);
+
 
     return card;
 }
@@ -198,7 +202,7 @@ function createWorkoutExerciseCardSettings(exercise) {
 
     for (let i = 0; i < exercise.settings.length; i++) {
         const setting = exercise.settings[i];
-        const settingText = createText(`${setting.name} · ${setting.value}`, "item-subtitle", "workout-card-setting");
+        const settingText = createText(`${setting.name}: ${setting.value}`, "item-subtitle", "workout-card-setting");
         settings.appendChild(settingText);
     }
 
