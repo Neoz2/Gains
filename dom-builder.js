@@ -91,7 +91,7 @@ function createExercisePickerRow(exercise, isSelected) {
     if (isSelected) {
         row.classList.add("selected-exercise-row");
 
-        const barsIcon = createIcon("fa-solid", "fa-bars");
+        const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
         row.appendChild(barsIcon);
     } else {
         row.classList.add("available-exercise-row");

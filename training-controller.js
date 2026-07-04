@@ -9,6 +9,7 @@ const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-ex
 const addToWorkoutButton = document.getElementById("add-to-workout");
 const trainingPageTitle = document.getElementById("training-page-title");
 const trainingPageSubtitle = document.getElementById("training-page-subtitle");
+const workoutExerciseList = document.getElementById("workout-exercise-list");
 const trainingEmptyState = document.querySelector(".training-empty-state");
 const trainingOverviewState = document.querySelector(".training-overview-state");
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
@@ -80,7 +81,8 @@ function enterAddExercisesToWorkoutMode() {
 
 function enterWorkoutState() {
     const workout = createWorkout(appState.workoutSelectedExercises);
-    console.log(workout);
+    renderWorkoutExerciseList(workout);
+
     showTrainingMode("workout");
 }
 
@@ -90,19 +92,34 @@ function selectWorkoutExercise(exercise) {
     removeExerciseFromArray(appState.workoutUnselectedExercises, exercise);
     addExerciseToArray(appState.workoutSelectedExercises, exercise);
 
-    renderWorkoutExerciseLists();
+    renderWorkoutExercisePickerLists();
 }
 
 function unselectWorkoutExercise(exercise) {
     removeExerciseFromArray(appState.workoutSelectedExercises, exercise);
     addExerciseToArray(appState.workoutUnselectedExercises, exercise);
 
-    renderWorkoutExerciseLists();
+    renderWorkoutExercisePickerLists();
+}
+
+// --- Form helpers --- //
+
+function clearWorkoutForm() {
+    appState.workoutSelectedExercises.length = 0;
+    appState.workoutUnselectedExercises.length = 0;
+
+    const exercises = loadExercises();
+
+    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+        appState.workoutUnselectedExercises.push(exercises[exerciseIndex]);
+    }
+
+    renderWorkoutExercisePickerLists();
 }
 
 // --- Rendering --- //
 
-function renderWorkoutExerciseLists() {
+function renderWorkoutExercisePickerLists() {
     renderSelectedWorkoutExercises();
     renderAvailableWorkoutExercises();
 }
@@ -143,17 +160,45 @@ function renderSelectedWorkoutExercises() {
     }
 }
 
-// --- Form helpers --- //
+function renderWorkoutExerciseList(workout) {
+    workoutExerciseList.innerHTML = "";
 
-function clearWorkoutForm() {
-    appState.workoutSelectedExercises.length = 0;
-    appState.workoutUnselectedExercises.length = 0;
+    for (let exerciseIndex = 0; exerciseIndex < workout.exercises.length; exerciseIndex++) {
+        const exerciseCard = createWorkoutExerciseCard(workout.exercises[exerciseIndex], exerciseIndex);
+        workoutExerciseList.appendChild(exerciseCard);
+    }
+}
 
-    const exercises = loadExercises();
+// --- DOM builders --- //
 
-    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-        appState.workoutUnselectedExercises.push(exercises[exerciseIndex]);
+function createWorkoutExerciseCard(exercise, exerciseIndex) {
+    const card = createElement("li", "item-card", "workout-card");
+    const dragIcon = createIcon("fa-solid", "fa-grip-vertical", "drag-handle");
+    const index = createText(exerciseIndex + 1, "workout-exercise-index");
+    const main = createElement("div", "workout-card-main");
+    const title = createText(exercise.name, "item-title");
+    const settings = createWorkoutExerciseCardSettings(exercise);
+    const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+
+    main.appendChild(title);
+    main.appendChild(settings);
+
+    card.appendChild(dragIcon);
+    card.appendChild(index);
+    card.appendChild(main);
+    card.appendChild(chevron);
+
+    return card;
+}
+
+function createWorkoutExerciseCardSettings(exercise) {
+    const settings = createElement("div", "workout-card-settings");
+
+    for (let i = 0; i < exercise.settings.length; i++) {
+        const setting = exercise.settings[i];
+        const settingText = createText(`${setting.name} · ${setting.value}`, "item-subtitle", "workout-card-setting");
+        settings.appendChild(settingText);
     }
 
-    renderWorkoutExerciseLists();
+    return settings;
 }

@@ -600,7 +600,7 @@ main {
   text-align: left;
 }
 
-.choice-card > .choice-card-icon {
+.choice-card>.choice-card-icon {
   width: 70px;
   height: 70px;
 
@@ -645,6 +645,88 @@ main {
   font-size: 25px;
 
   padding-left: 10px;
+}
+
+/* ---------- Workout cards ---------- */
+
+.workout-card {
+  display: grid;
+  grid-template-columns: 20px 24px 1fr 20px;
+  align-items: start;
+  column-gap: 10px;
+}
+
+.workout-card-main {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.workout-card>i:last-child {
+  color: var(--primary-color);
+  font-size: 20px;
+}
+
+.workout-card>i:first-child {
+  color: var(--muted-text-color);
+  font-size: 25px;
+}
+
+.workout-exercise-index {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: var(--radius-small);
+
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.workout-card .item-title {
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+
+  margin-top: 2px;
+}
+
+.workout-card-settings {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 2px;
+
+  overflow: hidden;
+}
+
+.workout-card-setting {
+  color: var(--muted-text-color);
+  font-size: 12px;
+  line-height: 1.25;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workout-card-setting:not(:last-child)::after {
+  content: "|";
+  color: var(--divider-color);
+  margin-left: 8px;
+}
+
+.workout-card>i:first-child,
+.workout-exercise-index,
+.workout-card>.chevron-button {
+  margin-top: 2px;
 }
 
 /* =========================================================
