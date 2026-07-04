@@ -651,7 +651,7 @@ main {
 
 .workout-card {
   display: grid;
-  grid-template-columns: 20px 24px 1fr 20px;
+  grid-template-columns: 20px 24px 1fr auto 20px;
   align-items: start;
   column-gap: 10px;
 }
@@ -663,7 +663,7 @@ main {
   flex-direction: column;
 }
 
-.workout-card>i:last-child {
+.workout-card>.chevron-button {
   color: var(--primary-color);
   font-size: 20px;
 }
@@ -696,6 +696,17 @@ main {
   align-items: center;
 
   margin-top: 2px;
+}
+
+.workout-set-count {
+  height: 24px;
+
+  color: var(--muted-text-color);
+  font-size: 12px;
+  font-weight: bold;
+
+  white-space: nowrap;
+  margin-top: 6px;
 }
 
 .workout-card-settings {

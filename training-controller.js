@@ -178,6 +178,7 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const main = createElement("div", "workout-card-main");
     const title = createText(exercise.name, "item-title");
     const settings = createWorkoutExerciseCardSettings(exercise);
+    const numberOfSets = createText("0 sets", "workout-set-count");
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
     main.appendChild(title);
@@ -186,6 +187,7 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     card.appendChild(dragIcon);
     card.appendChild(index);
     card.appendChild(main);
+    card.appendChild(numberOfSets);
     card.appendChild(chevron);
 
     return card;
