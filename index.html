@@ -75,7 +75,7 @@
         <span class="page-title">Start training</span>
         <span class="page-subtitle">Start a new session</span>
       </div>
-
+      <!-- starting page -->
       <div class="start-training-content training-overview-state">
         <button id="choice-start-training" class="choice-card">
           <i class="choice-card-icon fa-solid fa-plus"></i>
@@ -95,7 +95,7 @@
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
         </button>
       </div>
-
+      <!-- workout empty state -->
       <div class="empty-state training-empty-state hidden">
         <div class="empty-state-icon">
           <i class="fa-solid fa-dumbbell"></i>
@@ -107,6 +107,19 @@
           + Add exercise
         </button>
       </div>
+      <!-- add exercises -->
+      <div class="training-add-exercises-state hidden">
+        <span class="content-header">SELECTED EXERCISES</span>
+        <div class="training-selected-items"></div>
+
+        <span class="content-header">AVAILABLE EXERCISES</span>
+        <div class="training-unselected-items"></div>
+
+        <div class="training-save-bar">
+          <button id="save-workout" class="save-button">
+            Add to workout
+          </button>
+        </div>
     </section>
 
     <!-- CREATE EXERCISES -->

@@ -7,8 +7,10 @@
 const appState = {
 	editingExerciseId: null,
 	editingTemplateId: null,
-	selectedExercises: [],
-	unselectedExercises: []
+	templateSelectedExercises: [],
+	templateUnselectedExercises: [],
+	workoutSelectedExercises: [],
+	workoutUnselectedExercises: []
 };
 
 // =========================================================
@@ -27,6 +29,8 @@ refreshTemplateScreen();
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
+
+
 
 
 

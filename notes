@@ -1,16 +1,6 @@
 in folder, run cmd server: python -m http.server 8000
 http://192.168.2.2:8000
 
-
-To do:
--fix navigation with subpages
--zero exercises validation templates
--update text NEW TEMPLATE -> UPDATE TEMPLATE
--add delete template button
-
-unify plural adjsuters
-
-
 1. Positioning
 2. Display / layout
 3. Size

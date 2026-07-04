@@ -80,3 +80,31 @@ function addClasses(element, classes) {
 	}
 }
 
+function createExercisePickerRow(exercise, isSelected) {
+    const row = createButton();
+
+    if (isSelected) {
+        row.classList.add("selected-exercise-row");
+
+        const barsIcon = createIcon("fa-solid", "fa-bars");
+        row.appendChild(barsIcon);
+    } else {
+        row.classList.add("available-exercise-row");
+    }
+
+    const exerciseName = createText(exercise.name);
+
+    let checkIcon;
+
+    if (isSelected) {
+        checkIcon = createIcon("fa-solid", "fa-circle-check");
+    } else {
+        checkIcon = createIcon("fa-regular", "fa-circle");
+    }
+
+    row.appendChild(exerciseName);
+    row.appendChild(checkIcon);
+
+    return row;
+}
+

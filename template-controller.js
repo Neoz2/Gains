@@ -117,7 +117,7 @@ function saveTemplateFromForm() {
         clearInputError(templateNameInput);
     }
 
-    if (appState.selectedExercises.length === 0) {
+    if (appState.templateSelectedExercises.length === 0) {
         formIsValid = false;
         console.log("Select at least one exercise");
     }
@@ -127,7 +127,7 @@ function saveTemplateFromForm() {
     }
 
     if (appState.editingTemplateId === null) {
-        const template = createTemplate(templateName, appState.selectedExercises);
+        const template = createTemplate(templateName, appState.templateSelectedExercises);
         templates.push(template);
     } else {
         const templateIndex = templates.findIndex(function (template) {
@@ -139,7 +139,7 @@ function saveTemplateFromForm() {
             return;
         }
 
-        const updatedTemplate = createTemplate(templateName, appState.selectedExercises);
+        const updatedTemplate = createTemplate(templateName, appState.templateSelectedExercises);
         updatedTemplate.id = appState.editingTemplateId;
 
         templates[templateIndex] = updatedTemplate;
@@ -192,37 +192,17 @@ function removeExerciseFromTemplates(deletedExerciseId) {
 // --- Selection actions --- //
 
 function selectTemplateExercise(exercise) {
-    removeExerciseFromArray(appState.unselectedExercises, exercise);
-    addExerciseToArray(appState.selectedExercises, exercise);
+    removeExerciseFromArray(appState.templateUnselectedExercises, exercise);
+    addExerciseToArray(appState.templateSelectedExercises, exercise);
 
     renderTemplateExerciseLists();
 }
 
 function unselectTemplateExercise(exercise) {
-    removeExerciseFromArray(appState.selectedExercises, exercise);
-    addExerciseToArray(appState.unselectedExercises, exercise);
+    removeExerciseFromArray(appState.templateSelectedExercises, exercise);
+    addExerciseToArray(appState.templateUnselectedExercises, exercise);
 
     renderTemplateExerciseLists();
-}
-
-function addExerciseToArray(exercises, exercise) {
-    const exerciseAlreadyExists = exercises.some(function (existingExercise) {
-        return existingExercise.id === exercise.id;
-    });
-
-    if (!exerciseAlreadyExists) {
-        exercises.push(exercise);
-    }
-}
-
-function removeExerciseFromArray(exercises, exercise) {
-    const exerciseIndex = exercises.findIndex(function (existingExercise) {
-        return existingExercise.id === exercise.id;
-    });
-
-    if (exerciseIndex !== -1) {
-        exercises.splice(exerciseIndex, 1);
-    }
 }
 
 // --- Form helpers --- //
@@ -230,13 +210,13 @@ function removeExerciseFromArray(exercises, exercise) {
 function clearTemplateForm() {
     templateNameInput.value = "";
 
-    appState.selectedExercises.length = 0;
-    appState.unselectedExercises.length = 0;
+    appState.templateSelectedExercises.length = 0;
+    appState.templateUnselectedExercises.length = 0;
 
     const exercises = loadExercises();
 
     for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-        appState.unselectedExercises.push(exercises[exerciseIndex]);
+        appState.templateUnselectedExercises.push(exercises[exerciseIndex]);
     }
 
     renderTemplateExerciseLists();
@@ -274,19 +254,19 @@ function renderTemplateList(templates) {
 }
 
 function renderTemplateExerciseLists() {
-    renderSelectedExercises();
-    renderAvailableExercises();
+    renderSelectedTemplateExercises();
+    renderAvailableTemplateExercises();
 }
 
-function renderAvailableExercises() {
+function renderAvailableTemplateExercises() {
     const availableExercisesList = document.querySelector(".template-unselected-items");
 
     availableExercisesList.innerHTML = "";
 
-    for (let exerciseIndex = 0; exerciseIndex < appState.unselectedExercises.length; exerciseIndex++) {
-        const exercise = appState.unselectedExercises[exerciseIndex];
+    for (let exerciseIndex = 0; exerciseIndex < appState.templateUnselectedExercises.length; exerciseIndex++) {
+        const exercise = appState.templateUnselectedExercises[exerciseIndex];
 
-        const row = createTemplateExerciseRow(exercise, false);
+        const row = createExercisePickerRow(exercise, false);
 
         row.addEventListener("click", function () {
             selectTemplateExercise(exercise);
@@ -296,15 +276,15 @@ function renderAvailableExercises() {
     }
 }
 
-function renderSelectedExercises() {
+function renderSelectedTemplateExercises() {
     const selectedExercisesList = document.querySelector(".template-selected-items");
 
     selectedExercisesList.innerHTML = "";
 
-    for (let exerciseIndex = 0; exerciseIndex < appState.selectedExercises.length; exerciseIndex++) {
-        const exercise = appState.selectedExercises[exerciseIndex];
+    for (let exerciseIndex = 0; exerciseIndex < appState.templateSelectedExercises.length; exerciseIndex++) {
+        const exercise = appState.templateSelectedExercises[exerciseIndex];
 
-        const row = createTemplateExerciseRow(exercise, true);
+        const row = createExercisePickerRow(exercise, true);
 
         row.addEventListener("click", function () {
             unselectTemplateExercise(exercise);
@@ -315,34 +295,6 @@ function renderSelectedExercises() {
 }
 
 // --- DOM builders --- //
-
-function createTemplateExerciseRow(exercise, isSelected) {
-    const row = createButton();
-
-    if (isSelected) {
-        row.classList.add("selected-exercise-row");
-
-        const barsIcon = createIcon("fa-solid", "fa-bars");
-        row.appendChild(barsIcon);
-    } else {
-        row.classList.add("available-exercise-row");
-    }
-
-    const exerciseName = createText(exercise.name);
-
-    let checkIcon;
-
-    if (isSelected) {
-        checkIcon = createIcon("fa-solid", "fa-circle-check");
-    } else {
-        checkIcon = createIcon("fa-regular", "fa-circle");
-    }
-
-    row.appendChild(exerciseName);
-    row.appendChild(checkIcon);
-
-    return row;
-}
 
 function createTemplateCard(templates, templateIndex) {
     const template = templates[templateIndex];
