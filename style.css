@@ -547,6 +547,11 @@ main {
   font-size: 22px;
 }
 
+.home-nav-item>i:last-child {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
 .home-nav-text {
   flex: 1;
 
@@ -555,19 +560,92 @@ main {
   align-items: flex-start;
 
   margin-left: 20px;
+
+  color: var(--muted-text-color);
 }
 
 .home-nav-text>span:first-child {
   font-size: 20px;
+  color: var(--text-color);
 }
-
 
 /* =========================================================
    SCREEN: START TRAINING
 ========================================================= */
 
-/* Empty for now */
+.start-training-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 
+  padding-top: 30px;
+}
+
+.choice-card {
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  background: var(--card-color);
+  border-radius: var(--radius-large);
+  border: none;
+
+  padding: 25px 15px;
+
+  color: var(--text-color);
+  font-size: 12px;
+  text-align: left;
+}
+
+.choice-card > .choice-card-icon {
+  width: 70px;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--primary-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-color);
+
+  flex-shrink: 0;
+
+  font-size: 40px;
+}
+
+.choice-card-text {
+  flex: 1;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  color: var(--muted-text-color);
+}
+
+.choice-card-title {
+  font-size: 20px;
+  color: var(--text-color);
+}
+
+.choice-card-subtitle {
+  color: var(--muted-text-color);
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.choice-card-chevron {
+  color: var(--primary-color);
+  font-size: 25px;
+
+  padding-left: 10px;
+}
 
 /* =========================================================
    SCREEN: CREATE EXERCISES
