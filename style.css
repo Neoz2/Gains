@@ -713,6 +713,8 @@ main {
   flex-direction: column;
 }
 
+.training-selected-items,
+.training-unselected-items,
 .template-selected-items,
 .template-unselected-items {
   display: flex;
@@ -720,12 +722,14 @@ main {
   gap: 6px;
 }
 
+.training-selected-items,
 .template-selected-items {
   padding-bottom: 18px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--divider-color);
 }
 
+.training-unselected-items,
 .template-unselected-items {
   padding-bottom: 55px;
 }
