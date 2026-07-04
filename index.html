@@ -72,8 +72,8 @@
       </button>
 
       <div class="page-header">
-        <span class="page-title">Start training</span>
-        <span class="page-subtitle">Start a new session</span>
+        <span id="training-page-title" class="page-title">Start training</span>
+        <span id="training-page-subtitle" class="page-subtitle">Start a new session</span>
       </div>
       <!-- starting page -->
       <div class="start-training-content training-overview-state">
@@ -103,7 +103,7 @@
 
         <span class="empty-state-title">Your workout is empty</span>
         <span class="empty-state-text">Add exercises to get started</span>
-        <button id="empty-create-exercise" class="button-large">
+        <button id="empty-add-exercise" class="button-large">
           + Add exercise
         </button>
       </div>
@@ -116,10 +116,14 @@
         <div class="training-unselected-items"></div>
 
         <div class="training-save-bar">
-          <button id="save-workout" class="save-button">
+          <button id="add-to-workout" class="save-button">
             Add to workout
           </button>
         </div>
+        <!-- workout state -->
+        <div class="training-workout-state hidden">
+          <span class="content-header">WORKOUT</span>
+          <div class="workout-items"></div>
     </section>
 
     <!-- CREATE EXERCISES -->

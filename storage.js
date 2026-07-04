@@ -66,7 +66,7 @@ function createTemplate(name, selectedExercises) {
     };
 }
 
-function createWorkout(name, selectedExercises) {
+function createWorkout(selectedExercises) {
     const workoutExercises = [];
 
     for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++){

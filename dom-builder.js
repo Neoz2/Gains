@@ -4,6 +4,11 @@
 // DOM BUILDERS: GENERIC
 // =========================================================
 
+function updatePageHeader(titleElement, subtitleElement, title, subtitle) {
+	titleElement.textContent = title;
+	subtitleElement.textContent = subtitle;
+}
+
 function createActionButton(iconClassBase, iconClassIcon, text) {
 	const button = createButton("action-button");
 	const icon = createIcon(iconClassBase, iconClassIcon);

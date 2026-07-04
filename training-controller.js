@@ -5,10 +5,14 @@
 // =========================================================
 
 const overviewStartTrainingButton = document.getElementById("choice-start-training");
-const workoutEmptyStateAddExerciseButton = document.getElementById("empty-create-exercise");
+const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
+const addToWorkoutButton = document.getElementById("add-to-workout");
+const trainingPageTitle = document.getElementById("training-page-title");
+const trainingPageSubtitle = document.getElementById("training-page-subtitle");
 const trainingEmptyState = document.querySelector(".training-empty-state");
 const trainingOverviewState = document.querySelector(".training-overview-state");
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
+const workoutState = document.querySelector(".training-workout-state");
 
 // =========================================================
 // EXERCISE CONTROLLER
@@ -19,6 +23,7 @@ const addExercisesToWorkoutState = document.querySelector(".training-add-exercis
 function setupTrainingController() {
     setupOverviewStartTrainingButton();
     setupAddExerciseToWorkoutButton();
+    setupAddToWorkoutButton();
 }
 
 function refreshTrainingScreen() {
@@ -36,34 +41,47 @@ function setupAddExerciseToWorkoutButton() {
     workoutEmptyStateAddExerciseButton.addEventListener("click", enterAddExercisesToWorkoutMode);
 }
 
+function setupAddToWorkoutButton() {
+    addToWorkoutButton.addEventListener("click", enterWorkoutState);
+}
+
 // --- Modes --- //
 
 function showTrainingMode(mode) {
     trainingEmptyState.classList.add("hidden");
     trainingOverviewState.classList.add("hidden");
     addExercisesToWorkoutState.classList.add("hidden");
+    workoutState.classList.add("hidden");
 
     if (mode === "empty") {
+        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
         trainingEmptyState.classList.remove("hidden");
     } else if (mode === "overview") {
+        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
         trainingOverviewState.classList.remove("hidden");
     } else if (mode === "addExercises") {
+        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Build from scratch", "Select exercises for your workout");
         addExercisesToWorkoutState.classList.remove("hidden");
+    } else if (mode === "workout") {
+        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
+        workoutState.classList.remove("hidden");
     }
 }
 
 function enterStartEmptyTrainingMode() {
-    //appState.editingExerciseId = null;
-
-    //clearExerciseForm();
-    //updateSettingsRowsVisibility();
-    //updateSaveExerciseButtonText();
+    clearWorkoutForm()
 
     showTrainingMode("empty");
 }
 
 function enterAddExercisesToWorkoutMode() {
     showTrainingMode("addExercises");
+}
+
+function enterWorkoutState() {
+    const workout = createWorkout(appState.workoutSelectedExercises);
+    console.log(workout);
+    showTrainingMode("workout");
 }
 
 // --- Selection actions --- //
