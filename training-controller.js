@@ -254,7 +254,7 @@ function createWeightInputRow() {
     const weightInput = createWeightInput();
     const bigTimer = createText("00:00", "workout-big-timer");
 
-    const button = createTimerButton(weightInput);
+    const button = createTimerButton(weightInput, bigTimer);
 
     headers.appendChild(weightHeader);
     headers.appendChild(timerHeader);
@@ -287,12 +287,13 @@ function createWeightInput() {
     return weightInput;
 }
 
-function createTimerButton(weightInput) {
+function createTimerButton(weightInput, bigTimer) {
     button = createButton("button-large");
     button.textContent = "Start set";
 
     button.addEventListener("click", function () {
         if (weightInput.value !== "") {
+            startTimer(bigTimer);
             console.log('clicked');
         } else {
             console.log('no weight set');
@@ -300,4 +301,28 @@ function createTimerButton(weightInput) {
     });
 
     return button;
+}
+
+function startTimer(bigTimer) {
+    bigTimer.textContent = "00:00";
+    let timerStartedAt = Date.now();
+
+    let timerIntervalId = setInterval(function () {
+        const currentTime = Date.now();
+        const elapsedMilliseconds = currentTime - timerStartedAt;
+
+        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+
+        bigTimer.textContent = formatTimer(elapsedSeconds);
+    }, 250)
+}
+
+function formatTimer(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
 }
