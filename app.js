@@ -10,7 +10,8 @@ const appState = {
 	templateSelectedExercises: [],
 	templateUnselectedExercises: [],
 	workoutSelectedExercises: [],
-	workoutUnselectedExercises: []
+	workoutUnselectedExercises: [],
+	activeWorkout: null
 };
 
 // =========================================================

@@ -92,7 +92,10 @@ function refreshScreen(screenId) {
 		refreshTemplateScreen();
 	} else if (screenId === "start-training-screen") {
         refreshTrainingScreen();
-    }
+    } else if (screenId === "analyse-progress-screen") {
+		//temporary reset button for training
+		appState.activeWorkout = null;
+	}
 }
 
 function updateSelectedNavButton(screenId) {

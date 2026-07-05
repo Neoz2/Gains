@@ -54,17 +54,25 @@ function showTrainingMode(mode) {
     addExercisesToWorkoutState.classList.add("hidden");
     workoutState.classList.add("hidden");
 
-    if (mode === "empty") {
-        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
-        trainingEmptyState.classList.remove("hidden");
-    } else if (mode === "overview") {
-        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
-        trainingOverviewState.classList.remove("hidden");
-    } else if (mode === "addExercises") {
-        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Build from scratch", "Select exercises for your workout");
-        addExercisesToWorkoutState.classList.remove("hidden");
-    } else if (mode === "workout") {
+    if (appState.activeWorkout === null) {
+        if (mode === "empty") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
+            trainingEmptyState.classList.remove("hidden");
+        } else if (mode === "overview") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
+            trainingOverviewState.classList.remove("hidden");
+        } else if (mode === "addExercises") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Build from scratch", "Select exercises for your workout");
+            addExercisesToWorkoutState.classList.remove("hidden");
+        } else if (mode === "workout") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
+            workoutState.classList.remove("hidden");
+        }
+    }
+
+    else {
         updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
+        renderSelectedWorkoutExercises();
         workoutState.classList.remove("hidden");
     }
 }
@@ -81,6 +89,7 @@ function enterAddExercisesToWorkoutMode() {
 
 function enterWorkoutState() {
     const workout = createWorkout(appState.workoutSelectedExercises);
+    appState.activeWorkout = workout.id;
     renderWorkoutExerciseList(workout);
 
     showTrainingMode("workout");
@@ -174,27 +183,52 @@ function renderWorkoutExerciseList(workout) {
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const card = createElement("li", "item-card", "workout-card");
     const dragIcon = createIcon("fa-solid", "fa-grip-vertical", "drag-handle");
+
+    const content = createElement("div", "workout-card-content");
+    const body = createWorkoutExerciseCardBody(exercise, exerciseIndex);
+    const details = createWorkoutExerciseCardDetails(exercise);
+    const inputRow = createWeightInputRow();
+    const chevron = body.querySelector(".chevron-button");
+
+    body.addEventListener("click", function () {
+        rotateChevron(chevron);
+        changeVisibility(details);
+        changeVisibility(inputRow);
+    });
+
+    content.appendChild(body);
+
+    card.appendChild(dragIcon);
+    card.appendChild(content);
+    card.appendChild(details);
+    card.appendChild(inputRow);
+
+    return card;
+}
+
+function createWorkoutExerciseCardBody(exercise, exerciseIndex) {
     const body = createElement("div", "workout-card-body");
+
     const index = createText(exerciseIndex + 1, "workout-exercise-index");
     const title = createText(exercise.name, "workout-exercise-title");
     const numberOfSets = createText("0 sets", "workout-set-count");
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    body.addEventListener("click", function () {
-        rotateChevron(chevron);
-        //changeVisibility(details);
-    });
-
     body.appendChild(index);
     body.appendChild(title);
     body.appendChild(numberOfSets);
     body.appendChild(chevron);
-    
-    card.appendChild(dragIcon);
-    card.appendChild(body);
 
+    return body;
+}
 
-    return card;
+function createWorkoutExerciseCardDetails(exercise) {
+    const details = createElement("div", "workout-card-details", "hidden");
+    const settings = createWorkoutExerciseCardSettings(exercise);
+
+    details.appendChild(settings);
+
+    return details;
 }
 
 function createWorkoutExerciseCardSettings(exercise) {
@@ -202,9 +236,68 @@ function createWorkoutExerciseCardSettings(exercise) {
 
     for (let i = 0; i < exercise.settings.length; i++) {
         const setting = exercise.settings[i];
-        const settingText = createText(`${setting.name}: ${setting.value}`, "item-subtitle", "workout-card-setting");
+        const settingText = createText(`${setting.name} · ${setting.value}`, "workout-card-setting-pill");
         settings.appendChild(settingText);
     }
 
     return settings;
+}
+
+function createWeightInputRow() {
+    const inputRow = createElement("div", "workout-input-row", "hidden");
+    const headers = createElement("div", "workout-input-headers");
+    const content = createElement("div", "workout-inputs");
+
+    const weightHeader = createText("Weight (kg)", "field-name");
+    const timerHeader = createText("Time under load", "field-name");
+
+    const weightInput = createWeightInput();
+    const bigTimer = createText("00:00", "workout-big-timer");
+
+    const button = createTimerButton(weightInput);
+
+    headers.appendChild(weightHeader);
+    headers.appendChild(timerHeader);
+
+    content.appendChild(weightInput);
+    content.appendChild(bigTimer);
+
+    inputRow.appendChild(headers);
+    inputRow.appendChild(content);
+    inputRow.appendChild(button);
+
+    return inputRow;
+}
+
+function createWeightInput() {
+    const weightInput = createElement("input", "workout-weight-input");
+    weightInput.type = "number";
+    weightInput.min = "0";
+    weightInput.value = "";
+
+    weightInput.addEventListener("input", function () {
+        if (!weightInput.validity.valid) {
+            weightInput.value = "";
+        }
+        if (weightInput.value !== "") {
+            weightInput.value = parseInt(weightInput.value);
+        }
+    });
+
+    return weightInput;
+}
+
+function createTimerButton(weightInput) {
+    button = createButton("button-large");
+    button.textContent = "Start set";
+
+    button.addEventListener("click", function () {
+        if (weightInput.value !== "") {
+            console.log('clicked');
+        } else {
+            console.log('no weight set');
+        }
+    });
+
+    return button;
 }
