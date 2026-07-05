@@ -148,6 +148,12 @@ function closeAllWorkoutCardsExcept(activeCard) {
     }
 }
 
+function saveWorkoutSet(exercise, card, elapsedTime, weight) {
+    const set = createWorkoutExerciseSet(weight, elapsedTime);
+    exercise.sets.push(set);
+    console.log(exercise.sets);
+}
+
 // --- Rendering --- //
 
 function renderWorkoutExercisePickerLists() {
@@ -322,12 +328,9 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
         if (isStarted === false && weightInput.value !== "") {
             isStarted = true;
             startTimer(button, bigTimer);
-            console.log('clicked');
         } else if (isStarted === true) {
             isStarted = false;
-            stopTimer(button, bigTimer);
-        } else {
-            console.log('no weight set');
+            stopTimer(exercise, card, button, bigTimer, weightInput.value);
         }
     });
 
@@ -352,16 +355,16 @@ function startTimer(button, bigTimer) {
     }, 250)
 }
 
-function stopTimer(button, bigTimer) {
+function stopTimer(exercise, card, button, bigTimer, weight) {
     appState.activeTimer = false;
     clearInterval(timerIntervalId);
     button.textContent = "Start set";
 
     elapsedTime = bigTimer.textContent;
-    console.log(elapsedTime);
 
     bigTimer.textContent = "00:00";
-    return elapsedTime;
+
+    saveWorkoutSet(exercise, card, elapsedTime, weight);
 }
 
 function formatTimer(totalSeconds) {
