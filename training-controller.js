@@ -277,7 +277,7 @@ function createWeightInput() {
     const weightInput = createElement("input", "workout-weight-input");
     weightInput.type = "number";
     weightInput.min = "0";
-    weightInput.value = "";
+    weightInput.placeholder = "80";
 
     weightInput.addEventListener("input", function () {
         if (!weightInput.validity.valid) {
@@ -304,7 +304,6 @@ function createTimerButton(weightInput, bigTimer) {
         } else if (isStarted === true) {
             isStarted = false;
             stopTimer(button, bigTimer);
-            console.log(stopTimer(button, bigTimer));
         } else {
             console.log('no weight set');
         }
@@ -333,7 +332,12 @@ function startTimer(button, bigTimer) {
 function stopTimer(button, bigTimer) {
     clearInterval(timerIntervalId);
     button.textContent = "Start set";
-    return bigTimer.textContent;
+
+    elapsedTime = bigTimer.textContent;
+    console.log(elapsedTime);
+
+    bigTimer.textContent = "00:00";
+    return elapsedTime;
 }
 
 function formatTimer(totalSeconds) {
