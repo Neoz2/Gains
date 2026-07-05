@@ -11,7 +11,8 @@ const appState = {
 	templateUnselectedExercises: [],
 	workoutSelectedExercises: [],
 	workoutUnselectedExercises: [],
-	activeWorkout: null
+	activeWorkout: null,
+	activeTimer: false
 };
 
 // =========================================================

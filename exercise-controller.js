@@ -263,7 +263,6 @@ function renderExerciseOverview() {
     }
 }
 
-
 function renderExerciseScreen() {
     const exercises = loadExercises();
 

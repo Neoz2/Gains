@@ -130,6 +130,24 @@ function clearWorkoutForm() {
     renderWorkoutExercisePickerLists();
 }
 
+function closeAllWorkoutCardsExcept(activeCard) {
+    const workoutCards = document.querySelectorAll(".workout-card");
+
+    for (let cardIndex = 0; cardIndex < workoutCards.length; cardIndex++) {
+        const card = workoutCards[cardIndex];
+
+        if (card !== activeCard) {
+            const details = card.querySelector(".workout-card-details");
+            const inputRow = card.querySelector(".workout-input-row");
+            const chevron = card.querySelector(".chevron-button");
+
+            details.classList.add("hidden");
+            inputRow.classList.add("hidden");
+            chevron.classList.remove("chevron-rotate");
+        }
+    }
+}
+
 // --- Rendering --- //
 
 function renderWorkoutExercisePickerLists() {
@@ -191,13 +209,17 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const content = createElement("div", "workout-card-content");
     const body = createWorkoutExerciseCardBody(exercise, exerciseIndex);
     const details = createWorkoutExerciseCardDetails(exercise);
-    const inputRow = createWeightInputRow();
+    const inputRow = createWeightInputRow(exercise, card);
     const chevron = body.querySelector(".chevron-button");
 
     body.addEventListener("click", function () {
-        rotateChevron(chevron);
-        changeVisibility(details);
-        changeVisibility(inputRow);
+        if (appState.activeTimer === false) {
+            rotateChevron(chevron);
+            changeVisibility(details);
+            changeVisibility(inputRow);
+
+            closeAllWorkoutCardsExcept(card);
+        }
     });
 
     content.appendChild(body);
@@ -247,7 +269,7 @@ function createWorkoutExerciseCardSettings(exercise) {
     return settings;
 }
 
-function createWeightInputRow() {
+function createWeightInputRow(exercise, card) {
     const inputRow = createElement("div", "workout-input-row", "hidden");
     const headers = createElement("div", "workout-input-headers");
     const content = createElement("div", "workout-inputs");
@@ -258,7 +280,7 @@ function createWeightInputRow() {
     const weightInput = createWeightInput();
     const bigTimer = createText("00:00", "workout-big-timer");
 
-    const button = createTimerButton(weightInput, bigTimer);
+    const button = createTimerButton(weightInput, bigTimer, exercise, card);
 
     headers.appendChild(weightHeader);
     headers.appendChild(timerHeader);
@@ -291,8 +313,8 @@ function createWeightInput() {
     return weightInput;
 }
 
-function createTimerButton(weightInput, bigTimer) {
-    button = createButton("button-large");
+function createTimerButton(weightInput, bigTimer, exercise, card) {
+    const button = createButton("button-large");
     button.textContent = "Start set";
     let isStarted = false;
 
@@ -315,6 +337,7 @@ function createTimerButton(weightInput, bigTimer) {
 // --- Timer --- //
 
 function startTimer(button, bigTimer) {
+    appState.activeTimer = true;
     bigTimer.textContent = "00:00";
     button.textContent = "Stop set";
     timerStartedAt = Date.now();
@@ -330,6 +353,7 @@ function startTimer(button, bigTimer) {
 }
 
 function stopTimer(button, bigTimer) {
+    appState.activeTimer = false;
     clearInterval(timerIntervalId);
     button.textContent = "Start set";
 
