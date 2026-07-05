@@ -15,6 +15,10 @@ const trainingOverviewState = document.querySelector(".training-overview-state")
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
 const workoutState = document.querySelector(".training-workout-state");
 
+// --- global variables --- ///
+let timerStartedAt = null;
+let timerIntervalId = null;
+
 // =========================================================
 // EXERCISE CONTROLLER
 // =========================================================
@@ -290,11 +294,17 @@ function createWeightInput() {
 function createTimerButton(weightInput, bigTimer) {
     button = createButton("button-large");
     button.textContent = "Start set";
+    let isStarted = false;
 
     button.addEventListener("click", function () {
-        if (weightInput.value !== "") {
-            startTimer(bigTimer);
+        if (isStarted === false && weightInput.value !== "") {
+            isStarted = true;
+            startTimer(button, bigTimer);
             console.log('clicked');
+        } else if (isStarted === true) {
+            isStarted = false;
+            stopTimer(button, bigTimer);
+            console.log(stopTimer(button, bigTimer));
         } else {
             console.log('no weight set');
         }
@@ -303,11 +313,14 @@ function createTimerButton(weightInput, bigTimer) {
     return button;
 }
 
-function startTimer(bigTimer) {
-    bigTimer.textContent = "00:00";
-    let timerStartedAt = Date.now();
+// --- Timer --- //
 
-    let timerIntervalId = setInterval(function () {
+function startTimer(button, bigTimer) {
+    bigTimer.textContent = "00:00";
+    button.textContent = "Stop set";
+    timerStartedAt = Date.now();
+
+    timerIntervalId = setInterval(function () {
         const currentTime = Date.now();
         const elapsedMilliseconds = currentTime - timerStartedAt;
 
@@ -315,6 +328,12 @@ function startTimer(bigTimer) {
 
         bigTimer.textContent = formatTimer(elapsedSeconds);
     }, 250)
+}
+
+function stopTimer(button, bigTimer) {
+    clearInterval(timerIntervalId);
+    button.textContent = "Start set";
+    return bigTimer.textContent;
 }
 
 function formatTimer(totalSeconds) {
