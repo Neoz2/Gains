@@ -67,3 +67,22 @@ function removeExerciseFromArray(exercises, exercise) {
         exercises.splice(exerciseIndex, 1);
     }
 }
+
+function getExercisesFromTemplate(template) {
+    const exercises = loadExercises();
+    const templateExercises = [];
+
+    for (let exerciseIdIndex = 0; exerciseIdIndex < template.exerciseIds.length; exerciseIdIndex++) {
+        const exerciseId = template.exerciseIds[exerciseIdIndex];
+
+        const exercise = exercises.find(function (exercise) {
+            return exercise.id === exerciseId;
+        });
+
+        if (exercise !== undefined) {
+            templateExercises.push(exercise);
+        }
+    }
+
+    return templateExercises;
+}

@@ -5,6 +5,7 @@
 // =========================================================
 
 const overviewStartTrainingButton = document.getElementById("choice-start-training");
+const overviewFromTemplateButton = document.getElementById("choice-from-template");
 const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
 const addToWorkoutButton = document.getElementById("add-to-workout");
 const trainingPageTitle = document.getElementById("training-page-title");
@@ -13,6 +14,7 @@ const workoutExerciseList = document.getElementById("workout-exercise-list");
 const trainingEmptyState = document.querySelector(".training-empty-state");
 const trainingOverviewState = document.querySelector(".training-overview-state");
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
+const selectTemplateState = document.querySelector(".select-template-state");
 const workoutState = document.querySelector(".training-workout-state");
 
 // --- global variables --- ///
@@ -27,12 +29,13 @@ let timerIntervalId = null;
 
 function setupTrainingController() {
     setupOverviewStartTrainingButton();
+    setupOverviewFromTemplateButton();
     setupAddExerciseToWorkoutButton();
     setupAddToWorkoutButton();
 }
 
 function refreshTrainingScreen() {
-    clearWorkoutForm();
+    clearWorkoutFormAndLoadPicker();
     showTrainingMode("overview");
 }
 
@@ -42,12 +45,18 @@ function setupOverviewStartTrainingButton() {
     overviewStartTrainingButton.addEventListener("click", enterStartEmptyTrainingMode);
 }
 
+function setupOverviewFromTemplateButton() {
+    overviewFromTemplateButton.addEventListener("click", enterFromTemplateMode);
+}
+
 function setupAddExerciseToWorkoutButton() {
     workoutEmptyStateAddExerciseButton.addEventListener("click", enterAddExercisesToWorkoutMode);
 }
 
 function setupAddToWorkoutButton() {
-    addToWorkoutButton.addEventListener("click", enterWorkoutState);
+    addToWorkoutButton.addEventListener("click", function () {
+        enterWorkoutState(appState.workoutSelectedExercises);
+    });
 }
 
 // --- Modes --- //
@@ -56,6 +65,7 @@ function showTrainingMode(mode) {
     trainingEmptyState.classList.add("hidden");
     trainingOverviewState.classList.add("hidden");
     addExercisesToWorkoutState.classList.add("hidden");
+    selectTemplateState.classList.add("hidden");
     workoutState.classList.add("hidden");
 
     if (appState.activeWorkout === null) {
@@ -71,6 +81,9 @@ function showTrainingMode(mode) {
         } else if (mode === "workout") {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
             workoutState.classList.remove("hidden");
+        } else if (mode === "selectTemplate") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
+            selectTemplateState.classList.remove("hidden");
         }
     }
 
@@ -82,17 +95,22 @@ function showTrainingMode(mode) {
 }
 
 function enterStartEmptyTrainingMode() {
-    clearWorkoutForm()
+    clearWorkoutFormAndLoadPicker()
 
     showTrainingMode("empty");
+}
+
+function enterFromTemplateMode() {
+    renderWorkoutTemplateList();
+    showTrainingMode("selectTemplate");
 }
 
 function enterAddExercisesToWorkoutMode() {
     showTrainingMode("addExercises");
 }
 
-function enterWorkoutState() {
-    const workout = createWorkout(appState.workoutSelectedExercises);
+function enterWorkoutState(exercises) {
+    const workout = createWorkout(exercises);
     appState.activeWorkout = workout.id;
     renderWorkoutExerciseList(workout);
 
@@ -117,7 +135,7 @@ function unselectWorkoutExercise(exercise) {
 
 // --- Form helpers --- //
 
-function clearWorkoutForm() {
+function clearWorkoutFormAndLoadPicker() {
     appState.workoutSelectedExercises.length = 0;
     appState.workoutUnselectedExercises.length = 0;
 
@@ -152,9 +170,23 @@ function saveWorkoutSet(exercise, card, elapsedTime, weight) {
     const set = createWorkoutExerciseSet(weight, elapsedTime);
     exercise.sets.push(set);
     console.log(exercise.sets);
+
+    renderWorkoutSets(exercise, card);
 }
 
 // --- Rendering --- //
+
+function renderWorkoutTemplateList() {
+    const availableTemplateList = document.getElementById("workout-template-list");
+    availableTemplateList.innerHTML = "";
+
+    const templates = loadTemplates();
+
+    for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
+        const templateCard = createTemplateOption(templates[templateIndex]);
+        availableTemplateList.appendChild(templateCard);
+    }
+}
 
 function renderWorkoutExercisePickerLists() {
     renderSelectedWorkoutExercises();
@@ -204,6 +236,71 @@ function renderWorkoutExerciseList(workout) {
         const exerciseCard = createWorkoutExerciseCard(workout.exercises[exerciseIndex], exerciseIndex);
         workoutExerciseList.appendChild(exerciseCard);
     }
+}
+
+function renderWorkoutSets(exercise, card) {
+    const setCounter = card.querySelector(".workout-set-count");
+    const workoutSetBlock = card.querySelector(".workout-sets-block");
+    const workoutSetList = card.querySelector(".workout-sets-list");
+
+    setCounter.textContent = formatCountLabel(exercise.sets.length, "set");
+
+    if (exercise.sets.length > 0) {
+        setCounter.classList.add("has-sets");
+        workoutSetBlock.classList.remove("hidden");
+    } else {
+        setCounter.classList.remove("has-sets");
+        workoutSetBlock.classList.add("hidden");
+    }
+
+    workoutSetList.innerHTML = "";
+
+    for (let setIndex = 0; setIndex < exercise.sets.length; setIndex++) {
+        const set = exercise.sets[setIndex];
+        const setRow = createSetRow(setIndex + 1, set.weight, set.timeUnderLoad);
+
+        workoutSetList.appendChild(setRow);
+    }
+}
+
+// --- Timer --- //
+
+function startTimer(button, bigTimer) {
+    appState.activeTimer = true;
+    bigTimer.textContent = "00:00";
+    button.textContent = "Stop set";
+    timerStartedAt = Date.now();
+
+    timerIntervalId = setInterval(function () {
+        const currentTime = Date.now();
+        const elapsedMilliseconds = currentTime - timerStartedAt;
+
+        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+
+        bigTimer.textContent = formatTimer(elapsedSeconds);
+    }, 250)
+}
+
+function stopTimer(exercise, card, button, bigTimer, weight) {
+    appState.activeTimer = false;
+    clearInterval(timerIntervalId);
+    button.textContent = "Start set";
+
+    elapsedTime = bigTimer.textContent;
+
+    bigTimer.textContent = "00:00";
+
+    saveWorkoutSet(exercise, card, elapsedTime, weight);
+}
+
+function formatTimer(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
 }
 
 // --- DOM builders --- //
@@ -287,6 +384,7 @@ function createWeightInputRow(exercise, card) {
     const bigTimer = createText("00:00", "workout-big-timer");
 
     const button = createTimerButton(weightInput, bigTimer, exercise, card);
+    const setContainer = createSetContainer();
 
     headers.appendChild(weightHeader);
     headers.appendChild(timerHeader);
@@ -297,6 +395,7 @@ function createWeightInputRow(exercise, card) {
     inputRow.appendChild(headers);
     inputRow.appendChild(content);
     inputRow.appendChild(button);
+    inputRow.appendChild(setContainer);
 
     return inputRow;
 }
@@ -337,42 +436,71 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
     return button;
 }
 
-// --- Timer --- //
+function createSetContainer() {
+    const setContainer = createElement("div", "workout-sets-block", "hidden");
+    const header = createText("Completed sets", "field-name");
+    const setList = createElement("div", "workout-sets-list");
 
-function startTimer(button, bigTimer) {
-    appState.activeTimer = true;
-    bigTimer.textContent = "00:00";
-    button.textContent = "Stop set";
-    timerStartedAt = Date.now();
+    setContainer.appendChild(header);
+    setContainer.appendChild(setList);
 
-    timerIntervalId = setInterval(function () {
-        const currentTime = Date.now();
-        const elapsedMilliseconds = currentTime - timerStartedAt;
-
-        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-
-        bigTimer.textContent = formatTimer(elapsedSeconds);
-    }, 250)
+    return setContainer;
 }
 
-function stopTimer(exercise, card, button, bigTimer, weight) {
-    appState.activeTimer = false;
-    clearInterval(timerIntervalId);
-    button.textContent = "Start set";
+function createSetRow(setNumber, weight, timeUnderLoad) {
+    const setRow = createElement("div", "workout-set-row");
+    const setTimeControl = createElement("div", "workout-set-time-control");
+    const weightText = createElement("div", "workout-weight");
 
-    elapsedTime = bigTimer.textContent;
+    const deleteButton = createIconButton("fa-regular", "fa-trash-can", "workout-set-delete-button");
+    const setNumberText = createText(`Set ${setNumber}`, "workout-set-muted", "workout-set-index");
+    const weightValue = createText(weight, "workout-set-value");
+    const weightKg = createText("kg", "workout-set-muted");
+    const timeUnderLoadText = createText(timeUnderLoad, "workout-set-value");
+    const plusButton = createIconButton("fa-solid", "fa-plus", "workout-set-action-button");
+    const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
 
-    bigTimer.textContent = "00:00";
+    weightText.appendChild(weightValue);
+    weightText.appendChild(weightKg);
 
-    saveWorkoutSet(exercise, card, elapsedTime, weight);
+    setTimeControl.appendChild(minusButton);
+    setTimeControl.appendChild(timeUnderLoadText);
+    setTimeControl.appendChild(plusButton);
+
+    setRow.appendChild(deleteButton);
+    setRow.appendChild(setNumberText);
+    setRow.appendChild(weightText);
+    setRow.appendChild(setTimeControl);
+
+    return setRow;
 }
 
-function formatTimer(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+function createTemplateOption(template) {
+    const card = createElement("li", "item-card");
+    const header = createElement("div", "card-header");
 
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(seconds).padStart(2, "0");
+    const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+    const main = createElement("div", "item-text");
 
-    return `${formattedMinutes}:${formattedSeconds}`;
+    const title = createText(template.name, "item-title");
+    const subtitle = createText(formatCountLabel(template.exerciseIds.length, "exercise"), "item-subtitle");
+
+    const startButton = createButton("action-button");
+    startButton.textContent = "Start";
+
+    main.appendChild(title);
+    main.appendChild(subtitle);
+
+    header.appendChild(icon);
+    header.appendChild(main);
+    header.appendChild(startButton);
+
+    card.appendChild(header);
+
+    card.addEventListener("click", function () {
+        const templateExercises = getExercisesFromTemplate(template);
+        enterWorkoutState(templateExercises);
+    });
+
+    return card;
 }

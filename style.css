@@ -728,6 +728,11 @@ main {
   font-size: 20px;
 }
 
+.workout-input-row .button-large {
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--divider-color);
+}
+
 .workout-card-settings {
   display: flex;
   column-gap: 4px;
@@ -800,6 +805,116 @@ main {
 
   border-radius: var(--radius-small);
   border: 1px solid var(--border-color);
+}
+
+/* ---------- Set rows ---------- */
+
+.workout-set-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.workout-set-row:last-child {
+  border-bottom: none;
+}
+
+.workout-weight,
+.workout-set-time-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.workout-set-value {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.workout-set-muted {
+  color: var(--muted-text-color);
+  font-size: 13px;
+}
+
+.workout-set-action-button {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: none;
+  border: none;
+  color: var(--primary-color);
+
+  font-size: 16px;
+  padding: 0;
+}
+
+.workout-set-delete-button {
+  width: 36px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: none;
+  border: none;
+  color: var(--muted-text-color);
+  border-right: 1px solid var(--border-color);
+
+  font-size: 15px;
+  padding: 0;
+}
+
+.workout-set-index {
+  width: 44px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--border-color);
+  color: var(--muted-text-color);
+  border-radius: var(--radius-small);
+
+  font-size: 13px;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.template-start-button {
+  background: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: var(--radius-pill);
+
+  padding: 6px 12px;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.template-option-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--primary-color);
+  color: var(--text-color);
+  border-radius: var(--radius-medium);
+
+  flex-shrink: 0;
 }
 
 /* =========================================================
