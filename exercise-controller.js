@@ -38,8 +38,8 @@ function refreshExerciseScreen() {
 // --- Setup --- //
 
 function setupCreateExerciseButton() {
-	overviewCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
-	emptyCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
+    overviewCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
+    emptyCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
 }
 
 function setupExerciseForm() {
@@ -56,7 +56,8 @@ function setupSettingsForm() {
             return;
         }
 
-        const settingsRow = createSettingRow();
+        const settingIndex = settingsRows.length + 1;
+        const settingsRow = createSettingRow(settingIndex);
 
         settingsContainer.appendChild(settingsRow);
         updateSettingsRowsVisibility();
@@ -99,7 +100,7 @@ function enterEditExerciseMode(exercise) {
 
     for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
         const setting = exercise.settings[settingIndex];
-        const settingsRow = createSettingRow();
+        const settingsRow = createSettingRow(settingIndex + 1);
 
         const settingNameInput = settingsRow.querySelector(".setting-name");
         settingNameInput.value = setting.name;
@@ -289,9 +290,11 @@ function updateExerciseScreenVisibility(exercises) {
 
 // --- DOM builders --- //
 
-function createSettingRow() {
+function createSettingRow(settingIndex) {
     const settingsRow = createElement("div", "settings-row");
-    const settingNameDeleteRow = createElement("div", "setting-delete-button-row");
+    const topRow = createElement("div", "setting-top-row");
+    const settingIndexCounter = createText(settingIndex, "setting-index");
+    const settingsHeader = createText("Machine setting", "item-text");
     const settingNameLabel = createText("Setting name", "field-name");
     const settingNameInput = createTextInput("Name...", "setting-name");
     const settingValueLabel = createText("Value", "field-name");
@@ -306,13 +309,16 @@ function createSettingRow() {
         updateSettingsRowsVisibility();
     });
 
-    settingNameDeleteRow.appendChild(settingNameLabel);
-    settingNameDeleteRow.appendChild(deleteButton);
-
-    settingsRow.appendChild(settingNameDeleteRow);
+    topRow.appendChild(settingIndexCounter);
+    topRow.appendChild(settingsHeader);
+    topRow.appendChild(deleteButton);
+    
+    settingsRow.appendChild(topRow);
+    settingsRow.appendChild(settingNameLabel);
     settingsRow.appendChild(settingNameInput);
     settingsRow.appendChild(settingValueLabel);
     settingsRow.appendChild(settingValueInput);
+    console.log(settingIndex);
 
     return settingsRow;
 }
@@ -340,16 +346,16 @@ function createExerciseCard(exercises, exerciseIndex) {
 }
 
 function createExerciseCardHeader(exercise) {
-	const header = createElement("div", "card-header");
-	const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
-	const main = createExerciseCardMain(exercise);
-	const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+    const header = createElement("div", "card-header");
+    const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
+    const main = createExerciseCardMain(exercise);
+    const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-	header.appendChild(icon);
-	header.appendChild(main);
-	header.appendChild(chevron);
+    header.appendChild(icon);
+    header.appendChild(main);
+    header.appendChild(chevron);
 
-	return header;
+    return header;
 }
 
 function createExerciseCardMain(exercise) {

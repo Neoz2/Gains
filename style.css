@@ -955,21 +955,43 @@ main {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
+  gap: 8px;
 
-  padding: 6px 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+
+  background: var(--card-color);
+  border-radius: var(--radius-large);
+}
+
+.settings-row:first-child {
+  margin-top: 12px;
 }
 
 .settings-row:not(:last-child) {
-  padding-bottom: 14px;
-  margin-bottom: 8px;
-
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
 }
 
-.setting-delete-button-row {
+.setting-top-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 32px;
+  align-items: center;
+}
+
+.setting-index {
+  width: 24px;
+  height: 24px;
+
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: var(--radius-small);
+
+  font-size: 14px;
+  font-weight: bold;
 }
 
 /* =========================================================
@@ -1083,6 +1105,10 @@ main {
 
 .template-save-bar .save-button {
   margin: 0;
+}
+
+.exercises-form-state {
+  padding-bottom: 50px;
 }
 
 /* =========================================================

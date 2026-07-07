@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css?v=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#0D0D0F">
 
   <title>Gym App</title>
 </head>
@@ -160,22 +160,23 @@
       </div>
 
       <div class="exercises-form-state hidden">
-        <span class="content-header">NEW EXERCISE</span>
-
-        <input id="exercise-name-input" class="text-input" placeholder="Exercise name">
-        <span class="content-header">MACHINE SETTINGS</span>
-        <div class="content-card">
-          <button id="add-setting" class="add-setting">
+        <div class="section-header-row">
+          <span class="content-header">NEW EXERCISE</span>
+          <button id="add-setting" class="header-action-button">
             <i class="fa-solid fa-plus"></i>
             <span>Add setting</span>
           </button>
         </div>
-        <div id="settings-container" class="content-card hidden"></div>
+
+        <input id="exercise-name-input" class="text-input" placeholder="Exercise name">
+        <div id="settings-container" class="hidden"></div>
 
         <span>
-          <button id="save-exercise" class="save-button">
-            Save exercise
-          </button>
+          <div class="template-save-bar">
+            <button id="save-exercise" class="save-button">
+              Save exercise
+            </button>
+          </div>
         </span>
       </div>
 
