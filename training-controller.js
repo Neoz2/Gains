@@ -117,6 +117,18 @@ function enterWorkoutState(exercises) {
     showTrainingMode("workout");
 }
 
+// --- Mutate actions --- //
+
+function saveWorkoutSet(exercise, card, elapsedTime, weight) {
+    const set = createWorkoutExerciseSet(weight, elapsedTime);
+    exercise.sets.push(set);
+    console.log(exercise.sets);
+
+    renderWorkoutSets(exercise, card);
+}
+
+
+
 // --- Selection actions --- //
 
 function selectWorkoutExercise(exercise) {
@@ -164,14 +176,6 @@ function closeAllWorkoutCardsExcept(activeCard) {
             chevron.classList.remove("chevron-rotate");
         }
     }
-}
-
-function saveWorkoutSet(exercise, card, elapsedTime, weight) {
-    const set = createWorkoutExerciseSet(weight, elapsedTime);
-    exercise.sets.push(set);
-    console.log(exercise.sets);
-
-    renderWorkoutSets(exercise, card);
 }
 
 // --- Rendering --- //
@@ -257,7 +261,7 @@ function renderWorkoutSets(exercise, card) {
 
     for (let setIndex = 0; setIndex < exercise.sets.length; setIndex++) {
         const set = exercise.sets[setIndex];
-        const setRow = createSetRow(setIndex + 1, set.weight, set.timeUnderLoad);
+        const setRow = createSetRow(setIndex + 1, set, exercise, card);
 
         workoutSetList.appendChild(setRow);
     }
@@ -286,7 +290,7 @@ function stopTimer(exercise, card, button, bigTimer, weight) {
     clearInterval(timerIntervalId);
     button.textContent = "Start set";
 
-    elapsedTime = bigTimer.textContent;
+    elapsedTime = elapsedSeconds;
 
     bigTimer.textContent = "00:00";
 
@@ -447,18 +451,38 @@ function createSetContainer() {
     return setContainer;
 }
 
-function createSetRow(setNumber, weight, timeUnderLoad) {
+function createSetRow(setNumber, set, exercise, card) {
     const setRow = createElement("div", "workout-set-row");
     const setTimeControl = createElement("div", "workout-set-time-control");
     const weightText = createElement("div", "workout-weight");
 
     const deleteButton = createIconButton("fa-regular", "fa-trash-can", "workout-set-delete-button");
     const setNumberText = createText(`Set ${setNumber}`, "workout-set-muted", "workout-set-index");
-    const weightValue = createText(weight, "workout-set-value");
+    const weightValue = createText(set.weight, "workout-set-value");
     const weightKg = createText("kg", "workout-set-muted");
-    const timeUnderLoadText = createText(timeUnderLoad, "workout-set-value");
+    const timeUnderLoadText = createText(formatTimer(set.timeUnderLoad), "workout-set-value");
     const plusButton = createIconButton("fa-solid", "fa-plus", "workout-set-action-button");
     const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
+
+    deleteButton.addEventListener("click", function () {
+        exercise.sets.splice(set.id, 1);
+        renderWorkoutSets(exercise, card);
+    })
+
+    minusButton.addEventListener("click", function () {
+        if (set.timeUnderLoad > 0) {
+            set.timeUnderLoad -= 1;
+        }
+        ß
+        renderWorkoutSets(exercise, card);
+        console.log(set.timeUnderLoad);
+    })
+
+    plusButton.addEventListener("click", function () {
+        set.timeUnderLoad += 1;
+        renderWorkoutSets(exercise, card);
+        console.log(set.timeUnderLoad);
+    })
 
     weightText.appendChild(weightValue);
     weightText.appendChild(weightKg);
