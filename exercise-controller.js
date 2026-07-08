@@ -318,7 +318,6 @@ function createSettingRow(settingIndex) {
     settingsRow.appendChild(settingNameInput);
     settingsRow.appendChild(settingValueLabel);
     settingsRow.appendChild(settingValueInput);
-    console.log(settingIndex);
 
     return settingsRow;
 }

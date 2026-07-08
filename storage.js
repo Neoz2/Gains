@@ -117,6 +117,35 @@ function saveTemplates(templates) {
     saveItems(STORAGE_KEYS.templates, templates);
 }
 
+function loadWorkouts() {
+    return loadItems(STORAGE_KEYS.workouts);
+}
+
+function saveWorkouts(workouts) {
+    saveItems(STORAGE_KEYS.workouts, workouts);
+}
+
+function addWorkout(workout) {
+    const workouts = loadWorkouts();
+    workouts.push(workout);
+    saveWorkouts(workouts);
+}
+
+function updateWorkout(updatedWorkout) {
+    const workouts = loadWorkouts();
+
+    for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
+        if (workouts[workoutIndex].id === updatedWorkout.id) {
+            workouts[workoutIndex] = updatedWorkout;
+            saveWorkouts(workouts);
+            return;
+        }
+    }
+
+    workouts.push(updatedWorkout);
+    saveWorkouts(workouts);
+}
+
 // --- Storage helpers --- //
 function createId() {
     return crypto.randomUUID();

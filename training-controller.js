@@ -8,6 +8,7 @@ const overviewStartTrainingButton = document.getElementById("choice-start-traini
 const overviewFromTemplateButton = document.getElementById("choice-from-template");
 const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
 const addToWorkoutButton = document.getElementById("add-to-workout");
+const finishWorkoutButton = document.getElementById("finish-workout");
 const trainingPageTitle = document.getElementById("training-page-title");
 const trainingPageSubtitle = document.getElementById("training-page-subtitle");
 const workoutExerciseList = document.getElementById("workout-exercise-list");
@@ -16,6 +17,7 @@ const trainingOverviewState = document.querySelector(".training-overview-state")
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
 const selectTemplateState = document.querySelector(".select-template-state");
 const workoutState = document.querySelector(".training-workout-state");
+const summaryState = document.querySelector(".summary-state");
 
 // --- global variables --- ///
 let timerStartedAt = null;
@@ -32,6 +34,7 @@ function setupTrainingController() {
     setupOverviewFromTemplateButton();
     setupAddExerciseToWorkoutButton();
     setupAddToWorkoutButton();
+    setupFinishWorkoutButton();
 }
 
 function refreshTrainingScreen() {
@@ -59,6 +62,10 @@ function setupAddToWorkoutButton() {
     });
 }
 
+function setupFinishWorkoutButton() {
+    finishWorkoutButton.addEventListener("click", enterSummaryMode);
+}
+
 // --- Modes --- //
 
 function showTrainingMode(mode) {
@@ -67,6 +74,7 @@ function showTrainingMode(mode) {
     addExercisesToWorkoutState.classList.add("hidden");
     selectTemplateState.classList.add("hidden");
     workoutState.classList.add("hidden");
+    summaryState.classList.add("hidden");
 
     if (appState.activeWorkout === null) {
         if (mode === "empty") {
@@ -84,6 +92,9 @@ function showTrainingMode(mode) {
         } else if (mode === "selectTemplate") {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
             selectTemplateState.classList.remove("hidden");
+        } else if (mode === "summary") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "", "");
+            summaryState.classList.remove("hidden");
         }
     }
 
@@ -111,19 +122,31 @@ function enterAddExercisesToWorkoutMode() {
 
 function enterWorkoutState(exercises) {
     const workout = createWorkout(exercises);
-    appState.activeWorkout = workout.id;
+
+    appState.activeWorkout = workout;
+
+    addWorkout(workout);
     renderWorkoutExerciseList(workout);
 
     showTrainingMode("workout");
 }
 
+function enterSummaryMode() {
+    updateWorkout(appState.activeWorkout);
+
+    appState.activeWorkout = null;
+    
+    showTrainingMode("summary");
+}
+
 // --- Mutate actions --- //
 
 function saveWorkoutSet(exercise, card, elapsedTime, weight) {
-    const set = createWorkoutExerciseSet(weight, elapsedTime);
-    exercise.sets.push(set);
-    console.log(exercise.sets);
+    const set = createWorkoutExerciseSet(Number(weight), elapsedTime);
 
+    exercise.sets.push(set);
+
+    updateWorkout(appState.activeWorkout);
     renderWorkoutSets(exercise, card);
 }
 
@@ -465,7 +488,9 @@ function createSetRow(setNumber, set, exercise, card) {
     const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
 
     deleteButton.addEventListener("click", function () {
-        exercise.sets.splice(set.id, 1);
+        exercise.sets.splice(setNumber - 1, 1);
+
+        updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
     })
 
@@ -473,15 +498,16 @@ function createSetRow(setNumber, set, exercise, card) {
         if (set.timeUnderLoad > 0) {
             set.timeUnderLoad -= 1;
         }
-        ß
+
+        updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
-        console.log(set.timeUnderLoad);
     })
 
     plusButton.addEventListener("click", function () {
         set.timeUnderLoad += 1;
+
+        updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
-        console.log(set.timeUnderLoad);
     })
 
     weightText.appendChild(weightValue);

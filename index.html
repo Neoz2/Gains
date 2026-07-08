@@ -90,7 +90,7 @@
           <i class="choice-card-icon fa-solid fa-clipboard-list"></i>
           <span class="choice-card-text">
             <span class="choice-card-title">From template</span>
-            <span class="choice-card-subtitle">Use a saved tempalte to get started</span>
+            <span class="choice-card-subtitle">Use a saved template to get started</span>
           </span>
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
         </button>
@@ -129,10 +129,25 @@
           </button>
         </div>
       </div>
-
+      <!-- workout state-->
       <div class="training-workout-state hidden">
         <span class="content-header">WORKOUT</span>
         <ul id="workout-exercise-list" class="content-list"></ul>
+
+        <div class="template-save-bar">
+          <button id="finish-workout" class="save-button">
+            Finish workout
+          </button>
+        </div>
+      </div>
+      <!-- summary state-->
+      <div class="empty-state summary-state hidden">
+        <div class="empty-state-icon">
+          <i class="fa-solid fa-medal"></i>
+        </div>
+
+        <span class="empty-state-title">Nice work!</span>
+        <span class="empty-state-text">Your workout is complete and saved.</span>
       </div>
     </section>
 
