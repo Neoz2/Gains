@@ -275,6 +275,12 @@
         <span class="page-title">Analyse progress</span>
         <span class="page-subtitle">Track performance over time</span>
       </div>
+      <!-- weight graph -->
+      <div class="line-graph">
+        <div style="width: 100%;">
+          <canvas id="weight-graph"></canvas>
+        </div>
+      </div>
     </section>
 
     <!-- BOTTOM NAVIGATION -->
@@ -306,10 +312,13 @@
     </nav>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script src="storage.js"></script>
   <script src="helpers.js"></script>
   <script src="dom-builder.js"></script>
   <script src="navigation.js"></script>
+  <script src="progress-controller.js"></script>
   <script src="training-controller.js"></script>
   <script src="exercise-controller.js"></script>
   <script src="template-controller.js"></script>
