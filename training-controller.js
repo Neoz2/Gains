@@ -127,15 +127,21 @@ function enterWorkoutState(exercises) {
 
     addWorkout(workout);
     renderWorkoutExerciseList(workout);
-
     showTrainingMode("workout");
+
+    const firstWorkoutCard = document.querySelector(".workout-card");
+
+    if (firstWorkoutCard !== null) {
+        openWorkoutCard(firstWorkoutCard);
+        closeAllWorkoutCardsExcept(firstWorkoutCard);
+    }
 }
 
 function enterSummaryMode() {
     updateWorkout(appState.activeWorkout);
 
     appState.activeWorkout = null;
-    
+
     showTrainingMode("summary");
 }
 
@@ -199,6 +205,16 @@ function closeAllWorkoutCardsExcept(activeCard) {
             chevron.classList.remove("chevron-rotate");
         }
     }
+}
+
+function openWorkoutCard(card) {
+    const details = card.querySelector(".workout-card-details");
+    const inputRow = card.querySelector(".workout-input-row");
+    const chevron = card.querySelector(".chevron-button");
+
+    details.classList.remove("hidden");
+    inputRow.classList.remove("hidden");
+    chevron.classList.add("chevron-rotate");
 }
 
 // --- Rendering --- //
