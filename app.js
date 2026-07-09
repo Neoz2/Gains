@@ -30,8 +30,10 @@ refreshTrainingScreen();
 refreshExerciseScreen();
 refreshTemplateScreen();
 
+
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
+
 
 
 

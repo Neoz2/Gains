@@ -48,19 +48,27 @@
         const points = [];
 
         for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
-            for (let exerciseIndex = 0; exerciseIndex < workouts[workoutIndex].exercises.length; exerciseIndex++){
-                const exercise = workouts[workoutIndex].exercises.find(function (exercise) {
-                    const set = exercise.sets[0];
+            const workout = workouts[workoutIndex];
 
-                    points.push({
-                        workoutNumber: workoutIndex + 1,
-                        weight: set.weight,
-                        timeUnderLoad: set.timeUnderLoad
-                    });
+            const exercise = workout.exercises.find(function (exercise) {
+                return exercise.name === firstExercise.name;
+            });
 
-                    return exercise.name === firstExercise.name;
-                });
+            if (exercise === undefined) {
+                continue;
             }
+
+            const set = exercise.sets[0];
+
+            if (set === undefined) {
+                continue;
+            }
+
+            points.push({
+                workoutNumber: points.length + 1,
+                weight: Number(set.weight),
+                timeUnderLoad: Number(set.timeUnderLoad)
+            });
         }
 
     // --- Graphs --- //
@@ -131,8 +139,8 @@
                         },
                         maxTargetLine: {
                             type: "line",
-                            yMin: 80,
-                            yMax: 80,
+                            yMin: 70,
+                            yMax: 70,
                             borderColor: "rgba(93, 227, 109, 0.8)",
                             borderWidth: 2,
                             borderDash: [6, 6]

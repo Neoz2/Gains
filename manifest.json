@@ -1,10 +1,10 @@
 {
-  "name": "Gym Tracker",
-  "short_name": "Gym",
+  "name": "Gains",
+  "short_name": "Gains",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0D0D0F",
-  "theme_color": "#ff2f92",
+  "theme_color": "#0D0D0F",
   "icons": [
     {
       "src": "icons/icon-192.png",
