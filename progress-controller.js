@@ -4,37 +4,75 @@
 // DOM REFERENCES
 // =========================================================
 
-(async function() {
-    const workouts = loadWorkouts();
+    const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
+    const progressSelectionSpan = document.getElementById("progress-current-exercise");
 
-    const firstExercise = loadExercises()[0];
-    console.log(firstExercise.name);
+// =========================================================
+// EXERCISE CONTROLLER
+// =========================================================
 
-    const points = [];
+    let weightChart = null;
+    let tulChart = null;
 
-    for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
-        for (let exerciseIndex = 0; exerciseIndex < workouts[workoutIndex].exercises.length; exerciseIndex++){
-            const exercise = workouts[workoutIndex].exercises.find(function (exercise) {
-                const set = exercise.sets[0];
+    // --- Controller entry points --- //
 
-                console.log(exercise.name);
-
-                points.push({
-                    workoutNumber: workoutIndex + 1,
-                    weight: set.weight,
-                    timeUnderLoad: set.timeUnderLoad
-                });
-
-                return exercise.name === firstExercise.name;
-            });
-        }
+    function setupProgressController() {
+        setupExerciseDropdownButton()
     }
 
+    function refreshProgressScreen() {
+        loadGraphs();
+    }
+
+    // --- Setup --- //
+
+    function setupExerciseDropdownButton() {
+        exerciseDropdownButton.addEventListener("click", enterSelectExerciseToAnalyseMode);
+    }
+
+    // --- Modes --- //
+
+    function enterSelectExerciseToAnalyseMode() {
+        console.log("reached");
+    }
+
+    // --- Helpers --- //
+
+    function loadGraphs() {
+        const workouts = loadWorkouts();
+
+        const firstExercise = loadExercises()[0];   
+
+        progressSelectionSpan.textContent = firstExercise.name;
+
+        const points = [];
+
+        for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
+            for (let exerciseIndex = 0; exerciseIndex < workouts[workoutIndex].exercises.length; exerciseIndex++){
+                const exercise = workouts[workoutIndex].exercises.find(function (exercise) {
+                    const set = exercise.sets[0];
+
+                    points.push({
+                        workoutNumber: workoutIndex + 1,
+                        weight: set.weight,
+                        timeUnderLoad: set.timeUnderLoad
+                    });
+
+                    return exercise.name === firstExercise.name;
+                });
+            }
+        }
+
+    // --- Graphs --- //
 
     const weightCanvas = document.getElementById("weight-graph");
     const weightGradient = createChartFillGradient(weightCanvas);
 
-    new Chart(weightCanvas, {
+    if (weightChart !== null) {
+        weightChart.destroy();
+    }
+
+    weightChart = new Chart(weightCanvas, {
         type: "line",
         data: {
             labels: points.map(point => point.workoutNumber),
@@ -59,7 +97,11 @@
     const tulCanvas = document.getElementById("tul-graph");
     const tulGradient = createChartFillGradient(tulCanvas);
 
-    new Chart(tulCanvas, {
+    if (tulChart !== null) {
+        tulChart.destroy();
+    }
+
+    tulChart = new Chart(tulCanvas, {
         type: "line",
         data: {
             labels: points.map(point => point.workoutNumber),
@@ -101,7 +143,7 @@
         }
     });
 
-})();
+};
 
 function createChartFillGradient(canvas) {
     const context = canvas.getContext("2d");
