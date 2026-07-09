@@ -29,7 +29,6 @@ setupProgressController();
 refreshTrainingScreen();
 refreshExerciseScreen();
 refreshTemplateScreen();
-refreshProgressScreen();
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
