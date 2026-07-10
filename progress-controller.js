@@ -6,6 +6,8 @@
 
     const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
     const progressSelectionSpan = document.getElementById("progress-current-exercise");
+    const graphSelectionState = document.querySelector(".graph-exercise-selection-state");
+    const graphState = document.querySelector(".graphs-state");
 
 // =========================================================
 // EXERCISE CONTROLLER
@@ -22,7 +24,7 @@
     }
 
     function refreshProgressScreen() {
-        loadGraphs();
+        enterGraphsMode();
     }
 
     // --- Setup --- //
@@ -46,8 +48,25 @@
 
     // --- Modes --- //
 
+    function showProgressMode(mode) {
+        graphSelectionState.classList.add("hidden");
+        graphState.classList.add("hidden");
+
+        if (mode === "graphs") {
+            graphState.classList.remove("hidden");
+        } else if (mode === "selection") {
+            graphSelectionState.classList.remove("hidden");
+        }
+    }
+
+    function enterGraphsMode() {
+        loadGraphs();
+        showProgressMode("graphs");
+    }
+
     function enterSelectExerciseToAnalyseMode() {
-        console.log("reached");
+        renderAvailableExercisesForGraphs();
+        showProgressMode("selection");
     }
 
     // --- Helpers --- //
@@ -60,6 +79,28 @@
         } 
 
         button.classList.add("selected");
+    }
+
+    // --- Rendering --- //
+
+    function renderAvailableExercisesForGraphs() {
+        const availableExercisesList = document.querySelector(".graphs-unselected-items");
+
+        availableExercisesList.innerHTML = "";
+
+        const exercises = loadExercises();
+
+        for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+            const exercise = exercises[exerciseIndex];
+
+            const row = createExercisePickerRow(exercise, false);
+
+            row.addEventListener("click", function () {
+                console.log("selected");
+            });
+
+            availableExercisesList.appendChild(row);
+        }
     }
 
     // --- Graphs --- //

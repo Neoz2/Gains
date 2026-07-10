@@ -276,26 +276,33 @@
         <span class="page-subtitle">Track performance over time</span>
       </div>
       <!-- graphs -->
-      <button id="progress-exercise-dropdown" class="progress-exercise-dropdown">
-        <span id="progress-current-exercise">Exercise</span>
-        <i class="fa-solid fa-magnifying-glass item-icon"></i>
-      </button>
-      <div class="set-segmented-control">
-        <button class="segmented-control selected">Set 1</button>
-        <button class="segmented-control">Set 2</button>
-        <button class="segmented-control">Set 3</button>
-      </div>
+      <div class="graphs-state hidden">
+        <button id="progress-exercise-dropdown" class="progress-exercise-dropdown">
+          <span id="progress-current-exercise">Exercise</span>
+          <i class="fa-solid fa-magnifying-glass item-icon"></i>
+        </button>
+        <div class="set-segmented-control">
+          <button class="segmented-control selected">Set 1</button>
+          <button class="segmented-control">Set 2</button>
+          <button class="segmented-control">Set 3</button>
+        </div>
 
-      <div class="line-graph">
-        <div style="width: 100%;">
-          <canvas id="weight-graph"></canvas>
+        <div class="line-graph">
+          <div style="width: 100%;">
+            <canvas id="weight-graph"></canvas>
+          </div>
+        </div>
+
+        <div class="line-graph">
+          <div style="width: 100%;">
+            <canvas id="tul-graph"></canvas>
+          </div>
         </div>
       </div>
 
-      <div class="line-graph">
-        <div style="width: 100%;">
-          <canvas id="tul-graph"></canvas>
-        </div>
+      <div class="graph-exercise-selection-state hidden">
+        <span class="content-header">EXERCISES</span>
+        <div class="graphs-unselected-items"></div>
       </div>
     </section>
 

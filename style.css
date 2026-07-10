@@ -1017,6 +1017,7 @@ main {
   flex-direction: column;
 }
 
+.graphs-unselected-items,
 .training-selected-items,
 .training-unselected-items,
 .template-selected-items,
