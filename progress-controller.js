@@ -4,139 +4,142 @@
 // DOM REFERENCES
 // =========================================================
 
-    const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
-    const progressSelectionSpan = document.getElementById("progress-current-exercise");
-    const graphSelectionState = document.querySelector(".graph-exercise-selection-state");
-    const graphState = document.querySelector(".graphs-state");
+const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
+const progressSelectionSpan = document.getElementById("progress-current-exercise");
+const graphSelectionState = document.querySelector(".graph-exercise-selection-state");
+const graphState = document.querySelector(".graphs-state");
+const progressPageTitle = document.getElementById("progress-page-title");
+const progressPageSubtitle = document.getElementById("progress-page-subtitle");
 
 // =========================================================
 // EXERCISE CONTROLLER
 // =========================================================
 
-    let weightChart = null;
-    let tulChart = null;
+let weightChart = null;
+let tulChart = null;
 
-    // --- Controller entry points --- //
+// --- Controller entry points --- //
 
-    function setupProgressController() {
-        setupExerciseDropdownButton()
-        setupSetButtons();
+function setupProgressController() {
+    setupExerciseDropdownButton()
+    setupSetButtons();
+}
+
+function refreshProgressScreen() {
+    const firstExercise = loadExercises()[0]; //make this remember selectedexercise instead of first of list*
+    enterGraphsMode(firstExercise);
+}
+
+// --- Setup --- //
+
+function setupExerciseDropdownButton() {
+    exerciseDropdownButton.addEventListener("click", enterSelectExerciseToAnalyseMode);
+}
+
+function setupSetButtons() {
+    const buttons = document.querySelectorAll(".segmented-control");
+    console.log(buttons);
+
+    for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
+        const button = buttons[buttonIndex];
+
+        button.addEventListener("click", function () {
+            setButtonSelectionStatus(button, buttons);
+        });
+    }
+}
+
+// --- Modes --- //
+
+function showProgressMode(mode) {
+    graphSelectionState.classList.add("hidden");
+    graphState.classList.add("hidden");
+
+    if (mode === "graphs") {
+        graphState.classList.remove("hidden");
+        updatePageHeader(progressPageTitle, progressPageSubtitle, "Analyse progress", "Track performance over time");
+    } else if (mode === "selection") {
+        graphSelectionState.classList.remove("hidden");
+        updatePageHeader(progressPageTitle, progressPageSubtitle, "Select exercise", "Choose an exercise to analyse");
+    }
+}
+
+function enterGraphsMode(exercise) {
+    loadGraphs(exercise);
+    showProgressMode("graphs");
+}
+
+function enterSelectExerciseToAnalyseMode() {
+    renderAvailableExercisesForGraphs();
+    showProgressMode("selection");
+}
+
+// --- Helpers --- //
+
+function setButtonSelectionStatus(button, buttons) {
+    for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
+        const button = buttons[buttonIndex];
+
+        button.classList.remove("selected");
     }
 
-    function refreshProgressScreen() {
-        enterGraphsMode();
+    button.classList.add("selected");
+}
+
+// --- Rendering --- //
+
+function renderAvailableExercisesForGraphs() {
+    const availableExercisesList = document.querySelector(".graphs-unselected-items");
+
+    availableExercisesList.innerHTML = "";
+
+    const exercises = loadExercises();
+
+    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+        const exercise = exercises[exerciseIndex];
+
+        const row = createExercisePickerRow(exercise, false);
+
+        row.addEventListener("click", function () {
+            enterGraphsMode(exercise);
+        });
+
+        availableExercisesList.appendChild(row);
     }
+}
 
-    // --- Setup --- //
+// --- Graphs --- //
 
-    function setupExerciseDropdownButton() {
-        exerciseDropdownButton.addEventListener("click", enterSelectExerciseToAnalyseMode);
-    }
+function loadGraphs(selectedExercise) {
+    const workouts = loadWorkouts();
 
-    function setupSetButtons() {
-        const buttons = document.querySelectorAll(".segmented-control");
-        console.log(buttons);
+    progressSelectionSpan.textContent = selectedExercise.name;
 
-        for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++){
-            const button = buttons[buttonIndex];
+    const points = [];
 
-            button.addEventListener("click", function() {
-                setButtonSelectionStatus(button, buttons);
-            });
+    for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
+        const workout = workouts[workoutIndex];
+
+        const exercise = workout.exercises.find(function (exercise) {
+            return exercise.name === selectedExercise.name;
+        });
+
+        if (exercise === undefined) {
+            continue;
         }
-    }
 
-    // --- Modes --- //
+        const set = exercise.sets[0];
 
-    function showProgressMode(mode) {
-        graphSelectionState.classList.add("hidden");
-        graphState.classList.add("hidden");
-
-        if (mode === "graphs") {
-            graphState.classList.remove("hidden");
-        } else if (mode === "selection") {
-            graphSelectionState.classList.remove("hidden");
+        if (set === undefined) {
+            continue;
         }
+
+        points.push({
+            workoutNumber: points.length + 1,
+            weight: Number(set.weight),
+            timeUnderLoad: Number(set.timeUnderLoad)
+        });
     }
-
-    function enterGraphsMode() {
-        loadGraphs();
-        showProgressMode("graphs");
-    }
-
-    function enterSelectExerciseToAnalyseMode() {
-        renderAvailableExercisesForGraphs();
-        showProgressMode("selection");
-    }
-
-    // --- Helpers --- //
-
-    function setButtonSelectionStatus(button, buttons) {
-        for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++){
-            const button = buttons[buttonIndex];
-
-            button.classList.remove("selected");
-        } 
-
-        button.classList.add("selected");
-    }
-
-    // --- Rendering --- //
-
-    function renderAvailableExercisesForGraphs() {
-        const availableExercisesList = document.querySelector(".graphs-unselected-items");
-
-        availableExercisesList.innerHTML = "";
-
-        const exercises = loadExercises();
-
-        for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-            const exercise = exercises[exerciseIndex];
-
-            const row = createExercisePickerRow(exercise, false);
-
-            row.addEventListener("click", function () {
-                console.log("selected");
-            });
-
-            availableExercisesList.appendChild(row);
-        }
-    }
-
-    // --- Graphs --- //
-
-    function loadGraphs() {
-        const workouts = loadWorkouts();
-
-        const firstExercise = loadExercises()[0];   
-
-        progressSelectionSpan.textContent = firstExercise.name;
-
-        const points = [];
-
-        for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
-            const workout = workouts[workoutIndex];
-
-            const exercise = workout.exercises.find(function (exercise) {
-                return exercise.name === firstExercise.name;
-            });
-
-            if (exercise === undefined) {
-                continue;
-            }
-
-            const set = exercise.sets[0];
-
-            if (set === undefined) {
-                continue;
-            }
-
-            points.push({
-                workoutNumber: points.length + 1,
-                weight: Number(set.weight),
-                timeUnderLoad: Number(set.timeUnderLoad)
-            });
-        }
 
     // --- Graph configs --- //
 
