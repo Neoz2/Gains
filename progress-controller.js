@@ -18,6 +18,7 @@
 
     function setupProgressController() {
         setupExerciseDropdownButton()
+        setupSetButtons();
     }
 
     function refreshProgressScreen() {
@@ -30,6 +31,19 @@
         exerciseDropdownButton.addEventListener("click", enterSelectExerciseToAnalyseMode);
     }
 
+    function setupSetButtons() {
+        const buttons = document.querySelectorAll(".segmented-control");
+        console.log(buttons);
+
+        for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++){
+            const button = buttons[buttonIndex];
+
+            button.addEventListener("click", function() {
+                setButtonSelectionStatus(button, buttons);
+            });
+        }
+    }
+
     // --- Modes --- //
 
     function enterSelectExerciseToAnalyseMode() {
@@ -37,6 +51,18 @@
     }
 
     // --- Helpers --- //
+
+    function setButtonSelectionStatus(button, buttons) {
+        for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++){
+            const button = buttons[buttonIndex];
+
+            button.classList.remove("selected");
+        } 
+
+        button.classList.add("selected");
+    }
+
+    // --- Graphs --- //
 
     function loadGraphs() {
         const workouts = loadWorkouts();
@@ -71,7 +97,7 @@
             });
         }
 
-    // --- Graphs --- //
+    // --- Graph configs --- //
 
     const weightCanvas = document.getElementById("weight-graph");
     const weightGradient = createChartFillGradient(weightCanvas);
@@ -165,3 +191,4 @@ function createChartFillGradient(canvas) {
 
     return gradient;
 }
+
