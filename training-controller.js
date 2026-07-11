@@ -292,6 +292,17 @@ function getUsableTemplates() {
     });
 }
 
+function refreshWorkoutInputRow(exercise, card) {
+    const oldInputRow = card.querySelector(".workout-input-row");
+    const newInputRow = createWeightInputRow(exercise, card);
+
+    newInputRow.classList.remove("hidden");
+
+    card.replaceChild(newInputRow, oldInputRow);
+
+    renderWorkoutSets(exercise, card);
+}
+
 // --- Rendering --- //
 
 function renderWorkoutTemplateList() {
@@ -402,21 +413,12 @@ function startTimer(button, bigTimer) {
 function stopTimer(exercise, card, button, bigTimer, weightInput) {
     appState.activeTimer = false;
     clearInterval(timerIntervalId);
-    button.textContent = "Start set";
 
     elapsedTime = elapsedSeconds;
-    bigTimer.textContent = "00:00";
 
     saveWorkoutSet(exercise, card, elapsedTime, weightInput.value);
 
-    const nextSetNumber = exercise.sets.length + 1;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
-
-    if (lastSet !== null) {
-        weightInput.value = lastSet.weight;
-    } else {
-        weightInput.value = "";
-    }
+    refreshWorkoutInputRow(exercise, card);
 }
 
 function formatTimer(totalSeconds) {
@@ -520,7 +522,10 @@ function createWeightInputRow(exercise, card) {
     content.appendChild(weightInput);
     content.appendChild(bigTimer);
 
-    inputRow.appendChild(recommendation);
+    if (recommendation !== null) {
+        inputRow.appendChild(recommendation);
+    }
+
     inputRow.appendChild(headers);
     inputRow.appendChild(content);
     inputRow.appendChild(button);
@@ -532,6 +537,10 @@ function createWeightInputRow(exercise, card) {
 function createRecommendation(exercise) {
     const nextSetNumber = exercise.sets.length + 1;
     const lastSet = getSetOfLastSession(exercise, nextSetNumber);
+
+    if (lastSet === null) {
+        return null;
+    }
 
     let recommendationState = null;
     let indicationIconStyle = null;
@@ -554,9 +563,6 @@ function createRecommendation(exercise) {
         endText = " target";
         indicationIconStyle = "fa-arrow-trend-up";
         recommendationState = "good";
-    } else if (lastSet === null) {
-        //hide it
-        console.log("no sets yet");
     } else {
         title = "Stick to weight this workout";
         baseText = "Within ";
