@@ -95,8 +95,8 @@
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
         </button>
       </div>
-      <!-- workout empty state -->
-      <div class="empty-state training-empty-state hidden">
+      <!-- workout empty state no exercises-->
+      <div class="empty-state training-exercise-empty-state hidden">
         <div class="empty-state-icon">
           <i class="fa-solid fa-dumbbell"></i>
         </div>
@@ -107,6 +107,18 @@
           + Create exercise
         </button>
       </div>
+      <!-- workout empty state no templates-->
+      <div class="empty-state training-template-empty-state hidden">
+        <div class="empty-state-icon">
+          <i class="fa-solid fa-dumbbell"></i>
+        </div>
+
+        <span class="empty-state-title">No templates yet</span>
+        <span class="empty-state-text">Add at least one exercise to a template before using it to start a workout</span>
+        <button id="empty-add-template" class="button-large">
+          + Create template
+        </button>
+      </div>      
       <!-- template state -->
       <div class="select-template-state hidden">
         <div class="section-header-row">

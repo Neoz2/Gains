@@ -20,7 +20,7 @@ const templatesFormState = document.querySelector(".templates-form-state");
 // --- Controller entry points --- //
 
 function setupTemplateController() {
-    setupCreateTemplateButton();
+    setupEmptyTemplateButton();
     setupTemplateSaveButton();
 }
 
@@ -39,7 +39,7 @@ function refreshTemplateScreen(mode = null) {
 
 // --- Setup --- //
 
-function setupCreateTemplateButton() {
+function setupEmptyTemplateButton() {
     overviewCreateTemplateButton.addEventListener("click", function () {
         navigateToScreen("create-templates-screen", "form");
     });

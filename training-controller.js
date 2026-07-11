@@ -7,13 +7,15 @@
 const overviewStartTrainingButton = document.getElementById("choice-start-training");
 const overviewFromTemplateButton = document.getElementById("choice-from-template");
 const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
+const workoutEmptyStateAddTemplateButton = document.getElementById("empty-add-template");
 const addToWorkoutButton = document.getElementById("add-to-workout");
 const finishWorkoutButton = document.getElementById("finish-workout");
 const trainingBackButton = document.querySelector("#start-training-screen .back-button");
 const trainingPageTitle = document.getElementById("training-page-title");
 const trainingPageSubtitle = document.getElementById("training-page-subtitle");
 const workoutExerciseList = document.getElementById("workout-exercise-list");
-const trainingEmptyState = document.querySelector(".training-empty-state");
+const trainingExerciseEmptyState = document.querySelector(".training-exercise-empty-state");
+const trainingTemplateEmptyState = document.querySelector(".training-template-empty-state");
 const trainingOverviewState = document.querySelector(".training-overview-state");
 const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
 const selectTemplateState = document.querySelector(".select-template-state");
@@ -33,7 +35,8 @@ let timerIntervalId = null;
 function setupTrainingController() {
     setupOverviewStartTrainingButton();
     setupOverviewFromTemplateButton();
-    setupAddExerciseToWorkoutButton();
+    setupTrainingEmptyExerciseButton();
+    setupTrainingEmptyTemplateButton();
     setupAddToWorkoutButton();
     setupFinishWorkoutButton();
 }
@@ -41,20 +44,20 @@ function setupTrainingController() {
 function refreshTrainingScreen(mode = null) {
     if (mode === "workout") {
         showTrainingMode("workout");
-        updateTrainingBackButtonVisibility();
         return;
     }
 
     if (mode === "summary") {
         showTrainingMode("summary");
-        updateTrainingBackButtonVisibility();
         return;
     }
 
     clearWorkoutFormAndLoadPicker();
 
-    if (mode === "empty") {
-        showTrainingMode("empty");
+    if (mode === "empty-exercises") {
+        showTrainingMode("empty-exercises");
+    } else if (mode === "empty-templates") {
+        showTrainingMode("empty-templates");
     } else if (mode === "addExercises") {
         showTrainingMode("addExercises");
     } else if (mode === "selectTemplate") {
@@ -75,8 +78,12 @@ function setupOverviewFromTemplateButton() {
     overviewFromTemplateButton.addEventListener("click", enterFromTemplateMode);
 }
 
-function setupAddExerciseToWorkoutButton() {
+function setupTrainingEmptyExerciseButton() {
     workoutEmptyStateAddExerciseButton.addEventListener("click", createNewExercise);
+}
+
+function setupTrainingEmptyTemplateButton() {
+    workoutEmptyStateAddTemplateButton.addEventListener("click", createNewTemplate);
 }
 
 function setupAddToWorkoutButton() {
@@ -92,7 +99,8 @@ function setupFinishWorkoutButton() {
 // --- Modes --- //
 
 function showTrainingMode(mode) {
-    trainingEmptyState.classList.add("hidden");
+    trainingExerciseEmptyState.classList.add("hidden");
+    trainingTemplateEmptyState.classList.add("hidden");
     trainingOverviewState.classList.add("hidden");
     addExercisesToWorkoutState.classList.add("hidden");
     selectTemplateState.classList.add("hidden");
@@ -100,9 +108,9 @@ function showTrainingMode(mode) {
     summaryState.classList.add("hidden");
 
     if (appState.activeWorkout === null) {
-        if (mode === "empty") {
+        if (mode === "empty-exercises") {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
-            trainingEmptyState.classList.remove("hidden");
+            trainingExerciseEmptyState.classList.remove("hidden");
         } else if (mode === "overview") {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
             trainingOverviewState.classList.remove("hidden");
@@ -118,6 +126,9 @@ function showTrainingMode(mode) {
         } else if (mode === "summary") {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "", "");
             summaryState.classList.remove("hidden");
+        } else if (mode === "empty-templates") {
+            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
+            trainingTemplateEmptyState.classList.remove("hidden");
         }
     }
 
@@ -138,12 +149,18 @@ function enterStartEmptyTrainingMode() {
     if (exercises.length > 0) {
         navigateToScreen("start-training-screen", "addExercises");
     } else {
-        navigateToScreen("start-training-screen", "empty");
+        navigateToScreen("start-training-screen", "empty-exercises");
     }
 }
 
 function enterFromTemplateMode() {
-    navigateToScreen("start-training-screen", "selectTemplate");
+    const usableTemplates = getUsableTemplates();
+
+    if (usableTemplates.length === 0) {
+        navigateToScreen("start-training-screen", "empty-templates");
+    } else {
+        navigateToScreen("start-training-screen", "selectTemplate");
+    }
 }
 
 function enterAddExercisesToWorkoutMode() {
@@ -152,6 +169,11 @@ function enterAddExercisesToWorkoutMode() {
 
 function createNewExercise() {
     navigateToScreen("create-exercises-screen", "form");
+}
+
+function createNewTemplate() {
+    console.log("clicked");
+    navigateToScreen("create-templates-screen", "form");
 }
 
 function enterWorkoutState(exercises) {
@@ -261,16 +283,24 @@ function updateTrainingBackButtonVisibility() {
     }
 }
 
+function getUsableTemplates() {
+    const templates = loadTemplates();
+
+    return templates.filter(function (template) {
+        return template.exerciseIds.length > 0;
+    });
+}
+
 // --- Rendering --- //
 
 function renderWorkoutTemplateList() {
     const availableTemplateList = document.getElementById("workout-template-list");
     availableTemplateList.innerHTML = "";
 
-    const templates = loadTemplates();
+    const usableTemplates = getUsableTemplates();
 
-    for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
-        const templateCard = createTemplateOption(templates[templateIndex]);
+    for (let templateIndex = 0; templateIndex < usableTemplates.length; templateIndex++) {
+        const templateCard = createTemplateOption(usableTemplates[templateIndex]);
         availableTemplateList.appendChild(templateCard);
     }
 }
