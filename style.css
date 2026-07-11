@@ -15,6 +15,24 @@
   --placeholder-text-color: #888;
   --muted-text-color: #999999;
 
+  /* recommendation: increase */
+  --recommend-good-primary: #5DE36D;
+  --recommend-good-text: #9AF5A4;
+  --recommend-good-bg: rgba(93, 227, 109, 0.10);
+  --recommend-good-border: rgba(93, 227, 109, 0.42);
+
+  /* recommendation: lower */
+  --recommend-bad-primary: #FFB86B;
+  --recommend-bad-text: #FFD0A1;
+  --recommend-bad-bg: rgba(255, 184, 107, 0.10);
+  --recommend-bad-border: rgba(255, 184, 107, 0.42);
+
+  /* recommendation: same */
+  --recommend-same-primary: #8EA4FF;
+  --recommend-same-text: #B8C4FF;
+  --recommend-same-bg: rgba(142, 164, 255, 0.10);
+  --recommend-same-border: rgba(142, 164, 255, 0.38);
+
   --subtle-icon-color: #565656;
   --text-on-primary-color: black;
 
@@ -52,8 +70,8 @@ input {
 }
 
 .invisible {
-    visibility: hidden;
-    pointer-events: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* =========================================================
@@ -260,7 +278,7 @@ main {
   border-radius: 12px;
 }
 
-.icon-badge > i {
+.icon-badge>i {
   width: 22px;
   height: 22px;
 
@@ -690,6 +708,82 @@ main {
   font-size: 25px;
 
   padding-left: 10px;
+}
+
+/* ---------- Recommendation cards ---------- */
+
+.recommendation-container {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+
+  border-radius: var(--radius-medium);
+  background-color: var(--recommend-bg);
+  border: 1px solid var(--recommend-border);
+
+  margin-bottom: 6px;
+}
+
+.indication-icon {
+  width: 60px;
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--recommend-border);
+
+  margin: 10px;
+  box-sizing: border-box;
+}
+
+.indication-icon-symbol {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--recommend-primary);
+}
+
+.recommendation-text-icon {
+  padding-right: 10px;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+
+  color: var(--muted-text-color);
+
+  margin: 8px 0;
+}
+
+.info-container-title,
+.recommendation-text-icon,
+.text-field.recommend-highlight {
+  color: var(--recommend-text);
+}
+
+.recommendation-container.good {
+  --recommend-bg: var(--recommend-good-bg);
+  --recommend-border: var(--recommend-good-border);
+  --recommend-primary: var(--recommend-good-primary);
+  --recommend-text: var(--recommend-good-text);
+}
+
+.recommendation-container.bad {
+  --recommend-bg: var(--recommend-bad-bg);
+  --recommend-border: var(--recommend-bad-border);
+  --recommend-primary: var(--recommend-bad-primary);
+  --recommend-text: var(--recommend-bad-text);
+}
+
+.recommendation-container.same {
+  --recommend-bg: var(--recommend-same-bg);
+  --recommend-border: var(--recommend-same-border);
+  --recommend-primary: var(--recommend-same-primary);
+  --recommend-text: var(--recommend-same-text);
 }
 
 /* ---------- Workout cards ---------- */

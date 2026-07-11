@@ -512,18 +512,100 @@ function createWeightInputRow(exercise, card) {
     const button = createTimerButton(weightInput, bigTimer, exercise, card);
     const setContainer = createSetContainer();
 
+    const recommendation = createRecommendation(exercise);
+
     headers.appendChild(weightHeader);
     headers.appendChild(timerHeader);
 
     content.appendChild(weightInput);
     content.appendChild(bigTimer);
 
+    inputRow.appendChild(recommendation);
     inputRow.appendChild(headers);
     inputRow.appendChild(content);
     inputRow.appendChild(button);
     inputRow.appendChild(setContainer);
 
     return inputRow;
+}
+
+function createRecommendation(exercise) {
+    const nextSetNumber = exercise.sets.length + 1;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
+
+    let recommendationState = null;
+    let indicationIconStyle = null;
+    let title = null;
+    let baseText = null;
+    let TULtext = null;
+    let endText = null;
+
+    if (lastSet.timeUnderLoad < 50) {
+        title = "Decrease weight this workout";
+        baseText = "Below ";
+        TULtext = "0:50";
+        endText = " minimum";
+        indicationIconStyle = "fa-arrow-trend-down";
+        recommendationState = "bad";
+    } else if (lastSet.timeUnderLoad >= 70) {
+        title = "Increase weight this workout";
+        baseText = "Above ";
+        TULtext = "1:10";
+        endText = " target";
+        indicationIconStyle = "fa-arrow-trend-up";
+        recommendationState = "good";
+    } else if (lastSet === null) {
+        //hide it
+        console.log("no sets yet");
+    } else {
+        title = "Stick to weight this workout";
+        baseText = "Within ";
+        TULtext = "0:50 - 1:10";
+        endText = " range";
+        indicationIconStyle = "fa-arrow-right-arrow-left";
+        recommendationState = "same";
+    }
+
+    const recommendationContainer = createElement("div", "recommendation-container", recommendationState);
+    const infoContainer = createElement("div", "info-container");
+
+    const indicationIcon = createElement("div", "indication-icon");
+    const indicationIconSymbol = createIcon("fa-solid", indicationIconStyle, "indication-icon-symbol");
+
+    const titleText = createText(title, "text-field", "info-container-title");
+
+    const lastSessionTextContainer = createElement("div", "last-session-text-container");
+    const lastSessionIcon = createIcon("fa-regular", "fa-clock", "recommendation-text-icon");
+    const lastSessionStartText = createText("Last session: ", "text-field");
+    const lastSessionMidText = createText(formatTimer(lastSet.timeUnderLoad), "text-field", "recommend-highlight");
+    const lastSessionEndText = createText(" TUL", "text-field");
+
+    const targetTextContainer = createElement("div", "target-text-container");
+    const targetIcon = createIcon("fa-solid", "fa-bullseye", "recommendation-text-icon");
+    const targetStartText = createText(baseText, "text-field");
+    const targetMidText = createText(TULtext, "text-field", "recommend-highlight");
+    const targetEndText = createText(endText, "text-field");
+
+    indicationIcon.appendChild(indicationIconSymbol);
+
+    lastSessionTextContainer.appendChild(lastSessionIcon);
+    lastSessionTextContainer.appendChild(lastSessionStartText);
+    lastSessionTextContainer.appendChild(lastSessionMidText);
+    lastSessionTextContainer.appendChild(lastSessionEndText);
+
+    targetTextContainer.appendChild(targetIcon);
+    targetTextContainer.appendChild(targetStartText);
+    targetTextContainer.appendChild(targetMidText);
+    targetTextContainer.appendChild(targetEndText);
+
+    infoContainer.appendChild(titleText);
+    infoContainer.appendChild(lastSessionTextContainer);
+    infoContainer.appendChild(targetTextContainer);
+
+    recommendationContainer.appendChild(indicationIcon);
+    recommendationContainer.appendChild(infoContainer);
+
+    return recommendationContainer
 }
 
 function createWeightInput(exercise) {
@@ -537,7 +619,7 @@ function createWeightInput(exercise) {
 
     if (lastSet !== null) {
         weightInput.value = lastSet.weight;
-    } 
+    }
 
     weightInput.addEventListener("input", function () {
         if (!weightInput.validity.valid) {
