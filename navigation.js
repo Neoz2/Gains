@@ -36,10 +36,10 @@ function setupNavigation() {
 	window.addEventListener("popstate", function (event) {
 		if (event.state && event.state.screenId) {
 			showScreen(event.state.screenId);
-			refreshScreen(event.state.screenId);
+			refreshScreen(event.state.screenId, event.state.mode);
 		} else {
 			showScreen("home-screen");
-			refreshScreen("home-screen");
+			refreshScreen("home-screen", null);
 		}
 	});
 }
@@ -48,16 +48,29 @@ function setupNavigation() {
 // NAVIGATION FUNCTIONS
 // =========================================================
 
-function navigateToScreen(screenId) {
+function navigateToScreen(screenId, mode = null) {
 	showScreen(screenId);
 
 	const route = ROUTES[screenId];
 
 	if (route) {
-		history.pushState({ screenId: screenId }, "", route);
+		let url = route;
+
+		if (mode !== null) {
+			url += "/" + mode;
+		}
+
+		history.pushState(
+			{
+				screenId: screenId,
+				mode: mode
+			},
+			"",
+			url
+		);
 	}
 
-	refreshScreen(screenId);
+	refreshScreen(screenId, mode);
 }
 
 function showScreen(screenId) {
@@ -85,15 +98,15 @@ function showSelectedScreen(screenId) {
 	screen.classList.remove("hidden");
 }
 
-function refreshScreen(screenId) {
+function refreshScreen(screenId, mode = null) {
 	if (screenId === "create-exercises-screen") {
-		refreshExerciseScreen();
+		refreshExerciseScreen(mode);
 	} else if (screenId === "create-templates-screen") {
-		refreshTemplateScreen();
+		refreshTemplateScreen(mode);
 	} else if (screenId === "start-training-screen") {
-        refreshTrainingScreen();
-    } else if (screenId === "analyse-progress-screen") {
-		refreshProgressScreen();
+		refreshTrainingScreen(mode);
+	} else if (screenId === "analyse-progress-screen") {
+		refreshProgressScreen(mode);
 	}
 }
 

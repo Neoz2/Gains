@@ -51,6 +51,11 @@ input {
   display: none !important;
 }
 
+.invisible {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 /* =========================================================
    SHARED LAYOUT
 ========================================================= */

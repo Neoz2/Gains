@@ -27,19 +27,30 @@ function setupExerciseController() {
     setupSettingsForm();
 }
 
-function refreshExerciseScreen() {
+function refreshExerciseScreen(mode = null) {
     appState.editingExerciseId = null;
     clearExerciseForm();
     updateSaveExerciseButtonText();
     updateSettingsRowsVisibility();
+
+    if (mode === "form") {
+        enterCreateExerciseMode();
+        return;
+    }
+
     renderExerciseOverview();
 }
 
 // --- Setup --- //
 
 function setupCreateExerciseButton() {
-    overviewCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
-    emptyCreateExerciseButton.addEventListener("click", enterCreateExerciseMode);
+    overviewCreateExerciseButton.addEventListener("click", function () {
+        navigateToScreen("create-exercises-screen", "form");
+    });
+
+    emptyCreateExerciseButton.addEventListener("click", function () {
+        navigateToScreen("create-exercises-screen", "form");
+    });
 }
 
 function setupExerciseForm() {

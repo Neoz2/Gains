@@ -9,6 +9,7 @@ const overviewFromTemplateButton = document.getElementById("choice-from-template
 const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
 const addToWorkoutButton = document.getElementById("add-to-workout");
 const finishWorkoutButton = document.getElementById("finish-workout");
+const trainingBackButton = document.querySelector("#start-training-screen .back-button");
 const trainingPageTitle = document.getElementById("training-page-title");
 const trainingPageSubtitle = document.getElementById("training-page-subtitle");
 const workoutExerciseList = document.getElementById("workout-exercise-list");
@@ -37,9 +38,31 @@ function setupTrainingController() {
     setupFinishWorkoutButton();
 }
 
-function refreshTrainingScreen() {
+function refreshTrainingScreen(mode = null) {
+    if (mode === "workout") {
+        showTrainingMode("workout");
+        updateTrainingBackButtonVisibility();
+        return;
+    }
+
+    if (mode === "summary") {
+        showTrainingMode("summary");
+        updateTrainingBackButtonVisibility();
+        return;
+    }
+
     clearWorkoutFormAndLoadPicker();
-    showTrainingMode("overview");
+
+    if (mode === "empty") {
+        showTrainingMode("empty");
+    } else if (mode === "addExercises") {
+        showTrainingMode("addExercises");
+    } else if (mode === "selectTemplate") {
+        renderWorkoutTemplateList();
+        showTrainingMode("selectTemplate");
+    } else {
+        showTrainingMode("overview");
+    }
 }
 
 // --- Setup --- //
@@ -53,7 +76,7 @@ function setupOverviewFromTemplateButton() {
 }
 
 function setupAddExerciseToWorkoutButton() {
-    workoutEmptyStateAddExerciseButton.addEventListener("click", enterAddExercisesToWorkoutMode);
+    workoutEmptyStateAddExerciseButton.addEventListener("click", createNewExercise);
 }
 
 function setupAddToWorkoutButton() {
@@ -100,24 +123,35 @@ function showTrainingMode(mode) {
 
     else {
         updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
-        renderSelectedWorkoutExercises();
+        renderWorkoutExerciseList(appState.activeWorkout);
         workoutState.classList.remove("hidden");
     }
+
+    updateTrainingBackButtonVisibility();
 }
 
 function enterStartEmptyTrainingMode() {
     clearWorkoutFormAndLoadPicker()
 
-    showTrainingMode("empty");
+    const exercises = loadExercises();
+
+    if (exercises.length > 0) {
+        navigateToScreen("start-training-screen", "addExercises");
+    } else {
+        navigateToScreen("start-training-screen", "empty");
+    }
 }
 
 function enterFromTemplateMode() {
-    renderWorkoutTemplateList();
-    showTrainingMode("selectTemplate");
+    navigateToScreen("start-training-screen", "selectTemplate");
 }
 
 function enterAddExercisesToWorkoutMode() {
-    showTrainingMode("addExercises");
+    navigateToScreen("start-training-screen", "addExercises");
+}
+
+function createNewExercise() {
+    navigateToScreen("create-exercises-screen", "form");
 }
 
 function enterWorkoutState(exercises) {
@@ -127,7 +161,7 @@ function enterWorkoutState(exercises) {
 
     addWorkout(workout);
     renderWorkoutExerciseList(workout);
-    showTrainingMode("workout");
+    navigateToScreen("start-training-screen", "workout");
 
     const firstWorkoutCard = document.querySelector(".workout-card");
 
@@ -142,7 +176,7 @@ function enterSummaryMode() {
 
     appState.activeWorkout = null;
 
-    showTrainingMode("summary");
+    navigateToScreen("start-training-screen", "summary");
 }
 
 // --- Mutate actions --- //
@@ -155,8 +189,6 @@ function saveWorkoutSet(exercise, card, elapsedTime, weight) {
     updateWorkout(appState.activeWorkout);
     renderWorkoutSets(exercise, card);
 }
-
-
 
 // --- Selection actions --- //
 
@@ -215,6 +247,18 @@ function openWorkoutCard(card) {
     details.classList.remove("hidden");
     inputRow.classList.remove("hidden");
     chevron.classList.add("chevron-rotate");
+}
+
+function updateTrainingBackButtonVisibility() {
+    if (trainingBackButton === null) {
+        return;
+    }
+
+    if (appState.activeWorkout !== null) {
+        trainingBackButton.classList.add("invisible");
+    } else {
+        trainingBackButton.classList.remove("invisible");
+    }
 }
 
 // --- Rendering --- //

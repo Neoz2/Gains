@@ -24,18 +24,29 @@ function setupTemplateController() {
     setupTemplateSaveButton();
 }
 
-function refreshTemplateScreen() {
+function refreshTemplateScreen(mode = null) {
     appState.editingTemplateId = null;
     clearTemplateForm();
     updateSaveTemplateButtonText();
+
+    if (mode === "form") {
+        enterCreateTemplateMode();
+        return;
+    }
+
     renderTemplateOverview();
 }
 
 // --- Setup --- //
 
 function setupCreateTemplateButton() {
-    overviewCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
-    emptyCreateTemplateButton.addEventListener("click", enterCreateTemplateMode);
+    overviewCreateTemplateButton.addEventListener("click", function () {
+        navigateToScreen("create-templates-screen", "form");
+    });
+
+    emptyCreateTemplateButton.addEventListener("click", function () {
+        navigateToScreen("create-templates-screen", "form");
+    });
 }
 
 function setupTemplateSaveButton() {
@@ -319,31 +330,31 @@ function createTemplateCard(templates, templateIndex) {
 }
 
 function createTemplateCardHeader(template) {
-	const header = createElement("div", "card-header");
-	const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
-	const main = createTemplateCardMain(template);
-	const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
+    const header = createElement("div", "card-header");
+    const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+    const main = createTemplateCardMain(template);
+    const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-	header.appendChild(icon);
-	header.appendChild(main);
-	header.appendChild(chevron);
+    header.appendChild(icon);
+    header.appendChild(main);
+    header.appendChild(chevron);
 
-	return header;
+    return header;
 }
 
 function createTemplateCardMain(template) {
-	const main = createElement("div", "item-text");
+    const main = createElement("div", "item-text");
 
-	const title = createText(template.name, "item-title");
+    const title = createText(template.name, "item-title");
 
-	const exerciseCount = template.exerciseIds.length;
-	const subtitleText = formatCountLabel(exerciseCount, "exercise");
-	const subtitle = createText(subtitleText, "item-subtitle");
+    const exerciseCount = template.exerciseIds.length;
+    const subtitleText = formatCountLabel(exerciseCount, "exercise");
+    const subtitle = createText(subtitleText, "item-subtitle");
 
-	main.appendChild(title);
-	main.appendChild(subtitle);
+    main.appendChild(title);
+    main.appendChild(subtitle);
 
-	return main;
+    return main;
 }
 
 function createTemplateCardDetails(template) {

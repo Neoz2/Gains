@@ -32,14 +32,20 @@ function setupProgressController() {
     setupFirstExercise();
 }
 
-function refreshProgressScreen() {
-    enterGraphsMode();
+function refreshProgressScreen(mode = null) {
+    if (mode === "selection") {
+        enterSelectExerciseToAnalyseMode();
+    } else {
+        enterGraphsMode();
+    }
 }
 
 // --- Setup --- //
 
 function setupExerciseDropdownButton() {
-    exerciseDropdownButton.addEventListener("click", enterSelectExerciseToAnalyseMode);
+    exerciseDropdownButton.addEventListener("click", function () {
+        navigateToScreen("analyse-progress-screen", "selection");
+    });
 }
 
 function setupSetButtons() {
@@ -106,10 +112,20 @@ function showProgressMode(mode) {
 }
 
 function enterGraphsMode() {
+    const hasExercise = ensureSelectedExercise();
+
+    if (hasExercise === false) {
+        destroyProgressCharts();
+        progressSelectionSpan.textContent = "-";
+        showProgressMode("empty");
+        return;
+    }
+
     loadGraphExerciseData();
 
     if (points.length === 0) {
         destroyProgressCharts();
+        progressSelectionSpan.textContent = selectedExercise.name;
         showProgressMode("empty");
         return;
     }
@@ -177,6 +193,28 @@ function destroyProgressCharts() {
     }
 }
 
+function ensureSelectedExercise() {
+    const exercises = loadExercises();
+
+    if (selectedExercise !== null) {
+        const selectedStillExists = exercises.some(function (exercise) {
+            return exercise.id === selectedExercise.id;
+        });
+
+        if (selectedStillExists) {
+            return true;
+        }
+    }
+
+    if (exercises.length > 0) {
+        selectedExercise = exercises[0];
+        return true;
+    }
+
+    selectedExercise = null;
+    return false;
+}
+
 // --- Rendering --- //
 
 function renderAvailableExercisesForGraphs() {
@@ -194,7 +232,7 @@ function renderAvailableExercisesForGraphs() {
 
         row.addEventListener("click", function () {
             selectedExercise = exercise;
-            enterGraphsMode();
+            navigateToScreen("analyse-progress-screen", "graphs");
         });
 
         availableExercisesList.appendChild(row);
