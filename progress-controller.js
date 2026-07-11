@@ -66,7 +66,7 @@ function showProgressMode(mode) {
         updatePageHeader(progressPageTitle, progressPageSubtitle, "Analyse progress", "Track performance over time");
     } else if (mode === "selection") {
         graphSelectionState.classList.remove("hidden");
-        updatePageHeader(progressPageTitle, progressPageSubtitle, "Select exercise", "Choose an exercise to analyse");
+        updatePageHeader(progressPageTitle, progressPageSubtitle, "Choose exercise", "Select an exercise to analyse");
     }
 }
 
@@ -90,6 +90,12 @@ function setButtonSelectionStatus(button, buttons) {
     }
 
     button.classList.add("selected");
+}
+
+//function findMinMax()
+
+function loadGraphExerciseData() {
+
 }
 
 // --- Rendering --- //
@@ -170,9 +176,35 @@ function loadGraphs() {
             ]
         },
         options: {
+            scales: {
+                y: {
+                    suggestedMin: 0
+                }
+            },
+            layout: {
+                padding: {
+                    top:4,
+                    bottom: 4,
+                    left: 8,
+                    right: 8
+                }
+            },
             plugins: {
                 legend: {
                     display: false
+                },
+                title: {
+                    display: true,
+                    text: "Weight",
+                    align: "start",
+                    color: "floralwhite",
+                    font: {
+                        size: 14
+                    },
+                    padding: {
+                        top: 4,
+                        bottom: 15
+                    }
                 }
             }
         }
@@ -198,10 +230,36 @@ function loadGraphs() {
                 }
             ]
         },
-        options: {
+        options: {            
+            scales: {
+                y: {
+                    suggestedMin: 0
+                }
+            },
+            layout: {
+                padding: {
+                    top:4,
+                    bottom: 4,
+                    left: 8,
+                    right: 8
+                }
+            },
             plugins: {
                 legend: {
                     display: false
+                },
+                title: {
+                    display: true,
+                    text: "Time under load",
+                    align: "start",
+                    color: "floralwhite",
+                    font: {
+                        size: 14
+                    },
+                    padding: {
+                        top: 4,
+                        bottom: 15
+                    }
                 },
                 annotation: {
                     annotations: {
