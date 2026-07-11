@@ -18,16 +18,20 @@ const progressPageSubtitle = document.getElementById("progress-page-subtitle");
 let weightChart = null;
 let tulChart = null;
 
+let selectedExercise = null;
+let selectedSet = 0;
+
 // --- Controller entry points --- //
 
 function setupProgressController() {
     setupExerciseDropdownButton()
     setupSetButtons();
+
+    selectedExercise = loadExercises()[0];
 }
 
 function refreshProgressScreen() {
-    const firstExercise = loadExercises()[0]; //make this remember selectedexercise instead of first of list*
-    enterGraphsMode(firstExercise);
+    enterGraphsMode(selectedExercise, selectedSet);
 }
 
 // --- Setup --- //
@@ -38,13 +42,15 @@ function setupExerciseDropdownButton() {
 
 function setupSetButtons() {
     const buttons = document.querySelectorAll(".segmented-control");
-    console.log(buttons);
 
     for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
         const button = buttons[buttonIndex];
 
         button.addEventListener("click", function () {
             setButtonSelectionStatus(button, buttons);
+            selectedSet = Number(buttons[buttonIndex].dataset.setIndex);
+
+            enterGraphsMode();
         });
     }
 }
@@ -64,8 +70,8 @@ function showProgressMode(mode) {
     }
 }
 
-function enterGraphsMode(exercise) {
-    loadGraphs(exercise);
+function enterGraphsMode() {
+    loadGraphs();
     showProgressMode("graphs");
 }
 
@@ -110,7 +116,7 @@ function renderAvailableExercisesForGraphs() {
 
 // --- Graphs --- //
 
-function loadGraphs(selectedExercise) {
+function loadGraphs() {
     const workouts = loadWorkouts();
 
     progressSelectionSpan.textContent = selectedExercise.name;
@@ -128,7 +134,7 @@ function loadGraphs(selectedExercise) {
             continue;
         }
 
-        const set = exercise.sets[0];
+        const set = exercise.sets[selectedSet];
 
         if (set === undefined) {
             continue;
