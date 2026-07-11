@@ -589,7 +589,9 @@ function createTemplateOption(template) {
     const card = createElement("li", "item-card");
     const header = createElement("div", "card-header");
 
+    const iconBadge = createElement("span", "icon-badge");
     const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+
     const main = createElement("div", "item-text");
 
     const title = createText(template.name, "item-title");
@@ -598,10 +600,12 @@ function createTemplateOption(template) {
     const startButton = createButton("action-button");
     startButton.textContent = "Start";
 
+    iconBadge.appendChild(icon);
+
     main.appendChild(title);
     main.appendChild(subtitle);
 
-    header.appendChild(icon);
+    header.appendChild(iconBadge);
     header.appendChild(main);
     header.appendChild(startButton);
 

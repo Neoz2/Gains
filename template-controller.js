@@ -331,11 +331,16 @@ function createTemplateCard(templates, templateIndex) {
 
 function createTemplateCardHeader(template) {
     const header = createElement("div", "card-header");
+
+    const iconBadge = createElement("span", "icon-badge");
     const icon = createIcon("fa-solid", "fa-clipboard-list", "item-icon");
+
     const main = createTemplateCardMain(template);
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    header.appendChild(icon);
+    iconBadge.appendChild(icon);
+
+    header.appendChild(iconBadge);
     header.appendChild(main);
     header.appendChild(chevron);
 

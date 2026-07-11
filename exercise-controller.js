@@ -323,7 +323,7 @@ function createSettingRow(settingIndex) {
     topRow.appendChild(settingIndexCounter);
     topRow.appendChild(settingsHeader);
     topRow.appendChild(deleteButton);
-    
+
     settingsRow.appendChild(topRow);
     settingsRow.appendChild(settingNameLabel);
     settingsRow.appendChild(settingNameInput);
@@ -357,11 +357,16 @@ function createExerciseCard(exercises, exerciseIndex) {
 
 function createExerciseCardHeader(exercise) {
     const header = createElement("div", "card-header");
+
+    const iconBadge = createElement("span", "icon-badge");
     const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
+    
     const main = createExerciseCardMain(exercise);
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    header.appendChild(icon);
+    iconBadge.appendChild(icon);
+
+    header.appendChild(iconBadge);
     header.appendChild(main);
     header.appendChild(chevron);
 
