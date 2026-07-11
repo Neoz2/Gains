@@ -146,6 +146,45 @@ function updateWorkout(updatedWorkout) {
     saveWorkouts(workouts);
 }
 
+function getSetOfLastSession(exercise, setNumber) {
+    const workoutsDescending = getDescendingArrayOfWorkouts();
+
+    for (let workoutIndex = 0; workoutIndex < workoutsDescending.length; workoutIndex++) {
+        const workout = workoutsDescending[workoutIndex];
+
+        if (appState.activeWorkout !== null && workout.id === appState.activeWorkout.id) {
+            continue;
+        }
+
+        const lastExercise = workout.exercises.find(function (workoutExercise) {
+            return workoutExercise.exerciseId === exercise.exerciseId;
+        });
+
+        if (lastExercise === undefined) {
+            continue;
+        }
+
+        const lastSet = lastExercise.sets[setNumber - 1];
+
+        if (lastSet === undefined) {
+            return null;
+        }
+
+        return lastSet;
+    }
+
+    return null;
+}
+
+function getDescendingArrayOfWorkouts() {
+    const workouts = loadWorkouts();
+
+    return workouts.slice().sort(function (a, b) {
+        return new Date(b.startedAt) - new Date(a.startedAt);
+    });
+
+}
+
 // --- Storage helpers --- //
 function createId() {
     return crypto.randomUUID();

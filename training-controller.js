@@ -204,6 +204,7 @@ function enterSummaryMode() {
 // --- Mutate actions --- //
 
 function saveWorkoutSet(exercise, card, elapsedTime, weight) {
+    const setNumber = exercise.sets.length + 1;
     const set = createWorkoutExerciseSet(Number(weight), elapsedTime);
 
     exercise.sets.push(set);
@@ -398,16 +399,24 @@ function startTimer(button, bigTimer) {
     }, 250)
 }
 
-function stopTimer(exercise, card, button, bigTimer, weight) {
+function stopTimer(exercise, card, button, bigTimer, weightInput) {
     appState.activeTimer = false;
     clearInterval(timerIntervalId);
     button.textContent = "Start set";
 
     elapsedTime = elapsedSeconds;
-
     bigTimer.textContent = "00:00";
 
-    saveWorkoutSet(exercise, card, elapsedTime, weight);
+    saveWorkoutSet(exercise, card, elapsedTime, weightInput.value);
+
+    const nextSetNumber = exercise.sets.length + 1;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
+
+    if (lastSet !== null) {
+        weightInput.value = lastSet.weight;
+    } else {
+        weightInput.value = "";
+    }
 }
 
 function formatTimer(totalSeconds) {
@@ -497,7 +506,7 @@ function createWeightInputRow(exercise, card) {
     const weightHeader = createText("Weight (kg)", "field-name");
     const timerHeader = createText("Time under load", "field-name");
 
-    const weightInput = createWeightInput();
+    const weightInput = createWeightInput(exercise);
     const bigTimer = createText("00:00", "workout-big-timer");
 
     const button = createTimerButton(weightInput, bigTimer, exercise, card);
@@ -517,11 +526,19 @@ function createWeightInputRow(exercise, card) {
     return inputRow;
 }
 
-function createWeightInput() {
+function createWeightInput(exercise) {
     const weightInput = createElement("input", "workout-weight-input");
     weightInput.type = "number";
     weightInput.min = "0";
-    weightInput.placeholder = "80";
+
+    const nextSetNumber = exercise.sets.length + 1;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
+
+    if (lastSet !== null) {
+        weightInput.value = lastSet.weight;
+    } else {
+        weightInput.placeholder = "80";
+    }
 
     weightInput.addEventListener("input", function () {
         if (!weightInput.validity.valid) {
@@ -546,7 +563,7 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
             startTimer(button, bigTimer);
         } else if (isStarted === true) {
             isStarted = false;
-            stopTimer(exercise, card, button, bigTimer, weightInput.value);
+            stopTimer(exercise, card, button, bigTimer, weightInput);
         }
     });
 
