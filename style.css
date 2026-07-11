@@ -607,6 +607,17 @@ main {
    SCREEN: START TRAINING
 ========================================================= */
 
+.summary-state {
+  min-height: calc(100vh - 160px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 0;
+}
+
 .start-training-content {
   display: flex;
   flex-direction: column;

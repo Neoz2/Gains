@@ -138,7 +138,7 @@ function showTrainingMode(mode) {
         workoutState.classList.remove("hidden");
     }
 
-    updateTrainingBackButtonVisibility();
+    updateTrainingBackButtonVisibility(mode);
 }
 
 function enterStartEmptyTrainingMode() {
@@ -272,12 +272,12 @@ function openWorkoutCard(card) {
     chevron.classList.add("chevron-rotate");
 }
 
-function updateTrainingBackButtonVisibility() {
+function updateTrainingBackButtonVisibility(mode) {
     if (trainingBackButton === null) {
         return;
     }
 
-    if (appState.activeWorkout !== null) {
+    if (appState.activeWorkout !== null || mode === "summary") {
         trainingBackButton.classList.add("invisible");
     } else {
         trainingBackButton.classList.remove("invisible");
@@ -530,15 +530,14 @@ function createWeightInput(exercise) {
     const weightInput = createElement("input", "workout-weight-input");
     weightInput.type = "number";
     weightInput.min = "0";
+    weightInput.placeholder = "0";
 
     const nextSetNumber = exercise.sets.length + 1;
     const lastSet = getSetOfLastSession(exercise, nextSetNumber);
 
     if (lastSet !== null) {
         weightInput.value = lastSet.weight;
-    } else {
-        weightInput.placeholder = "80";
-    }
+    } 
 
     weightInput.addEventListener("input", function () {
         if (!weightInput.validity.valid) {

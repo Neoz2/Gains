@@ -147,6 +147,14 @@ function updateWorkout(updatedWorkout) {
 }
 
 function getSetOfLastSession(exercise, setNumber) {
+    if (exercise === undefined || exercise === null) {
+        return null;
+    }
+
+    if (exercise.exerciseId === undefined) {
+        return null;
+    }
+
     const workoutsDescending = getDescendingArrayOfWorkouts();
 
     for (let workoutIndex = 0; workoutIndex < workoutsDescending.length; workoutIndex++) {
@@ -167,7 +175,7 @@ function getSetOfLastSession(exercise, setNumber) {
         const lastSet = lastExercise.sets[setNumber - 1];
 
         if (lastSet === undefined) {
-            return null;
+            continue;
         }
 
         return lastSet;
