@@ -287,15 +287,26 @@
           <button class="segmented-control" data-set-index="2">Set 3</button>
         </div>
 
-        <div class="line-graph">
-          <div style="width: 100%;">
-            <canvas id="weight-graph"></canvas>
+        <div id="progress-empty-state" class="progress-empty-state empty-state hidden">
+          <div class="empty-state-icon">
+            <i class="fa-solid fa-chart-simple"></i>
           </div>
+          
+          <span class="empty-state-title">No data yet</span>
+          <span class="empty-state-text">Complete this set in a workout to see progress.</span>
         </div>
 
-        <div class="line-graph">
-          <div style="width: 100%;">
-            <canvas id="tul-graph"></canvas>
+        <div id="progress-chart-content">
+          <div class="line-graph">
+            <div style="width: 100%;">
+              <canvas id="weight-graph"></canvas>
+            </div>
+          </div>
+
+          <div class="line-graph">
+            <div style="width: 100%;">
+              <canvas id="tul-graph"></canvas>
+            </div>
           </div>
         </div>
       </div>

@@ -10,6 +10,8 @@ const graphSelectionState = document.querySelector(".graph-exercise-selection-st
 const graphState = document.querySelector(".graphs-state");
 const progressPageTitle = document.getElementById("progress-page-title");
 const progressPageSubtitle = document.getElementById("progress-page-subtitle");
+const progressEmptyState = document.getElementById("progress-empty-state");
+const progressChartContent = document.getElementById("progress-chart-content");
 
 // =========================================================
 // EXERCISE CONTROLLER
@@ -20,18 +22,18 @@ let tulChart = null;
 
 let selectedExercise = null;
 let selectedSet = 0;
+let points = [];
 
 // --- Controller entry points --- //
 
 function setupProgressController() {
     setupExerciseDropdownButton()
     setupSetButtons();
-
-    selectedExercise = loadExercises()[0];
+    setupFirstExercise();
 }
 
 function refreshProgressScreen() {
-    enterGraphsMode(selectedExercise, selectedSet);
+    enterGraphsMode();
 }
 
 // --- Setup --- //
@@ -55,24 +57,65 @@ function setupSetButtons() {
     }
 }
 
+function setupFirstExercise() {
+    const exercises = loadExercises();
+
+    if (exercises.length > 0) {
+        selectedExercise = exercises[0];
+    }
+}
+
 // --- Modes --- //
 
 function showProgressMode(mode) {
     graphSelectionState.classList.add("hidden");
     graphState.classList.add("hidden");
+    progressEmptyState.classList.add("hidden");
+    progressChartContent.classList.add("hidden");
 
     if (mode === "graphs") {
         graphState.classList.remove("hidden");
-        updatePageHeader(progressPageTitle, progressPageSubtitle, "Analyse progress", "Track performance over time");
+        progressChartContent.classList.remove("hidden");
+
+        updatePageHeader(
+            progressPageTitle,
+            progressPageSubtitle,
+            "Analyse progress",
+            "Track performance over time"
+        );
+    } else if (mode === "empty") {
+        graphState.classList.remove("hidden");
+        progressEmptyState.classList.remove("hidden");
+
+        updatePageHeader(
+            progressPageTitle,
+            progressPageSubtitle,
+            "Analyse progress",
+            "Track performance over time"
+        );
     } else if (mode === "selection") {
         graphSelectionState.classList.remove("hidden");
-        updatePageHeader(progressPageTitle, progressPageSubtitle, "Choose exercise", "Select an exercise to analyse");
+
+        updatePageHeader(
+            progressPageTitle,
+            progressPageSubtitle,
+            "Choose exercise",
+            "Select an exercise to analyse"
+        );
     }
 }
 
 function enterGraphsMode() {
-    loadGraphs();
+    loadGraphExerciseData();
+
+    if (points.length === 0) {
+        destroyProgressCharts();
+        showProgressMode("empty");
+        return;
+    }
+
     showProgressMode("graphs");
+    loadGraphs();
 }
 
 function enterSelectExerciseToAnalyseMode() {
@@ -92,42 +135,10 @@ function setButtonSelectionStatus(button, buttons) {
     button.classList.add("selected");
 }
 
-//function findMinMax()
-
 function loadGraphExerciseData() {
+    points = [];
 
-}
-
-// --- Rendering --- //
-
-function renderAvailableExercisesForGraphs() {
-    const availableExercisesList = document.querySelector(".graphs-unselected-items");
-
-    availableExercisesList.innerHTML = "";
-
-    const exercises = loadExercises();
-
-    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
-        const exercise = exercises[exerciseIndex];
-
-        const row = createExercisePickerRow(exercise, false);
-
-        row.addEventListener("click", function () {
-            enterGraphsMode(exercise);
-        });
-
-        availableExercisesList.appendChild(row);
-    }
-}
-
-// --- Graphs --- //
-
-function loadGraphs() {
     const workouts = loadWorkouts();
-
-    progressSelectionSpan.textContent = selectedExercise.name;
-
-    const points = [];
 
     for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
         const workout = workouts[workoutIndex];
@@ -152,6 +163,48 @@ function loadGraphs() {
             timeUnderLoad: Number(set.timeUnderLoad)
         });
     }
+}
+
+function destroyProgressCharts() {
+    if (weightChart !== null) {
+        weightChart.destroy();
+        weightChart = null;
+    }
+
+    if (tulChart !== null) {
+        tulChart.destroy();
+        tulChart = null;
+    }
+}
+
+// --- Rendering --- //
+
+function renderAvailableExercisesForGraphs() {
+    const availableExercisesList = document.querySelector(".graphs-unselected-items");
+
+    availableExercisesList.innerHTML = "";
+
+    const exercises = loadExercises();
+
+    for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+        const exercise = exercises[exerciseIndex];
+
+        const isSelected = selectedExercise !== null && exercise.id === selectedExercise.id;
+        const row = createExercisePickerRow(exercise, isSelected);
+
+        row.addEventListener("click", function () {
+            selectedExercise = exercise;
+            enterGraphsMode();
+        });
+
+        availableExercisesList.appendChild(row);
+    }
+}
+
+// --- Graphs --- //
+
+function loadGraphs() {
+    progressSelectionSpan.textContent = selectedExercise.name;
 
     // --- Graph configs --- //
 
@@ -177,13 +230,21 @@ function loadGraphs() {
         },
         options: {
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
                 y: {
-                    suggestedMin: 0
+                    grid: {
+                        display: false
+                    },
+                    grace: "60%"
                 }
             },
             layout: {
                 padding: {
-                    top:4,
+                    top: 4,
                     bottom: 4,
                     left: 8,
                     right: 8
@@ -230,15 +291,23 @@ function loadGraphs() {
                 }
             ]
         },
-        options: {            
+        options: {
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
                 y: {
-                    suggestedMin: 0
+                    grid: {
+                        display: false
+                    },
+                    grace: "60%"
                 }
             },
             layout: {
                 padding: {
-                    top:4,
+                    top: 4,
                     bottom: 4,
                     left: 8,
                     right: 8
