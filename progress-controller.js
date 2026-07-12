@@ -267,6 +267,8 @@ function loadGraphs() {
             ]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 x: {
                     grid: {
@@ -274,10 +276,11 @@ function loadGraphs() {
                     }
                 },
                 y: {
+                    min: 0,
                     grid: {
                         display: false
                     },
-                    grace: "60%"
+                    grace: "25%"
                 }
             },
             layout: {
@@ -330,6 +333,8 @@ function loadGraphs() {
             ]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 x: {
                     grid: {
@@ -337,10 +342,11 @@ function loadGraphs() {
                     }
                 },
                 y: {
+                    min: 0,
                     grid: {
                         display: false
                     },
-                    grace: "60%"
+                    grace: "25%"
                 }
             },
             layout: {
@@ -391,7 +397,6 @@ function loadGraphs() {
             }
         }
     });
-
 };
 
 function createChartFillGradient(canvas) {

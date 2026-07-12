@@ -179,17 +179,22 @@ function createNewTemplate() {
 function enterWorkoutState(exercises) {
     const workout = createWorkout(exercises);
 
-    appState.activeWorkout = workout;
+    if (workout.exercises.length > 0) {
+        appState.activeWorkout = workout;
 
-    addWorkout(workout);
-    renderWorkoutExerciseList(workout);
-    navigateToScreen("start-training-screen", "workout");
 
-    const firstWorkoutCard = document.querySelector(".workout-card");
+        addWorkout(workout);
+        renderWorkoutExerciseList(workout);
+        navigateToScreen("start-training-screen", "workout");
 
-    if (firstWorkoutCard !== null) {
-        openWorkoutCard(firstWorkoutCard);
-        closeAllWorkoutCardsExcept(firstWorkoutCard);
+        const firstWorkoutCard = document.querySelector(".workout-card");
+
+        if (firstWorkoutCard !== null) {
+            openWorkoutCard(firstWorkoutCard);
+            closeAllWorkoutCardsExcept(firstWorkoutCard);
+        }
+    } else {
+        console.log("no exercises selected");
     }
 }
 
@@ -210,7 +215,6 @@ function saveWorkoutSet(exercise, card, elapsedTime, weight) {
     exercise.sets.push(set);
 
     updateWorkout(appState.activeWorkout);
-    renderWorkoutSets(exercise, card);
 }
 
 // --- Selection actions --- //
@@ -444,13 +448,19 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const chevron = body.querySelector(".chevron-button");
 
     body.addEventListener("click", function () {
-        if (appState.activeTimer === false) {
-            rotateChevron(chevron);
-            changeVisibility(details);
-            changeVisibility(inputRow);
-
-            closeAllWorkoutCardsExcept(card);
+        if (appState.activeTimer === true) {
+            return;
         }
+
+        const currentDetails = card.querySelector(".workout-card-details");
+        const currentInputRow = card.querySelector(".workout-input-row");
+        const currentChevron = card.querySelector(".chevron-button");
+
+        rotateChevron(currentChevron);
+        changeVisibility(currentDetails);
+        changeVisibility(currentInputRow);
+
+        closeAllWorkoutCardsExcept(card);
     });
 
     content.appendChild(body);
@@ -459,6 +469,8 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     card.appendChild(content);
     card.appendChild(details);
     card.appendChild(inputRow);
+
+    renderWorkoutSets(exercise, card);
 
     return card;
 }
@@ -618,7 +630,7 @@ function createWeightInput(exercise) {
     const weightInput = createElement("input", "workout-weight-input");
     weightInput.type = "number";
     weightInput.min = "0";
-    weightInput.placeholder = "0";
+    weightInput.placeholder = "-";
 
     const nextSetNumber = exercise.sets.length + 1;
     const lastSet = getSetOfLastSession(exercise, nextSetNumber);

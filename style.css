@@ -1266,14 +1266,39 @@ main {
    SCREEN: ANALYSE PROGRESS
 ========================================================= */
 
+.graphs-state {
+  height: calc(100dvh - 210px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#progress-chart-content {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  min-height: 0;
+}
+
 .line-graph {
   box-sizing: border-box;
+  min-height: 0;
 
   background-color: var(--card-color);
   border-radius: var(--radius-medium);
 
   padding: 4px;
   margin-bottom: 12px;
+}
+
+.line-graph > div {
+  height: 100%;
+}
+
+.line-graph canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .progress-exercise-dropdown {
