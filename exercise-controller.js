@@ -175,8 +175,10 @@ function saveExerciseFromForm() {
             return;
         }
 
+        const existingExercise = exercises[exerciseIndex];
+
         exercises[exerciseIndex] = {
-            id: appState.editingExerciseId,
+            ...existingExercise,
             name: exerciseName,
             settings: settings
         };

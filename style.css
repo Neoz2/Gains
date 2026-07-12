@@ -1172,6 +1172,7 @@ main {
   border-bottom: 1px solid var(--divider-color);
 }
 
+#workout-exercise-list,
 .training-unselected-items,
 .template-unselected-items {
   padding-bottom: 55px;

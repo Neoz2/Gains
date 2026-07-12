@@ -37,6 +37,7 @@ function setupTrainingController() {
     setupOverviewFromTemplateButton();
     setupTrainingEmptyExerciseButton();
     setupTrainingEmptyTemplateButton();
+    setupSummaryPageButton();
     setupAddToWorkoutButton();
     setupFinishWorkoutButton();
 }
@@ -94,6 +95,13 @@ function setupAddToWorkoutButton() {
 
 function setupFinishWorkoutButton() {
     finishWorkoutButton.addEventListener("click", enterSummaryMode);
+}
+
+function setupSummaryPageButton() {
+    summaryState.addEventListener("click", function () {
+        console.log("clicked");
+        navigateToScreen("home-screen", "home");
+    });
 }
 
 // --- Modes --- //

@@ -103,7 +103,7 @@ function enterEditTemplateMode(template) {
     updateSaveTemplateButtonText();
 }
 
-function exitEditTemplateMode() {
+function resetTemplateFormAndShowOverview() {
     appState.editingTemplateId = null;
     clearTemplateForm();
     updateSaveTemplateButtonText();
@@ -157,7 +157,7 @@ function saveTemplateFromForm() {
     }
 
     saveTemplates(templates);
-    exitEditTemplateMode();
+    resetTemplateFormAndShowOverview();
 }
 
 function deleteTemplate(templates, templateIndex) {
