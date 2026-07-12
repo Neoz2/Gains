@@ -175,7 +175,7 @@ function loadGraphExerciseData() {
         }
 
         points.push({
-            workoutNumber: points.length + 1,
+            label: formatWorkoutDate(workout.startedAt),
             weight: Number(set.weight),
             timeUnderLoad: Number(set.timeUnderLoad)
         });
@@ -242,7 +242,7 @@ function loadGraphs() {
     weightChart = new Chart(weightCanvas, {
         type: "line",
         data: {
-            labels: points.map(point => point.workoutNumber),
+            labels: points.map(point => point.label),
             datasets: [
                 {
                     data: points.map(point => point.weight),
@@ -308,7 +308,7 @@ function loadGraphs() {
     tulChart = new Chart(tulCanvas, {
         type: "line",
         data: {
-            labels: points.map(point => point.workoutNumber),
+            labels: points.map(point => point.label),
             datasets: [
                 {
                     data: points.map(point => point.timeUnderLoad),

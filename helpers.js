@@ -47,6 +47,19 @@ function formatCountLabel(count, string) {
     return `${count} ${string}${pluralAdjuster}`;
 }
 
+function formatWorkoutDate(isoDate) {
+    const date = new Date(isoDate);
+
+    if (Number.isNaN(date.getTime())) {
+        return "-";
+    }
+
+    return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+    });
+}
+
 // select from exercises
 function addExerciseToArray(exercises, exercise) {
     const exerciseAlreadyExists = exercises.some(function (existingExercise) {
