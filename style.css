@@ -1234,6 +1234,7 @@ main {
   flex: 1;
 }
 
+.training-save-bar,
 .template-save-bar {
   position: fixed;
   left: 50%;
@@ -1254,6 +1255,7 @@ main {
       var(--background-color) 100%);
 }
 
+.training-save-bar .save-button,
 .template-save-bar .save-button {
   margin: 0;
 }

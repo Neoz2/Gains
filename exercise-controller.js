@@ -105,7 +105,7 @@ function enterEditExerciseMode(exercise) {
     appState.editingExerciseId = exercise.id;
 
     clearExerciseForm();
-    renderExerciseScreen();
+    showExerciseMode("form");
 
     exerciseNameInput.value = exercise.name;
 
@@ -115,12 +115,14 @@ function enterEditExerciseMode(exercise) {
 
         const settingNameInput = settingsRow.querySelector(".setting-name");
         settingNameInput.value = setting.name;
+
         const settingValueInput = settingsRow.querySelector(".setting-value");
         settingValueInput.value = setting.value;
 
         settingsContainer.appendChild(settingsRow);
 
     }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
     updateSettingsRowsVisibility();
     updateSaveExerciseButtonText();
@@ -275,27 +277,12 @@ function renderExerciseOverview() {
     }
 }
 
-function renderExerciseScreen() {
-    const exercises = loadExercises();
-
-    renderExerciseList(exercises);
-    updateExerciseScreenVisibility(exercises);
-}
-
 function renderExerciseList(exercises) {
     exerciseList.innerHTML = "";
 
     for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
         const exerciseCard = createExerciseCard(exercises, exerciseIndex);
         exerciseList.appendChild(exerciseCard);
-    }
-}
-
-function updateExerciseScreenVisibility(exercises) {
-    if (exercises.length === 0) {
-        showExerciseMode("empty");
-    } else {
-        showExerciseMode("form");
     }
 }
 

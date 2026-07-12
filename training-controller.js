@@ -179,23 +179,23 @@ function createNewTemplate() {
 function enterWorkoutState(exercises) {
     const workout = createWorkout(exercises);
 
-    if (workout.exercises.length > 0) {
-        appState.activeWorkout = workout;
-
-
-        addWorkout(workout);
-        renderWorkoutExerciseList(workout);
-        navigateToScreen("start-training-screen", "workout");
-
-        const firstWorkoutCard = document.querySelector(".workout-card");
-
-        if (firstWorkoutCard !== null) {
-            openWorkoutCard(firstWorkoutCard);
-            closeAllWorkoutCardsExcept(firstWorkoutCard);
-        }
-    } else {
+    if (workout.exercises.length === 0) {
         console.log("no exercises selected");
+        return;
     }
+
+    appState.activeWorkout = workout;
+    addWorkout(workout);
+
+    navigateToScreen("start-training-screen", "workout");
+
+    const firstWorkoutCard = document.querySelector(".workout-card");
+
+    if (firstWorkoutCard !== null) {
+        openWorkoutCard(firstWorkoutCard);
+        closeAllWorkoutCardsExcept(firstWorkoutCard);
+    }
+
 }
 
 function enterSummaryMode() {
@@ -208,8 +208,7 @@ function enterSummaryMode() {
 
 // --- Mutate actions --- //
 
-function saveWorkoutSet(exercise, card, elapsedTime, weight) {
-    const setNumber = exercise.sets.length + 1;
+function saveWorkoutSet(exercise, elapsedTime, weight) {
     const set = createWorkoutExerciseSet(Number(weight), elapsedTime);
 
     exercise.sets.push(set);
@@ -420,7 +419,7 @@ function stopTimer(exercise, card, button, bigTimer, weightInput) {
 
     elapsedTime = elapsedSeconds;
 
-    saveWorkoutSet(exercise, card, elapsedTime, weightInput.value);
+    saveWorkoutSet(exercise, elapsedTime, weightInput.value);
 
     refreshWorkoutInputRow(exercise, card);
 }

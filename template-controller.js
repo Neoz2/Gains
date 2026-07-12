@@ -20,7 +20,7 @@ const templatesFormState = document.querySelector(".templates-form-state");
 // --- Controller entry points --- //
 
 function setupTemplateController() {
-    setupEmptyTemplateButton();
+    setupTemplateCreateButtons();
     setupTemplateSaveButton();
 }
 
@@ -39,7 +39,7 @@ function refreshTemplateScreen(mode = null) {
 
 // --- Setup --- //
 
-function setupEmptyTemplateButton() {
+function setupTemplateCreateButtons() {
     overviewCreateTemplateButton.addEventListener("click", function () {
         navigateToScreen("create-templates-screen", "form");
     });
@@ -160,26 +160,7 @@ function saveTemplateFromForm() {
     exitEditTemplateMode();
 }
 
-function deleteCurrentTemplate() {
-    const templates = loadTemplates();
-
-    const templateIndex = templates.findIndex(function (template) {
-        return template.id === appState.editingTemplateId;
-    });
-
-    if (templateIndex === -1) {
-        return;
-    }
-
-    templates.splice(templateIndex, 1);
-
-    saveTemplates(templates);
-    exitEditTemplateMode();
-}
-
 function deleteTemplate(templates, templateIndex) {
-    const deletedTemplateId = templates[templateIndex].id;
-
     templates.splice(templateIndex, 1);
     saveTemplates(templates);
     renderTemplateOverview();
@@ -392,17 +373,17 @@ function createSavedTemplateExerciseRow(exercise) {
     return templateExerciseRow;
 }
 
-function createTemplateCardActions(templates, exerciseIndex) {
+function createTemplateCardActions(templates, templateIndex) {
     const actions = createElement("div", "card-actions");
     const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
 
     editButton.addEventListener("click", function () {
-        enterEditTemplateMode(templates[exerciseIndex]);
+        enterEditTemplateMode(templates[templateIndex]);
     });
 
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
-        deleteTemplate(templates, exerciseIndex);
+        deleteTemplate(templates, templateIndex);
     });
 
     actions.appendChild(editButton);
