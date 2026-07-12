@@ -86,3 +86,9 @@ function getExercisesFromTemplate(template) {
 
     return templateExercises;
 }
+
+function navigateOnClick(element, screen, mode = null) {
+    element.addEventListener("click", function () {
+        navigateToScreen(screen, mode);
+    });
+}

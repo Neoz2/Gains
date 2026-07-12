@@ -20,16 +20,14 @@ const progressChartContent = document.getElementById("progress-chart-content");
 let weightChart = null;
 let tulChart = null;
 
-let selectedExercise = null;
 let selectedSet = 0;
 let points = [];
 
 // --- Controller entry points --- //
 
 function setupProgressController() {
-    setupExerciseDropdownButton()
+    setupExerciseDropdownButton();
     setupSetButtons();
-    setupFirstExercise();
 }
 
 function refreshProgressScreen(mode = null) {
@@ -43,9 +41,7 @@ function refreshProgressScreen(mode = null) {
 // --- Setup --- //
 
 function setupExerciseDropdownButton() {
-    exerciseDropdownButton.addEventListener("click", function () {
-        navigateToScreen("analyse-progress-screen", "selection");
-    });
+    navigateOnClick(exerciseDropdownButton, "analyse-progress-screen", "selection");
 }
 
 function setupSetButtons() {
@@ -60,14 +56,6 @@ function setupSetButtons() {
 
             enterGraphsMode();
         });
-    }
-}
-
-function setupFirstExercise() {
-    const exercises = loadExercises();
-
-    if (exercises.length > 0) {
-        selectedExercise = exercises[0];
     }
 }
 
@@ -112,13 +100,20 @@ function showProgressMode(mode) {
 }
 
 function enterGraphsMode() {
-    const hasExercise = ensureSelectedExercise();
+    let selectedExercise = getSelectedProgressExercise();
 
-    if (hasExercise === false) {
-        destroyProgressCharts();
-        progressSelectionSpan.textContent = "-";
-        showProgressMode("empty");
-        return;
+    if (selectedExercise === null) {
+        const exercises = loadExercises();
+
+        if (exercises.length === 0) {
+            destroyProgressCharts();
+            progressSelectionSpan.textContent = "-";
+            showProgressMode("empty");
+            return;
+        }
+
+        saveSelectedProgressExerciseId(exercises[0].id);
+        selectedExercise = exercises[0];
     }
 
     loadGraphExerciseData();
@@ -154,20 +149,26 @@ function setButtonSelectionStatus(button, buttons) {
 function loadGraphExerciseData() {
     points = [];
 
+    const selectedExercise = getSelectedProgressExercise();
+
+    if (selectedExercise === null) {
+        return;
+    }
+
     const workouts = loadWorkouts();
 
     for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
         const workout = workouts[workoutIndex];
 
-        const exercise = workout.exercises.find(function (exercise) {
-            return exercise.name === selectedExercise.name;
+        const workoutExercise = workout.exercises.find(function (exercise) {
+            return exercise.exerciseId === selectedExercise.id;
         });
 
-        if (exercise === undefined) {
+        if (workoutExercise === undefined) {
             continue;
         }
 
-        const set = exercise.sets[selectedSet];
+        const set = workoutExercise.sets[selectedSet];
 
         if (set === undefined) {
             continue;
@@ -193,28 +194,6 @@ function destroyProgressCharts() {
     }
 }
 
-function ensureSelectedExercise() {
-    const exercises = loadExercises();
-
-    if (selectedExercise !== null) {
-        const selectedStillExists = exercises.some(function (exercise) {
-            return exercise.id === selectedExercise.id;
-        });
-
-        if (selectedStillExists) {
-            return true;
-        }
-    }
-
-    if (exercises.length > 0) {
-        selectedExercise = exercises[0];
-        return true;
-    }
-
-    selectedExercise = null;
-    return false;
-}
-
 // --- Rendering --- //
 
 function renderAvailableExercisesForGraphs() {
@@ -223,15 +202,16 @@ function renderAvailableExercisesForGraphs() {
     availableExercisesList.innerHTML = "";
 
     const exercises = loadExercises();
+    const selectedExerciseId = loadSelectedProgressExerciseId();
 
     for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
         const exercise = exercises[exerciseIndex];
 
-        const isSelected = selectedExercise !== null && exercise.id === selectedExercise.id;
+        const isSelected = exercise.id === selectedExerciseId;
         const row = createExercisePickerRow(exercise, isSelected);
 
         row.addEventListener("click", function () {
-            selectedExercise = exercise;
+            saveSelectedProgressExerciseId(exercise.id);
             navigateToScreen("analyse-progress-screen", "graphs");
         });
 
@@ -242,6 +222,12 @@ function renderAvailableExercisesForGraphs() {
 // --- Graphs --- //
 
 function loadGraphs() {
+    const selectedExercise = getSelectedProgressExercise();
+
+    if (selectedExercise === null) {
+        return;
+    }
+
     progressSelectionSpan.textContent = selectedExercise.name;
 
     // --- Graph configs --- //

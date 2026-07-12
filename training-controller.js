@@ -22,24 +22,20 @@ const selectTemplateState = document.querySelector(".select-template-state");
 const workoutState = document.querySelector(".training-workout-state");
 const summaryState = document.querySelector(".summary-state");
 
-// --- global variables --- ///
-let timerStartedAt = null;
-let timerIntervalId = null;
-
 // =========================================================
 // EXERCISE CONTROLLER
 // =========================================================
 
+let timerStartedAt = null;
+let timerIntervalId = null;
+
 // --- Controller entry points --- //
 
 function setupTrainingController() {
-    setupOverviewStartTrainingButton();
-    setupOverviewFromTemplateButton();
-    setupTrainingEmptyExerciseButton();
-    setupTrainingEmptyTemplateButton();
-    setupSummaryPageButton();
-    setupAddToWorkoutButton();
-    setupFinishWorkoutButton();
+    setupTrainingChoiceButtons();
+    setupTrainingEmptyStateButtons();
+    setupWorkoutButtons();
+    setupSummaryActions();
 }
 
 function refreshTrainingScreen(mode = null) {
@@ -71,37 +67,26 @@ function refreshTrainingScreen(mode = null) {
 
 // --- Setup --- //
 
-function setupOverviewStartTrainingButton() {
+function setupTrainingChoiceButtons() {
     overviewStartTrainingButton.addEventListener("click", enterStartEmptyTrainingMode);
-}
-
-function setupOverviewFromTemplateButton() {
     overviewFromTemplateButton.addEventListener("click", enterFromTemplateMode);
 }
 
-function setupTrainingEmptyExerciseButton() {
-    workoutEmptyStateAddExerciseButton.addEventListener("click", createNewExercise);
+function setupTrainingEmptyStateButtons() {
+    navigateOnClick(workoutEmptyStateAddExerciseButton, "create-exercises-screen", "form");
+    navigateOnClick(workoutEmptyStateAddTemplateButton, "create-templates-screen", "form");
 }
 
-function setupTrainingEmptyTemplateButton() {
-    workoutEmptyStateAddTemplateButton.addEventListener("click", createNewTemplate);
-}
-
-function setupAddToWorkoutButton() {
+function setupWorkoutButtons() {
     addToWorkoutButton.addEventListener("click", function () {
         enterWorkoutState(appState.workoutSelectedExercises);
     });
-}
 
-function setupFinishWorkoutButton() {
     finishWorkoutButton.addEventListener("click", enterSummaryMode);
 }
 
-function setupSummaryPageButton() {
-    summaryState.addEventListener("click", function () {
-        console.log("clicked");
-        navigateToScreen("home-screen", "home");
-    });
+function setupSummaryActions() {
+    navigateOnClick(summaryState, "home-screen");
 }
 
 // --- Modes --- //
@@ -171,24 +156,10 @@ function enterFromTemplateMode() {
     }
 }
 
-function enterAddExercisesToWorkoutMode() {
-    navigateToScreen("start-training-screen", "addExercises");
-}
-
-function createNewExercise() {
-    navigateToScreen("create-exercises-screen", "form");
-}
-
-function createNewTemplate() {
-    console.log("clicked");
-    navigateToScreen("create-templates-screen", "form");
-}
-
 function enterWorkoutState(exercises) {
     const workout = createWorkout(exercises);
 
     if (workout.exercises.length === 0) {
-        console.log("no exercises selected");
         return;
     }
 
@@ -198,12 +169,8 @@ function enterWorkoutState(exercises) {
     navigateToScreen("start-training-screen", "workout");
 
     const firstWorkoutCard = document.querySelector(".workout-card");
-
-    if (firstWorkoutCard !== null) {
-        openWorkoutCard(firstWorkoutCard);
-        closeAllWorkoutCardsExcept(firstWorkoutCard);
-    }
-
+    openWorkoutCard(firstWorkoutCard);
+    closeAllWorkoutCardsExcept(firstWorkoutCard);
 }
 
 function enterSummaryMode() {

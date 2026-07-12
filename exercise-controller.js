@@ -22,35 +22,25 @@ const exercisesOverviewState = document.querySelector(".exercises-overview-state
 // --- Controller entry points --- //
 
 function setupExerciseController() {
-    setupCreateExerciseButton();
+    setupExerciseCreateButtons();
     setupExerciseForm();
     setupSettingsForm();
 }
 
 function refreshExerciseScreen(mode = null) {
-    appState.editingExerciseId = null;
-    clearExerciseForm();
-    updateSaveExerciseButtonText();
-    updateSettingsRowsVisibility();
-
     if (mode === "form") {
         enterCreateExerciseMode();
         return;
     }
 
-    renderExerciseOverview();
+    resetExerciseFormAndShowOverview();
 }
 
 // --- Setup --- //
 
-function setupCreateExerciseButton() {
-    overviewCreateExerciseButton.addEventListener("click", function () {
-        navigateToScreen("create-exercises-screen", "form");
-    });
-
-    emptyCreateExerciseButton.addEventListener("click", function () {
-        navigateToScreen("create-exercises-screen", "form");
-    });
+function setupExerciseCreateButtons() {
+    navigateOnClick(overviewCreateExerciseButton, "create-exercises-screen", "form");
+    navigateOnClick(emptyCreateExerciseButton, "create-exercises-screen", "form");
 }
 
 function setupExerciseForm() {
@@ -128,11 +118,14 @@ function enterEditExerciseMode(exercise) {
     updateSaveExerciseButtonText();
 }
 
-function exitEditExerciseMode() {
+function resetExerciseFormAndShowOverview() {
     appState.editingExerciseId = null;
+
     updateSaveExerciseButtonText();
     clearExerciseForm();
     updateSettingsRowsVisibility();
+
+    renderExerciseOverview();
 }
 
 // --- Mutate actions --- //
@@ -185,8 +178,7 @@ function saveExerciseFromForm() {
     }
 
     saveExercises(exercises);
-    exitEditExerciseMode();
-    renderExerciseOverview();
+    resetExerciseFormAndShowOverview();
 }
 
 function deleteExercise(exercises, exerciseIndex) {

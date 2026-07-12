@@ -7,7 +7,8 @@
 const STORAGE_KEYS = {
     exercises: "gym-app-exercises",
     templates: "gym-app-templates",
-    workouts: "gym-app-workouts"
+    workouts: "gym-app-workouts",
+    selectedProgressExerciseId: "gym-app-selected-progress-exercise-id"
 };
 
 // =========================================================
@@ -105,6 +106,14 @@ function loadExercises() {
     return loadItems(STORAGE_KEYS.exercises);
 }
 
+function getExerciseById(exerciseId) {
+    const exercises = loadExercises();
+
+    return exercises.find(function (exercise) {
+        return exercise.id === exerciseId;
+    });
+}
+
 function saveExercises(exercises) {
     saveItems(STORAGE_KEYS.exercises, exercises);
 }
@@ -123,6 +132,30 @@ function loadWorkouts() {
 
 function saveWorkouts(workouts) {
     saveItems(STORAGE_KEYS.workouts, workouts);
+}
+
+function loadSelectedProgressExerciseId() {
+    return localStorage.getItem(STORAGE_KEYS.selectedProgressExerciseId);
+}
+
+function getSelectedProgressExercise() {
+    const selectedExerciseId = loadSelectedProgressExerciseId();
+
+    if (selectedExerciseId === null) {
+        return null;
+    }
+
+    const exercise = getExerciseById(selectedExerciseId);
+
+    if (exercise === undefined) {
+        return null;
+    }
+
+    return exercise;
+}
+
+function saveSelectedProgressExerciseId(exerciseId) {
+    localStorage.setItem(STORAGE_KEYS.selectedProgressExerciseId, exerciseId);
 }
 
 function addWorkout(workout) {
@@ -145,6 +178,8 @@ function updateWorkout(updatedWorkout) {
     workouts.push(updatedWorkout);
     saveWorkouts(workouts);
 }
+
+// --- Getters --- //
 
 function getSetOfLastSession(exercise, setNumber) {
     if (exercise === undefined || exercise === null) {

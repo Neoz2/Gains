@@ -25,28 +25,19 @@ function setupTemplateController() {
 }
 
 function refreshTemplateScreen(mode = null) {
-    appState.editingTemplateId = null;
-    clearTemplateForm();
-    updateSaveTemplateButtonText();
-
     if (mode === "form") {
         enterCreateTemplateMode();
         return;
     }
 
-    renderTemplateOverview();
+    resetTemplateFormAndShowOverview();
 }
 
 // --- Setup --- //
 
 function setupTemplateCreateButtons() {
-    overviewCreateTemplateButton.addEventListener("click", function () {
-        navigateToScreen("create-templates-screen", "form");
-    });
-
-    emptyCreateTemplateButton.addEventListener("click", function () {
-        navigateToScreen("create-templates-screen", "form");
-    });
+    navigateOnClick(overviewCreateTemplateButton, "create-templates-screen", "form");
+    navigateOnClick(emptyCreateTemplateButton, "create-templates-screen", "form");
 }
 
 function setupTemplateSaveButton() {
@@ -76,6 +67,7 @@ function enterCreateTemplateMode() {
 
     clearTemplateForm();
     updateSaveTemplateButtonText();
+    
     showTemplateMode("form");
 }
 
@@ -105,8 +97,10 @@ function enterEditTemplateMode(template) {
 
 function resetTemplateFormAndShowOverview() {
     appState.editingTemplateId = null;
+
     clearTemplateForm();
     updateSaveTemplateButtonText();
+
     renderTemplateOverview();
 }
 
