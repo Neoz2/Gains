@@ -54,17 +54,17 @@ function createExercise(name, settings) {
 }
 
 function createTemplate(name, selectedExercises) {
-    const exerciseIds = [];
-
-    for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
-        exerciseIds.push(selectedExercises[exerciseIndex].id);
-    }
-
     return {
         id: createId(),
         name: name,
-        exerciseIds: exerciseIds
+        exerciseIds: getExerciseIdsFromSelectedExercises(selectedExercises)
     };
+}
+
+function getExerciseIdsFromSelectedExercises(selectedExercises) {
+    return selectedExercises.map(function (exercise) {
+        return exercise.id;
+    });
 }
 
 function createWorkout(selectedExercises) {
@@ -225,7 +225,14 @@ function getDescendingArrayOfWorkouts() {
     return workouts.slice().sort(function (a, b) {
         return new Date(b.startedAt) - new Date(a.startedAt);
     });
+}
 
+function getAscendingArrayOfWorkouts() {
+    const workouts = loadWorkouts();
+
+    return workouts.slice().sort(function (a, b) {
+        return new Date(a.startedAt) - new Date(b.startedAt);
+    });
 }
 
 // --- Storage helpers --- //

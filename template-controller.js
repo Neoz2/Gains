@@ -67,7 +67,7 @@ function enterCreateTemplateMode() {
 
     clearTemplateForm();
     updateSaveTemplateButtonText();
-    
+
     showTemplateMode("form");
 }
 
@@ -139,15 +139,17 @@ function saveTemplateFromForm() {
             return template.id === appState.editingTemplateId;
         });
 
-
         if (templateIndex === -1) {
             return;
         }
 
-        const updatedTemplate = createTemplate(templateName, appState.templateSelectedExercises);
-        updatedTemplate.id = appState.editingTemplateId;
+        const existingTemplate = templates[templateIndex];
 
-        templates[templateIndex] = updatedTemplate;
+        templates[templateIndex] = {
+            ...existingTemplate,
+            name: templateName,
+            exerciseIds: getExerciseIdsFromSelectedExercises(appState.templateSelectedExercises)
+        };
     }
 
     saveTemplates(templates);
@@ -172,7 +174,6 @@ function removeExerciseFromTemplates(deletedExerciseId) {
     }
 
     saveTemplates(templates);
-    renderTemplateOverview();
 }
 
 // --- Selection actions --- //

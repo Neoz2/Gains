@@ -185,10 +185,11 @@ function deleteExercise(exercises, exerciseIndex) {
     const deletedExerciseId = exercises[exerciseIndex].id;
 
     exercises.splice(exerciseIndex, 1);
-    saveExercises(exercises);
-    renderExerciseOverview();
 
+    saveExercises(exercises);
     removeExerciseFromTemplates(deletedExerciseId);
+
+    renderExerciseOverview();
 }
 
 // --- Form helpers --- //
@@ -341,7 +342,7 @@ function createExerciseCardHeader(exercise) {
 
     const iconBadge = createElement("span", "icon-badge");
     const icon = createIcon("fa-solid", "fa-dumbbell", "item-icon");
-    
+
     const main = createExerciseCardMain(exercise);
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 

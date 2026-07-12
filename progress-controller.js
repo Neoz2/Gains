@@ -155,7 +155,7 @@ function loadGraphExerciseData() {
         return;
     }
 
-    const workouts = loadWorkouts();
+    const workouts = getAscendingArrayOfWorkouts();
 
     for (let workoutIndex = 0; workoutIndex < workouts.length; workoutIndex++) {
         const workout = workouts[workoutIndex];
@@ -234,86 +234,37 @@ function loadGraphs() {
 
     const weightCanvas = document.getElementById("weight-graph");
     const weightGradient = createChartFillGradient(weightCanvas);
+    const weightTitle = "Weight";
+    const weightData = points.map(point => point.weight);
 
     if (weightChart !== null) {
         weightChart.destroy();
     }
 
-    weightChart = new Chart(weightCanvas, {
-        type: "line",
-        data: {
-            labels: points.map(point => point.label),
-            datasets: [
-                {
-                    data: points.map(point => point.weight),
-                    borderColor: "#EA2266",
-                    backgroundColor: weightGradient,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    min: 0,
-                    grid: {
-                        display: false
-                    },
-                    grace: "25%"
-                }
-            },
-            layout: {
-                padding: {
-                    top: 4,
-                    bottom: 4,
-                    left: 8,
-                    right: 8
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: "Weight",
-                    align: "start",
-                    color: "floralwhite",
-                    font: {
-                        size: 14
-                    },
-                    padding: {
-                        top: 4,
-                        bottom: 15
-                    }
-                }
-            }
-        }
-    });
+    weightChart = createProgressChart(weightCanvas, weightTitle, weightData, weightGradient, false);
 
     const tulCanvas = document.getElementById("tul-graph");
     const tulGradient = createChartFillGradient(tulCanvas);
+    const tulTitle = "Time under load";
+    const tulData = points.map(point => point.timeUnderLoad);
 
     if (tulChart !== null) {
         tulChart.destroy();
     }
 
-    tulChart = new Chart(tulCanvas, {
+    tulChart = createProgressChart(tulCanvas, tulTitle, tulData, tulGradient, true);
+}
+
+function createProgressChart(canvas, title, data, gradient, showTargetLines) {
+    return new Chart(canvas, {
         type: "line",
         data: {
             labels: points.map(point => point.label),
             datasets: [
                 {
-                    data: points.map(point => point.timeUnderLoad),
+                    data: data,
                     borderColor: "#EA2266",
-                    backgroundColor: tulGradient,
+                    backgroundColor: gradient,
                     fill: true
                 }
             ]
@@ -349,7 +300,7 @@ function loadGraphs() {
                 },
                 title: {
                     display: true,
-                    text: "Time under load",
+                    text: title,
                     align: "start",
                     color: "floralwhite",
                     font: {
@@ -363,6 +314,7 @@ function loadGraphs() {
                 annotation: {
                     annotations: {
                         minTargetLine: {
+                            display: showTargetLines,
                             type: "line",
                             yMin: 50,
                             yMax: 50,
@@ -371,6 +323,7 @@ function loadGraphs() {
                             borderDash: [6, 6]
                         },
                         maxTargetLine: {
+                            display: showTargetLines,
                             type: "line",
                             yMin: 70,
                             yMax: 70,
@@ -383,7 +336,7 @@ function loadGraphs() {
             }
         }
     });
-};
+}
 
 function createChartFillGradient(canvas) {
     const context = canvas.getContext("2d");
