@@ -135,7 +135,7 @@
         <span class="content-header">AVAILABLE EXERCISES</span>
         <div class="training-unselected-items"></div>
 
-        <div class="training-save-bar">
+        <div class="fixed-save-bar">
           <button id="add-to-workout" class="save-button">
             Add to workout
           </button>
@@ -146,7 +146,7 @@
         <span class="content-header">WORKOUT</span>
         <ul id="workout-exercise-list" class="content-list"></ul>
 
-        <div class="template-save-bar">
+        <div class="fixed-save-bar">
           <button id="finish-workout" class="save-button">
             Finish workout
           </button>
@@ -198,13 +198,11 @@
         <input id="exercise-name-input" class="text-input" placeholder="Exercise name">
         <div id="settings-container" class="hidden"></div>
 
-        <span>
-          <div class="template-save-bar">
-            <button id="save-exercise" class="save-button">
-              Save exercise
-            </button>
-          </div>
-        </span>
+        <div class="fixed-save-bar">
+          <button id="save-exercise" class="save-button">
+            Save exercise
+          </button>
+        </div>
       </div>
 
       <div class="exercises-overview-state hidden">
@@ -256,7 +254,7 @@
         <span class="content-header">AVAILABLE EXERCISES</span>
         <div class="template-unselected-items"></div>
 
-        <div class="template-save-bar">
+        <div class="fixed-save-bar">
           <button id="save-template" class="save-button">
             Save template
           </button>
@@ -310,13 +308,13 @@
 
         <div id="progress-chart-content">
           <div class="line-graph">
-            <div style="width: 100%;">
+            <div class="chart-wrapper">
               <canvas id="weight-graph"></canvas>
             </div>
           </div>
 
           <div class="line-graph">
-            <div style="width: 100%;">
+            <div class="chart-wrapper">
               <canvas id="tul-graph"></canvas>
             </div>
           </div>

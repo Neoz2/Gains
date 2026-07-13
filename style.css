@@ -1235,8 +1235,7 @@ main {
   flex: 1;
 }
 
-.training-save-bar,
-.template-save-bar {
+.fixed-save-bar {
   position: fixed;
   left: 50%;
   bottom: 63px;
@@ -1268,6 +1267,10 @@ main {
 /* =========================================================
    SCREEN: ANALYSE PROGRESS
 ========================================================= */
+
+.chart-wrapper {
+  width: 100%;
+}
 
 .graphs-state {
   height: calc(100dvh - 210px);

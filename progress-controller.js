@@ -125,7 +125,7 @@ function enterGraphsMode() {
     }
 
     showProgressMode("graphs");
-    renderGraphs(selectedExercise, points);
+    renderProgressGraphs(selectedExercise, points);
 }
 
 function enterSelectExerciseToAnalyseMode() {
@@ -214,12 +214,8 @@ function renderAvailableExercisesForGraphs() {
     }
 }
 
-// --- Graphs --- //
-
-function renderGraphs(selectedExercise, points) {
+function renderProgressGraphs(selectedExercise, points) {
     progressSelectionSpan.textContent = selectedExercise.name;
-
-    // --- Graph configs --- //
 
     const labels = points.map(point => point.label);
 
@@ -341,4 +337,3 @@ function createChartFillGradient(canvas) {
 
     return gradient;
 }
-
