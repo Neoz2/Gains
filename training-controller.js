@@ -251,15 +251,9 @@ function openWorkoutCard(card) {
 }
 
 function updateTrainingBackButtonVisibility(mode) {
-    if (trainingBackButton === null) {
-        return;
-    }
+    const shouldHideBackButton = appState.activeWorkout !== null || mode === "summary";
 
-    if (appState.activeWorkout !== null || mode === "summary") {
-        trainingBackButton.classList.add("invisible");
-    } else {
-        trainingBackButton.classList.remove("invisible");
-    }
+    trainingBackButton.classList.toggle("invisible", shouldHideBackButton);
 }
 
 function getUsableTemplates() {
