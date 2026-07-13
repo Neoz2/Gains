@@ -12,10 +12,9 @@ const STORAGE_KEYS = {
 };
 
 // =========================================================
-// DATA STORAGE
+// LOCAL STORAGE HELPERS
 // =========================================================
 
-// --- Data storage functions --- //
 function loadItems(storageKey) {
     const savedItems = localStorage.getItem(storageKey);
 
@@ -42,7 +41,9 @@ function saveItems(storageKey, items) {
     localStorage.setItem(storageKey, json);
 }
 
-// --- Data models + storage --- //
+// =========================================================
+// DATA MODELS
+// =========================================================
 
 function createExercise(name, settings) {
     return {
@@ -53,24 +54,18 @@ function createExercise(name, settings) {
     };
 }
 
-function createTemplate(name, selectedExercises) {
+function createTemplate(name, selectedExerciseIds) {
     return {
         id: createId(),
         name: name,
-        exerciseIds: getExerciseIdsFromSelectedExercises(selectedExercises)
+        exerciseIds: selectedExerciseIds
     };
-}
-
-function getExerciseIdsFromSelectedExercises(selectedExercises) {
-    return selectedExercises.map(function (exercise) {
-        return exercise.id;
-    });
 }
 
 function createWorkout(selectedExercises) {
     const workoutExercises = [];
 
-    for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++){
+    for (let exerciseIndex = 0; exerciseIndex < selectedExercises.length; exerciseIndex++) {
         const exercise = selectedExercises[exerciseIndex];
         const workoutExercise = createWorkoutExercise(exercise);
 
@@ -84,26 +79,34 @@ function createWorkout(selectedExercises) {
     };
 }
 
-function createWorkoutExercise(exercise){
+function createWorkoutExercise(exercise) {
     return {
         id: createId(),
         exerciseId: exercise.id,
         name: exercise.name,
         settings: copySettings(exercise.settings),
         sets: []
-    }
+    };
 }
 
-function createWorkoutExerciseSet(weight, timeUnderLoad){
+function createWorkoutExerciseSet(weight, timeUnderLoad) {
     return {
         id: createId(),
         weight: weight,
         timeUnderLoad: timeUnderLoad
-    }
+    };
 }
+
+// =========================================================
+// EXERCISE STORAGE
+// =========================================================
 
 function loadExercises() {
     return loadItems(STORAGE_KEYS.exercises);
+}
+
+function saveExercises(exercises) {
+    saveItems(STORAGE_KEYS.exercises, exercises);
 }
 
 function getExerciseById(exerciseId) {
@@ -114,9 +117,9 @@ function getExerciseById(exerciseId) {
     });
 }
 
-function saveExercises(exercises) {
-    saveItems(STORAGE_KEYS.exercises, exercises);
-}
+// =========================================================
+// TEMPLATE STORAGE
+// =========================================================
 
 function loadTemplates() {
     return loadItems(STORAGE_KEYS.templates);
@@ -126,36 +129,16 @@ function saveTemplates(templates) {
     saveItems(STORAGE_KEYS.templates, templates);
 }
 
+// =========================================================
+// WORKOUT STORAGE
+// =========================================================
+
 function loadWorkouts() {
     return loadItems(STORAGE_KEYS.workouts);
 }
 
 function saveWorkouts(workouts) {
     saveItems(STORAGE_KEYS.workouts, workouts);
-}
-
-function loadSelectedProgressExerciseId() {
-    return localStorage.getItem(STORAGE_KEYS.selectedProgressExerciseId);
-}
-
-function getSelectedProgressExercise() {
-    const selectedExerciseId = loadSelectedProgressExerciseId();
-
-    if (selectedExerciseId === null) {
-        return null;
-    }
-
-    const exercise = getExerciseById(selectedExerciseId);
-
-    if (exercise === undefined) {
-        return null;
-    }
-
-    return exercise;
-}
-
-function saveSelectedProgressExerciseId(exerciseId) {
-    localStorage.setItem(STORAGE_KEYS.selectedProgressExerciseId, exerciseId);
 }
 
 function addWorkout(workout) {
@@ -179,7 +162,21 @@ function updateWorkout(updatedWorkout) {
     saveWorkouts(workouts);
 }
 
-// --- Getters --- //
+function getDescendingArrayOfWorkouts() {
+    const workouts = loadWorkouts();
+
+    return workouts.slice().sort(function (a, b) {
+        return new Date(b.startedAt) - new Date(a.startedAt);
+    });
+}
+
+function getAscendingArrayOfWorkouts() {
+    const workouts = loadWorkouts();
+
+    return workouts.slice().sort(function (a, b) {
+        return new Date(a.startedAt) - new Date(b.startedAt);
+    });
+}
 
 function getSetOfLastSession(exercise, setNumber, ignoredWorkoutId = null) {
     if (exercise === undefined || exercise === null) {
@@ -219,29 +216,44 @@ function getSetOfLastSession(exercise, setNumber, ignoredWorkoutId = null) {
     return null;
 }
 
-function getDescendingArrayOfWorkouts() {
-    const workouts = loadWorkouts();
+// =========================================================
+// SELECTED PROGRESS EXERCISE STORAGE
+// =========================================================
 
-    return workouts.slice().sort(function (a, b) {
-        return new Date(b.startedAt) - new Date(a.startedAt);
-    });
+function loadSelectedProgressExerciseId() {
+    return localStorage.getItem(STORAGE_KEYS.selectedProgressExerciseId);
 }
 
-function getAscendingArrayOfWorkouts() {
-    const workouts = loadWorkouts();
-
-    return workouts.slice().sort(function (a, b) {
-        return new Date(a.startedAt) - new Date(b.startedAt);
-    });
+function saveSelectedProgressExerciseId(exerciseId) {
+    localStorage.setItem(STORAGE_KEYS.selectedProgressExerciseId, exerciseId);
 }
 
-// --- Storage helpers --- //
+function getSelectedProgressExercise() {
+    const selectedExerciseId = loadSelectedProgressExerciseId();
+
+    if (selectedExerciseId === null) {
+        return null;
+    }
+
+    const exercise = getExerciseById(selectedExerciseId);
+
+    if (exercise === undefined) {
+        return null;
+    }
+
+    return exercise;
+}
+
+// =========================================================
+// UTILITY HELPERS
+// =========================================================
+
 function createId() {
     return crypto.randomUUID();
 }
 
 function copySettings(settings) {
-    const copiedSettings = []
+    const copiedSettings = [];
 
     for (let settingIndex = 0; settingIndex < settings.length; settingIndex++) {
         const setting = settings[settingIndex];
@@ -253,4 +265,10 @@ function copySettings(settings) {
     }
 
     return copiedSettings;
+}
+
+function getExerciseIdsFromSelectedExercises(selectedExercises) {
+    return selectedExercises.map(function (exercise) {
+        return exercise.id;
+    });
 }

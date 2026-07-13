@@ -1,7 +1,7 @@
 //dom-builder.js
 
 // =========================================================
-// DOM BUILDERS: GENERIC
+// GENERIC DOM BUILDERS
 // =========================================================
 
 function updatePageHeader(titleElement, subtitleElement, title, subtitle) {
@@ -14,8 +14,7 @@ function createActionButton(iconClassBase, iconClassIcon, text) {
 	const icon = createIcon(iconClassBase, iconClassIcon);
 	const label = createText(text, "action-button-text");
 
-	button.appendChild(icon);
-	button.appendChild(label);
+	button.append(icon, label);
 
 	return button;
 }
@@ -43,7 +42,7 @@ function createIconButton(iconClassBase, iconClassIcon, ...classes) {
 	const button = createButton(...classes);
 	const icon = createIcon(iconClassBase, iconClassIcon);
 
-	button.appendChild(icon);
+	button.append(icon);
 
 	return button;
 }
@@ -85,6 +84,10 @@ function addClasses(element, classes) {
 	}
 }
 
+// =========================================================
+// SHARED APP DOM BUILDERS
+// =========================================================
+
 function createExercisePickerRow(exercise, isSelected) {
     const row = createButton();
 
@@ -92,7 +95,7 @@ function createExercisePickerRow(exercise, isSelected) {
         row.classList.add("selected-exercise-row");
 
         const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
-        row.appendChild(barsIcon);
+        row.append(barsIcon);
     } else {
         row.classList.add("available-exercise-row");
     }
@@ -107,8 +110,7 @@ function createExercisePickerRow(exercise, isSelected) {
         checkIcon = createIcon("fa-regular", "fa-circle");
     }
 
-    row.appendChild(exerciseName);
-    row.appendChild(checkIcon);
+    row.append(exerciseName, checkIcon);
 
     return row;
 }

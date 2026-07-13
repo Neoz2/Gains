@@ -14,14 +14,13 @@ const progressEmptyState = document.getElementById("progress-empty-state");
 const progressChartContent = document.getElementById("progress-chart-content");
 
 // =========================================================
-// EXERCISE CONTROLLER
+// PROGRESS CONTROLLER
 // =========================================================
 
 let weightChart = null;
 let tulChart = null;
 
 let selectedSet = 0;
-let points = [];
 
 // --- Controller entry points --- //
 
@@ -116,7 +115,7 @@ function enterGraphsMode() {
         selectedExercise = exercises[0];
     }
 
-    loadGraphExerciseData();
+    const points = loadGraphExerciseData(selectedExercise);
 
     if (points.length === 0) {
         destroyProgressCharts();
@@ -126,7 +125,7 @@ function enterGraphsMode() {
     }
 
     showProgressMode("graphs");
-    loadGraphs();
+    renderGraphs(selectedExercise, points);
 }
 
 function enterSelectExerciseToAnalyseMode() {
@@ -146,14 +145,8 @@ function setButtonSelectionStatus(button, buttons) {
     button.classList.add("selected");
 }
 
-function loadGraphExerciseData() {
-    points = [];
-
-    const selectedExercise = getSelectedProgressExercise();
-
-    if (selectedExercise === null) {
-        return;
-    }
+function loadGraphExerciseData(selectedExercise) {
+    const points = [];
 
     const workouts = getAscendingArrayOfWorkouts();
 
@@ -180,6 +173,8 @@ function loadGraphExerciseData() {
             timeUnderLoad: Number(set.timeUnderLoad)
         });
     }
+
+    return points;
 }
 
 function destroyProgressCharts() {
@@ -215,22 +210,18 @@ function renderAvailableExercisesForGraphs() {
             navigateToScreen("analyse-progress-screen", "graphs");
         });
 
-        availableExercisesList.appendChild(row);
+        availableExercisesList.append(row);
     }
 }
 
 // --- Graphs --- //
 
-function loadGraphs() {
-    const selectedExercise = getSelectedProgressExercise();
-
-    if (selectedExercise === null) {
-        return;
-    }
-
+function renderGraphs(selectedExercise, points) {
     progressSelectionSpan.textContent = selectedExercise.name;
 
     // --- Graph configs --- //
+
+    const labels = points.map(point => point.label);
 
     const weightCanvas = document.getElementById("weight-graph");
     const weightGradient = createChartFillGradient(weightCanvas);
@@ -241,7 +232,7 @@ function loadGraphs() {
         weightChart.destroy();
     }
 
-    weightChart = createProgressChart(weightCanvas, weightTitle, weightData, weightGradient, false);
+    weightChart = createProgressChart(weightCanvas, weightTitle, weightData, labels, weightGradient, false);
 
     const tulCanvas = document.getElementById("tul-graph");
     const tulGradient = createChartFillGradient(tulCanvas);
@@ -252,14 +243,14 @@ function loadGraphs() {
         tulChart.destroy();
     }
 
-    tulChart = createProgressChart(tulCanvas, tulTitle, tulData, tulGradient, true);
+    tulChart = createProgressChart(tulCanvas, tulTitle, tulData, labels, tulGradient, true);
 }
 
-function createProgressChart(canvas, title, data, gradient, showTargetLines) {
+function createProgressChart(canvas, title, data, labels, gradient, showTargetLines) {
     return new Chart(canvas, {
         type: "line",
         data: {
-            labels: points.map(point => point.label),
+            labels: labels,
             datasets: [
                 {
                     data: data,

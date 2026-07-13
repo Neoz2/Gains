@@ -60,7 +60,7 @@ function setupSettingsForm() {
         const settingIndex = settingsRows.length + 1;
         const settingsRow = createSettingRow(settingIndex);
 
-        settingsContainer.appendChild(settingsRow);
+        settingsContainer.append(settingsRow);
         updateSettingsRowsVisibility();
     });
 }
@@ -109,7 +109,7 @@ function enterEditExerciseMode(exercise) {
         const settingValueInput = settingsRow.querySelector(".setting-value");
         settingValueInput.value = setting.value;
 
-        settingsContainer.appendChild(settingsRow);
+        settingsContainer.append(settingsRow);
 
     }
 
@@ -277,7 +277,7 @@ function renderExerciseList(exercises) {
 
     for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
         const exerciseCard = createExerciseCard(exercises, exerciseIndex);
-        exerciseList.appendChild(exerciseCard);
+        exerciseList.append(exerciseCard);
     }
 }
 
@@ -302,15 +302,8 @@ function createSettingRow(settingIndex) {
         updateSettingsRowsVisibility();
     });
 
-    topRow.appendChild(settingIndexCounter);
-    topRow.appendChild(settingsHeader);
-    topRow.appendChild(deleteButton);
-
-    settingsRow.appendChild(topRow);
-    settingsRow.appendChild(settingNameLabel);
-    settingsRow.appendChild(settingNameInput);
-    settingsRow.appendChild(settingValueLabel);
-    settingsRow.appendChild(settingValueInput);
+    topRow.append(settingIndexCounter, settingsHeader, deleteButton);
+    settingsRow.append(topRow, settingNameLabel, settingNameInput, settingValueLabel, settingValueInput);
 
     return settingsRow;
 }
@@ -329,10 +322,8 @@ function createExerciseCard(exercises, exerciseIndex) {
         changeVisibility(details);
     });
 
-    details.appendChild(actions);
-
-    card.appendChild(header);
-    card.appendChild(details);
+    details.append(actions);
+    card.append(header, details);
 
     return card;
 }
@@ -346,11 +337,8 @@ function createExerciseCardHeader(exercise) {
     const main = createExerciseCardMain(exercise);
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    iconBadge.appendChild(icon);
-
-    header.appendChild(iconBadge);
-    header.appendChild(main);
-    header.appendChild(chevron);
+    iconBadge.append(icon);
+    header.append(iconBadge, main, chevron);
 
     return header;
 }
@@ -364,8 +352,7 @@ function createExerciseCardMain(exercise) {
     const subtitleText = formatCountLabel(settingCount, "machine setting");
     const subtitle = createText(subtitleText, "item-subtitle");
 
-    main.appendChild(title);
-    main.appendChild(subtitle);
+    main.append(title, subtitle);
 
     return main;
 }
@@ -377,7 +364,7 @@ function createExerciseCardDetails(exercise) {
     for (let settingIndex = 0; settingIndex < exercise.settings.length; settingIndex++) {
         const setting = exercise.settings[settingIndex];
         const settingRow = createSavedExerciseSettingRow(setting);
-        details.appendChild(settingRow);
+        details.append(settingRow);
     }
 
     return details;
@@ -388,8 +375,7 @@ function createSavedExerciseSettingRow(setting) {
     const settingName = createText(setting.name, "setting-name");
     const settingValue = createText(setting.value, "setting-value");
 
-    settingRow.appendChild(settingName);
-    settingRow.appendChild(settingValue);
+    settingRow.append(settingName, settingValue);
 
     return settingRow;
 }
@@ -407,8 +393,7 @@ function createExerciseCardActions(exercises, exerciseIndex) {
         deleteExercise(exercises, exerciseIndex);
     });
 
-    actions.appendChild(editButton);
-    actions.appendChild(deleteButton);
+    actions.append(editButton, deleteButton);
 
     return actions;
 }

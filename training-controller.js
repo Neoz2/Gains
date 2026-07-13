@@ -304,7 +304,7 @@ function renderWorkoutTemplateList() {
 
     for (let templateIndex = 0; templateIndex < usableTemplates.length; templateIndex++) {
         const templateCard = createTemplateOption(usableTemplates[templateIndex]);
-        availableTemplateList.appendChild(templateCard);
+        availableTemplateList.append(templateCard);
     }
 }
 
@@ -327,7 +327,7 @@ function renderAvailableWorkoutExercises() {
             selectWorkoutExercise(exercise);
         });
 
-        availableExercisesList.appendChild(row);
+        availableExercisesList.append(row);
     }
 }
 
@@ -345,7 +345,7 @@ function renderSelectedWorkoutExercises() {
             unselectWorkoutExercise(exercise);
         });
 
-        selectedExercisesList.appendChild(row);
+        selectedExercisesList.append(row);
     }
 }
 
@@ -354,7 +354,7 @@ function renderWorkoutExerciseList(workout) {
 
     for (let exerciseIndex = 0; exerciseIndex < workout.exercises.length; exerciseIndex++) {
         const exerciseCard = createWorkoutExerciseCard(workout.exercises[exerciseIndex], exerciseIndex);
-        workoutExerciseList.appendChild(exerciseCard);
+        workoutExerciseList.append(exerciseCard);
     }
 }
 
@@ -379,7 +379,7 @@ function renderWorkoutSets(exercise, card) {
         const set = exercise.sets[setIndex];
         const setRow = createSetRow(setIndex + 1, set, exercise, card);
 
-        workoutSetList.appendChild(setRow);
+        workoutSetList.append(setRow);
     }
 }
 
@@ -450,12 +450,8 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
         closeAllWorkoutCardsExcept(card);
     });
 
-    content.appendChild(body);
-
-    card.appendChild(dragIcon);
-    card.appendChild(content);
-    card.appendChild(details);
-    card.appendChild(inputRow);
+    content.append(body);
+    card.append(dragIcon, content, details, inputRow);
 
     renderWorkoutSets(exercise, card);
 
@@ -470,10 +466,7 @@ function createWorkoutExerciseCardBody(exercise, exerciseIndex) {
     const numberOfSets = createText("0 sets", "workout-set-count");
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    body.appendChild(index);
-    body.appendChild(title);
-    body.appendChild(numberOfSets);
-    body.appendChild(chevron);
+    body.append(index, title, numberOfSets, chevron);
 
     return body;
 }
@@ -482,7 +475,7 @@ function createWorkoutExerciseCardDetails(exercise) {
     const details = createElement("div", "workout-card-details", "hidden");
     const settings = createWorkoutExerciseCardSettings(exercise);
 
-    details.appendChild(settings);
+    details.append(settings);
 
     return details;
 }
@@ -493,7 +486,7 @@ function createWorkoutExerciseCardSettings(exercise) {
     for (let i = 0; i < exercise.settings.length; i++) {
         const setting = exercise.settings[i];
         const settingText = createText(`${setting.name} · ${setting.value}`, "workout-card-setting-pill");
-        settings.appendChild(settingText);
+        settings.append(settingText);
     }
 
     return settings;
@@ -515,20 +508,14 @@ function createWeightInputRow(exercise, card) {
 
     const recommendation = createRecommendation(exercise);
 
-    headers.appendChild(weightHeader);
-    headers.appendChild(timerHeader);
-
-    content.appendChild(weightInput);
-    content.appendChild(bigTimer);
+    headers.append(weightHeader, timerHeader);
+    content.append(weightInput, bigTimer);
 
     if (recommendation !== null) {
-        inputRow.appendChild(recommendation);
+        inputRow.append(recommendation);
     }
 
-    inputRow.appendChild(headers);
-    inputRow.appendChild(content);
-    inputRow.appendChild(button);
-    inputRow.appendChild(setContainer);
+    inputRow.append(headers, content, button, setContainer);
 
     return inputRow;
 }
@@ -592,26 +579,13 @@ function createRecommendation(exercise) {
     const targetMidText = createText(TULtext, "text-field", "recommend-highlight");
     const targetEndText = createText(endText, "text-field");
 
-    indicationIcon.appendChild(indicationIconSymbol);
+    indicationIcon.append(indicationIconSymbol);
+    lastSessionTextContainer.append(lastSessionIcon, lastSessionStartText, lastSessionMidText, lastSessionEndText);
+    targetTextContainer.append(targetIcon, targetStartText, targetMidText, targetEndText);
+    infoContainer.append(titleText, lastSessionTextContainer, targetTextContainer);
+    recommendationContainer.append(indicationIcon, infoContainer);
 
-    lastSessionTextContainer.appendChild(lastSessionIcon);
-    lastSessionTextContainer.appendChild(lastSessionStartText);
-    lastSessionTextContainer.appendChild(lastSessionMidText);
-    lastSessionTextContainer.appendChild(lastSessionEndText);
-
-    targetTextContainer.appendChild(targetIcon);
-    targetTextContainer.appendChild(targetStartText);
-    targetTextContainer.appendChild(targetMidText);
-    targetTextContainer.appendChild(targetEndText);
-
-    infoContainer.appendChild(titleText);
-    infoContainer.appendChild(lastSessionTextContainer);
-    infoContainer.appendChild(targetTextContainer);
-
-    recommendationContainer.appendChild(indicationIcon);
-    recommendationContainer.appendChild(infoContainer);
-
-    return recommendationContainer
+    return recommendationContainer;
 }
 
 function createWeightInput(exercise) {
@@ -663,8 +637,7 @@ function createSetContainer() {
     const header = createText("Completed sets", "field-name");
     const setList = createElement("div", "workout-sets-list");
 
-    setContainer.appendChild(header);
-    setContainer.appendChild(setList);
+    setContainer.append(header, setList);
 
     return setContainer;
 }
@@ -687,7 +660,7 @@ function createSetRow(setNumber, set, exercise, card) {
 
         updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
-    })
+    });
 
     minusButton.addEventListener("click", function () {
         if (set.timeUnderLoad > 0) {
@@ -696,26 +669,18 @@ function createSetRow(setNumber, set, exercise, card) {
 
         updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
-    })
+    });
 
     plusButton.addEventListener("click", function () {
         set.timeUnderLoad += 1;
 
         updateWorkout(appState.activeWorkout);
         renderWorkoutSets(exercise, card);
-    })
+    });
 
-    weightText.appendChild(weightValue);
-    weightText.appendChild(weightKg);
-
-    setTimeControl.appendChild(minusButton);
-    setTimeControl.appendChild(timeUnderLoadText);
-    setTimeControl.appendChild(plusButton);
-
-    setRow.appendChild(deleteButton);
-    setRow.appendChild(setNumberText);
-    setRow.appendChild(weightText);
-    setRow.appendChild(setTimeControl);
+    weightText.append(weightValue, weightKg);
+    setTimeControl.append(minusButton, timeUnderLoadText, plusButton);
+    setRow.append(deleteButton, setNumberText, weightText, setTimeControl);
 
     return setRow;
 }
@@ -735,16 +700,10 @@ function createTemplateOption(template) {
     const startButton = createButton("action-button");
     startButton.textContent = "Start";
 
-    iconBadge.appendChild(icon);
-
-    main.appendChild(title);
-    main.appendChild(subtitle);
-
-    header.appendChild(iconBadge);
-    header.appendChild(main);
-    header.appendChild(startButton);
-
-    card.appendChild(header);
+    iconBadge.append(icon);
+    main.append(title, subtitle);
+    header.append(iconBadge, main, startButton);
+    card.append(header);
 
     card.addEventListener("click", function () {
         const templateExercises = getExercisesFromTemplate(template);

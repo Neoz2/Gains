@@ -133,8 +133,10 @@ function saveTemplateFromForm() {
         return;
     }
 
+    const exerciseIds = getExerciseIdsFromSelectedExercises(appState.templateSelectedExercises);
+
     if (appState.editingTemplateId === null) {
-        const template = createTemplate(templateName, appState.templateSelectedExercises);
+        const template = createTemplate(templateName, exerciseIds);
         templates.push(template);
     } else {
         const templateIndex = templates.findIndex(function (template) {
@@ -150,7 +152,7 @@ function saveTemplateFromForm() {
         templates[templateIndex] = {
             ...existingTemplate,
             name: templateName,
-            exerciseIds: getExerciseIdsFromSelectedExercises(appState.templateSelectedExercises)
+            exerciseIds: exerciseIds
         };
     }
 
@@ -238,7 +240,7 @@ function renderTemplateList(templates) {
 
     for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
         const savedTemplateCard = createTemplateCard(templates, templateIndex);
-        templateList.appendChild(savedTemplateCard);
+        templateList.append(savedTemplateCard);
     }
 }
 
@@ -261,7 +263,7 @@ function renderAvailableTemplateExercises() {
             selectTemplateExercise(exercise);
         });
 
-        availableExercisesList.appendChild(row);
+        availableExercisesList.append(row);
     }
 }
 
@@ -279,7 +281,7 @@ function renderSelectedTemplateExercises() {
             unselectTemplateExercise(exercise);
         });
 
-        selectedExercisesList.appendChild(row);
+        selectedExercisesList.append(row);
     }
 }
 
@@ -299,10 +301,8 @@ function createTemplateCard(templates, templateIndex) {
         changeVisibility(details);
     });
 
-    details.appendChild(actions);
-
-    card.appendChild(header);
-    card.appendChild(details);
+    details.append(actions);
+    card.append(header, details);
 
     return card;
 }
@@ -316,11 +316,8 @@ function createTemplateCardHeader(template) {
     const main = createTemplateCardMain(template);
     const chevron = createIconButton("fa-solid", "fa-chevron-right", "chevron-button");
 
-    iconBadge.appendChild(icon);
-
-    header.appendChild(iconBadge);
-    header.appendChild(main);
-    header.appendChild(chevron);
+    iconBadge.append(icon);
+    header.append(iconBadge, main, chevron);
 
     return header;
 }
@@ -334,8 +331,7 @@ function createTemplateCardMain(template) {
     const subtitleText = formatCountLabel(exerciseCount, "exercise");
     const subtitle = createText(subtitleText, "item-subtitle");
 
-    main.appendChild(title);
-    main.appendChild(subtitle);
+    main.append(title, subtitle);
 
     return main;
 }
@@ -355,7 +351,7 @@ function createTemplateCardDetails(template) {
 
         if (exercise !== undefined) {
             const templateExerciseRow = createSavedTemplateExerciseRow(exercise);
-            details.appendChild(templateExerciseRow);
+            details.append(templateExerciseRow);
         }
     }
 
@@ -365,7 +361,7 @@ function createTemplateCardDetails(template) {
 function createSavedTemplateExerciseRow(exercise) {
     const templateExerciseRow = createElement("div", "card-row");
     const templateExerciseName = createText(exercise.name, "setting-name");
-    templateExerciseRow.appendChild(templateExerciseName);
+    templateExerciseRow.append(templateExerciseName);
 
     return templateExerciseRow;
 }
@@ -383,8 +379,7 @@ function createTemplateCardActions(templates, templateIndex) {
         deleteTemplate(templates, templateIndex);
     });
 
-    actions.appendChild(editButton);
-    actions.appendChild(deleteButton);
+    actions.append(editButton, deleteButton);
 
     return actions;
 }

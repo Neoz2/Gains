@@ -8,7 +8,7 @@ const navButtons = document.querySelectorAll(".nav-button");
 const goBackButtons = document.querySelectorAll(".back-button");
 
 // =========================================================
-// GLOBALS
+// CONSTANTS
 // =========================================================
 
 const ROUTES = {
