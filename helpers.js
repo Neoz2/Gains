@@ -1,7 +1,7 @@
 //helpers.js
 
 // =========================================================
-// HELPERS
+// INPUT HELPERS
 // =========================================================
 
 function showInputError(inputElement) {
@@ -24,27 +24,37 @@ function clearErrorWhenTyping(inputElement) {
     });
 }
 
+// =========================================================
+// UI HELPERS
+// =========================================================
+
 function rotateChevron(chevron) {
     chevron.classList.toggle("chevron-rotate");
 }
 
 function changeVisibility(item) {
-    if (item.classList.contains("hidden")) {
-        item.classList.remove("hidden");
-    } else {
-        item.classList.add("hidden");
-    }
+    item.classList.toggle("hidden");
 }
 
-function nameExistsInList(list, nameInput) {
+// =========================================================
+// VALIDATION HELPERS
+// =========================================================
+
+function nameExistsInListExceptId(list, name, ignoredId) {
+    const normalizedName = name.trim().toLowerCase();
+
     return list.some(function (item) {
-        return item.name === nameInput;
+        return item.name.trim().toLowerCase() === normalizedName && item.id !== ignoredId;
     });
 }
 
-function formatCountLabel(count, string) {
+// =========================================================
+// FORMAT HELPERS
+// =========================================================
+
+function formatCountLabel(count, singularLabel) {
     const pluralAdjuster = count === 1 ? "" : "s";
-    return `${count} ${string}${pluralAdjuster}`;
+    return `${count} ${singularLabel}${pluralAdjuster}`;
 }
 
 function formatWorkoutDate(isoDate) {
@@ -60,8 +70,11 @@ function formatWorkoutDate(isoDate) {
     });
 }
 
-// select from exercises
-function addExerciseToArray(exercises, exercise) {
+// =========================================================
+// EXERCISE ARRAY HELPERS
+// =========================================================
+
+function addSelectedExercise(exercises, exercise) {
     const exerciseAlreadyExists = exercises.some(function (existingExercise) {
         return existingExercise.id === exercise.id;
     });
@@ -71,7 +84,7 @@ function addExerciseToArray(exercises, exercise) {
     }
 }
 
-function removeExerciseFromArray(exercises, exercise) {
+function removeSelectedExercise(exercises, exercise) {
     const exerciseIndex = exercises.findIndex(function (existingExercise) {
         return existingExercise.id === exercise.id;
     });
@@ -81,27 +94,3 @@ function removeExerciseFromArray(exercises, exercise) {
     }
 }
 
-function getExercisesFromTemplate(template) {
-    const exercises = loadExercises();
-    const templateExercises = [];
-
-    for (let exerciseIdIndex = 0; exerciseIdIndex < template.exerciseIds.length; exerciseIdIndex++) {
-        const exerciseId = template.exerciseIds[exerciseIdIndex];
-
-        const exercise = exercises.find(function (exercise) {
-            return exercise.id === exerciseId;
-        });
-
-        if (exercise !== undefined) {
-            templateExercises.push(exercise);
-        }
-    }
-
-    return templateExercises;
-}
-
-function navigateOnClick(element, screen, mode = null) {
-    element.addEventListener("click", function () {
-        navigateToScreen(screen, mode);
-    });
-}

@@ -37,16 +37,38 @@ function setupNavigation() {
 		if (event.state && event.state.screenId) {
 			showScreen(event.state.screenId);
 			refreshScreen(event.state.screenId, event.state.mode);
-		} else {
-			showScreen("home-screen");
-			refreshScreen("home-screen", null);
+			return;
 		}
+
+		showScreen("home-screen");
 	});
+}
+
+function navigateOnClick(element, screen, mode = null) {
+    element.addEventListener("click", function () {
+        navigateToScreen(screen, mode);
+    });
 }
 
 // =========================================================
 // NAVIGATION FUNCTIONS
 // =========================================================
+
+function refreshScreen(screenId, mode = null) {
+    if (screenId === "home-screen") {
+        return;
+    }
+
+    if (screenId === "create-exercises-screen") {
+        refreshExerciseScreen(mode);
+    } else if (screenId === "create-templates-screen") {
+        refreshTemplateScreen(mode);
+    } else if (screenId === "start-training-screen") {
+        refreshTrainingScreen(mode);
+    } else if (screenId === "analyse-progress-screen") {
+        refreshProgressScreen(mode);
+    }
+}
 
 function navigateToScreen(screenId, mode = null) {
 	showScreen(screenId);
@@ -96,18 +118,6 @@ function showSelectedScreen(screenId) {
 	}
 
 	screen.classList.remove("hidden");
-}
-
-function refreshScreen(screenId, mode = null) {
-	if (screenId === "create-exercises-screen") {
-		refreshExerciseScreen(mode);
-	} else if (screenId === "create-templates-screen") {
-		refreshTemplateScreen(mode);
-	} else if (screenId === "start-training-screen") {
-		refreshTrainingScreen(mode);
-	} else if (screenId === "analyse-progress-screen") {
-		refreshProgressScreen(mode);
-	}
 }
 
 function updateSelectedNavButton(screenId) {

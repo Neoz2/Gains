@@ -139,7 +139,7 @@ function saveExerciseFromForm() {
     if (exerciseName === "") {
         showInputError(exerciseNameInput);
         formIsValid = false;
-    } else if (nameExistsInList(exercises, exerciseName) && appState.editingExerciseId === null) {
+    } else if (nameExistsInListExceptId(exercises, exerciseName, appState.editingExerciseId)) {
         showInputError(exerciseNameInput);
         formIsValid = false;
     } else {

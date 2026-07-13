@@ -181,7 +181,7 @@ function updateWorkout(updatedWorkout) {
 
 // --- Getters --- //
 
-function getSetOfLastSession(exercise, setNumber) {
+function getSetOfLastSession(exercise, setNumber, ignoredWorkoutId = null) {
     if (exercise === undefined || exercise === null) {
         return null;
     }
@@ -195,7 +195,7 @@ function getSetOfLastSession(exercise, setNumber) {
     for (let workoutIndex = 0; workoutIndex < workoutsDescending.length; workoutIndex++) {
         const workout = workoutsDescending[workoutIndex];
 
-        if (appState.activeWorkout !== null && workout.id === appState.activeWorkout.id) {
+        if (workout.id === ignoredWorkoutId) {
             continue;
         }
 

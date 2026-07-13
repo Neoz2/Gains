@@ -79,7 +79,7 @@ function addClasses(element, classes) {
 	for (let classIndex = 0; classIndex < classes.length; classIndex++) {
 		const className = classes[classIndex];
 
-		if (className !== undefined) {
+		if (className !== undefined && className !== null && className !== "") {
 			element.classList.add(className);
 		}
 	}

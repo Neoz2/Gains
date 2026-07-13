@@ -194,15 +194,15 @@ function saveWorkoutSet(exercise, elapsedTime, weight) {
 // --- Selection actions --- //
 
 function selectWorkoutExercise(exercise) {
-    removeExerciseFromArray(appState.workoutUnselectedExercises, exercise);
-    addExerciseToArray(appState.workoutSelectedExercises, exercise);
+    removeSelectedExercise(appState.workoutUnselectedExercises, exercise);
+    addSelectedExercise(appState.workoutSelectedExercises, exercise);
 
     renderWorkoutExercisePickerLists();
 }
 
 function unselectWorkoutExercise(exercise) {
-    removeExerciseFromArray(appState.workoutSelectedExercises, exercise);
-    addExerciseToArray(appState.workoutUnselectedExercises, exercise);
+    removeSelectedExercise(appState.workoutSelectedExercises, exercise);
+    addSelectedExercise(appState.workoutUnselectedExercises, exercise);
 
     renderWorkoutExercisePickerLists();
 }
@@ -279,6 +279,25 @@ function refreshWorkoutInputRow(exercise, card) {
     card.replaceChild(newInputRow, oldInputRow);
 
     renderWorkoutSets(exercise, card);
+}
+
+function getExercisesFromTemplate(template) {
+    const exercises = loadExercises();
+    const templateExercises = [];
+
+    for (let exerciseIdIndex = 0; exerciseIdIndex < template.exerciseIds.length; exerciseIdIndex++) {
+        const exerciseId = template.exerciseIds[exerciseIdIndex];
+
+        const exercise = exercises.find(function (savedExercise) {
+            return savedExercise.id === exerciseId;
+        });
+
+        if (exercise !== undefined) {
+            templateExercises.push(exercise);
+        }
+    }
+
+    return templateExercises;
 }
 
 // --- Rendering --- //
@@ -522,7 +541,8 @@ function createWeightInputRow(exercise, card) {
 
 function createRecommendation(exercise) {
     const nextSetNumber = exercise.sets.length + 1;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
+    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
 
     if (lastSet === null) {
         return null;
@@ -601,13 +621,14 @@ function createRecommendation(exercise) {
 }
 
 function createWeightInput(exercise) {
+    const nextSetNumber = exercise.sets.length + 1;
+    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
+
     const weightInput = createElement("input", "workout-weight-input");
     weightInput.type = "number";
     weightInput.min = "0";
     weightInput.placeholder = "-";
-
-    const nextSetNumber = exercise.sets.length + 1;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber);
 
     if (lastSet !== null) {
         weightInput.value = lastSet.weight;

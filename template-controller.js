@@ -114,9 +114,11 @@ function saveTemplateFromForm() {
 
     if (templateName === "") {
         showInputError(templateNameInput);
+        console.log("Empty name not allowed");
         formIsValid = false;
-    } else if (nameExistsInList(templates, templateName) && appState.editingTemplateId === null) {
+    } else if (nameExistsInListExceptId(templates, templateName, appState.editingTemplateId)) {
         showInputError(templateNameInput);
+        console.log("Name exists");
         formIsValid = false;
     } else {
         clearInputError(templateNameInput);
@@ -179,15 +181,15 @@ function removeExerciseFromTemplates(deletedExerciseId) {
 // --- Selection actions --- //
 
 function selectTemplateExercise(exercise) {
-    removeExerciseFromArray(appState.templateUnselectedExercises, exercise);
-    addExerciseToArray(appState.templateSelectedExercises, exercise);
+    removeSelectedExercise(appState.templateUnselectedExercises, exercise);
+    addSelectedExercise(appState.templateSelectedExercises, exercise);
 
     renderTemplateExerciseLists();
 }
 
 function unselectTemplateExercise(exercise) {
-    removeExerciseFromArray(appState.templateSelectedExercises, exercise);
-    addExerciseToArray(appState.templateUnselectedExercises, exercise);
+    removeSelectedExercise(appState.templateSelectedExercises, exercise);
+    addSelectedExercise(appState.templateUnselectedExercises, exercise);
 
     renderTemplateExerciseLists();
 }
