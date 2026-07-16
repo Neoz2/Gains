@@ -40,13 +40,8 @@ function setupTrainingController() {
 }
 
 function refreshTrainingScreen(mode = null) {
-    if (mode === "workout") {
-        showTrainingMode("workout");
-        return;
-    }
-
-    if (mode === "summary") {
-        showTrainingMode("summary");
+    if (modeUsesExistingWorkoutState(mode)) {
+        showTrainingMode(mode);
         return;
     }
 
@@ -93,13 +88,13 @@ function setupSummaryActions() {
 // --- Modes --- //
 
 function showTrainingMode(mode) {
-    trainingExerciseEmptyState.classList.add("hidden");
-    trainingTemplateEmptyState.classList.add("hidden");
-    trainingOverviewState.classList.add("hidden");
-    addExercisesToWorkoutState.classList.add("hidden");
-    selectTemplateState.classList.add("hidden");
-    workoutState.classList.add("hidden");
-    summaryState.classList.add("hidden");
+    hideAllTrainingStates();
+
+    if (appState.activeWorkout !== null) {
+        showActiveWorkoutMode();
+        updateTrainingBackButtonVisibility(mode);
+        return;
+    }
 
     if (appState.activeWorkout === null) {
         if (mode === "empty-exercises") {
@@ -124,12 +119,6 @@ function showTrainingMode(mode) {
             updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
             trainingTemplateEmptyState.classList.remove("hidden");
         }
-    }
-
-    else {
-        updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
-        renderWorkoutExerciseList(appState.activeWorkout);
-        workoutState.classList.remove("hidden");
     }
 
     updateTrainingBackButtonVisibility(mode);
@@ -170,6 +159,11 @@ function enterWorkoutState(exercises) {
     navigateToScreen("start-training-screen", "workout");
 
     const firstWorkoutCard = document.querySelector(".workout-card");
+
+    if (firstWorkoutCard === null) {
+        return;
+    }
+
     openWorkoutCard(firstWorkoutCard);
     closeAllWorkoutCardsExcept(firstWorkoutCard);
 }
@@ -180,6 +174,12 @@ function enterSummaryMode() {
     appState.activeWorkout = null;
 
     navigateToScreen("start-training-screen", "summary");
+}
+
+function showActiveWorkoutMode() {
+    updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
+    renderWorkoutExerciseList(appState.activeWorkout);
+    workoutState.classList.remove("hidden");
 }
 
 // --- Mutate actions --- //
@@ -276,6 +276,10 @@ function refreshWorkoutInputRow(exercise, card) {
     renderWorkoutSets(exercise, card);
 }
 
+function modeUsesExistingWorkoutState(mode) {
+    return mode === "workout" || mode === "summary";
+}
+
 // --- Rendering --- //
 
 function renderWorkoutTemplateList() {
@@ -363,6 +367,16 @@ function renderWorkoutSets(exercise, card) {
 
         workoutSetList.append(setRow);
     }
+}
+
+function hideAllTrainingStates() {
+    trainingExerciseEmptyState.classList.add("hidden");
+    trainingTemplateEmptyState.classList.add("hidden");
+    trainingOverviewState.classList.add("hidden");
+    addExercisesToWorkoutState.classList.add("hidden");
+    selectTemplateState.classList.add("hidden");
+    workoutState.classList.add("hidden");
+    summaryState.classList.add("hidden");
 }
 
 // --- Timer --- //
