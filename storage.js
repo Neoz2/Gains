@@ -129,6 +129,25 @@ function saveTemplates(templates) {
     saveItems(STORAGE_KEYS.templates, templates);
 }
 
+function getExercisesFromTemplate(template) {
+    const exercises = loadExercises();
+    const templateExercises = [];
+
+    for (let exerciseIndex = 0; exerciseIndex < template.exerciseIds.length; exerciseIndex++) {
+        const exerciseId = template.exerciseIds[exerciseIndex];
+
+        const exercise = exercises.find(function (exercise) {
+            return exercise.id === exerciseId;
+        });
+
+        if (exercise !== undefined) {
+         templateExercises.push(exercise);
+        }
+    }
+
+    return templateExercises;
+}
+
 // =========================================================
 // WORKOUT STORAGE
 // =========================================================
@@ -265,10 +284,4 @@ function copySettings(settings) {
     }
 
     return copiedSettings;
-}
-
-function getExerciseIdsFromSelectedExercises(selectedExercises) {
-    return selectedExercises.map(function (exercise) {
-        return exercise.id;
-    });
 }

@@ -23,11 +23,12 @@ const workoutState = document.querySelector(".training-workout-state");
 const summaryState = document.querySelector(".summary-state");
 
 // =========================================================
-// EXERCISE CONTROLLER
+// TRAINING CONTROLLER
 // =========================================================
 
 let timerStartedAt = null;
 let timerIntervalId = null;
+let elapsedSeconds = 0;
 
 // --- Controller entry points --- //
 
@@ -275,25 +276,6 @@ function refreshWorkoutInputRow(exercise, card) {
     renderWorkoutSets(exercise, card);
 }
 
-function getExercisesFromTemplate(template) {
-    const exercises = loadExercises();
-    const templateExercises = [];
-
-    for (let exerciseIdIndex = 0; exerciseIdIndex < template.exerciseIds.length; exerciseIdIndex++) {
-        const exerciseId = template.exerciseIds[exerciseIdIndex];
-
-        const exercise = exercises.find(function (savedExercise) {
-            return savedExercise.id === exerciseId;
-        });
-
-        if (exercise !== undefined) {
-            templateExercises.push(exercise);
-        }
-    }
-
-    return templateExercises;
-}
-
 // --- Rendering --- //
 
 function renderWorkoutTemplateList() {
@@ -387,6 +369,8 @@ function renderWorkoutSets(exercise, card) {
 
 function startTimer(button, bigTimer) {
     appState.activeTimer = true;
+    elapsedSeconds = 0;
+
     bigTimer.textContent = "00:00";
     button.textContent = "Stop set";
     timerStartedAt = Date.now();
@@ -405,9 +389,7 @@ function stopTimer(exercise, card, button, bigTimer, weightInput) {
     appState.activeTimer = false;
     clearInterval(timerIntervalId);
 
-    elapsedTime = elapsedSeconds;
-
-    saveWorkoutSet(exercise, elapsedTime, weightInput.value);
+    saveWorkoutSet(exercise, elapsedSeconds, weightInput.value);
 
     refreshWorkoutInputRow(exercise, card);
 }
