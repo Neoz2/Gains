@@ -12,7 +12,7 @@ const appState = {
 	workoutSelectedExercises: [],
 	workoutUnselectedExercises: [],
 	activeWorkout: null,
-	activeTimer: false
+	activeSetTimer: false
 };
 
 // =========================================================

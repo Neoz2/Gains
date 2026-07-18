@@ -35,9 +35,7 @@ const workoutExerciseList = document.getElementById("workout-exercise-list");
 
 const TRAINING_MODES = [];
 
-let timerStartedAt = null;
-let timerIntervalId = null;
-let elapsedSeconds = 0;
+const workoutSessionTimer = createTimerState();
 
 let unfoldedWorkoutCardIndex = 0;
 
@@ -54,6 +52,8 @@ function setupTrainingController() {
 function refreshTrainingScreen(mode = null) {
     if (appState.activeWorkout !== null) {
         showTrainingMode("training-workout-mode");
+        updateTimer(workoutSessionTimer, trainingModeSubtitle, formatWorkoutSessionTime);
+
         renderWorkoutExerciseList(appState.activeWorkout);
         openStoredWorkoutCard();
         return;
@@ -113,8 +113,16 @@ function showTrainingMode(mode) {
     updateTrainingBackButtonVisibility(mode);
 }
 
+function updateTrainingBackButtonVisibility(mode) {
+    const shouldHideBackButton = hasActiveWorkout() || mode === "training-end-of-workout-mode";
+
+    trainingBackButton.classList.toggle("invisible", shouldHideBackButton);
+}
+
+// --- Workout lifecycle --- //
+
 function enterFromScratchMode() {
-    resetWorkoutExercisePicker()
+    resetWorkoutExercisePicker();
 
     const exercises = loadExercises();
 
@@ -148,11 +156,14 @@ function enterWorkoutState(exercises) {
     unfoldedWorkoutCardIndex = 0;
 
     navigateToScreen("start-training-screen", "training-workout-mode");
-}
 
+    startWorkoutSessionTimer(workoutSessionTimer, trainingModeSubtitle);
+}
 
 function enterEndOfWorkoutMode() {
     updateWorkout(appState.activeWorkout);
+
+    stopTimerInterval(workoutSessionTimer.intervalId);
 
     appState.activeWorkout = null;
 
@@ -208,7 +219,7 @@ function unselectWorkoutExercise(exercise) {
     renderWorkoutExercisePickerLists();
 }
 
-// --- Form helpers --- //
+// --- Exercise picker helpers --- //
 
 function resetWorkoutExercisePicker() {
     appState.workoutSelectedExercises.length = 0;
@@ -222,6 +233,16 @@ function resetWorkoutExercisePicker() {
 
     renderWorkoutExercisePickerLists();
 }
+
+function getUsableTemplates() {
+    const templates = loadTemplates();
+
+    return templates.filter(function (template) {
+        return template.exerciseIds.length > 0;
+    });
+}
+
+// --- Workout card UI helpers --- //
 
 function closeAllWorkoutCardsExcept(activeCard) {
     const workoutCards = document.querySelectorAll(".workout-card");
@@ -255,31 +276,6 @@ function openStoredWorkoutCard() {
     closeAllWorkoutCardsExcept(card);
 }
 
-function updateTrainingBackButtonVisibility(mode) {
-    const shouldHideBackButton = hasActiveWorkout() || mode === "training-end-of-workout-mode";
-
-    trainingBackButton.classList.toggle("invisible", shouldHideBackButton);
-}
-
-function getUsableTemplates() {
-    const templates = loadTemplates();
-
-    return templates.filter(function (template) {
-        return template.exerciseIds.length > 0;
-    });
-}
-
-function refreshWorkoutInputRow(exercise, card) {
-    const oldInputRow = card.querySelector(".workout-input-row");
-    const newInputRow = createWeightInputRow(exercise, card);
-
-    newInputRow.classList.remove("hidden");
-
-    card.replaceChild(newInputRow, oldInputRow);
-
-    renderWorkoutSets(exercise, card);
-}
-
 function openWorkoutCard(card) {
     const details = card.querySelector(".workout-card-details");
     const inputRow = card.querySelector(".workout-input-row");
@@ -291,7 +287,7 @@ function openWorkoutCard(card) {
 }
 
 function openSelectedWorkoutCard(card, exerciseIndex) {
-    if (appState.activeTimer === true) {
+    if (appState.activeSetTimer === true) {
         return;
     }
 
@@ -299,95 +295,6 @@ function openSelectedWorkoutCard(card, exerciseIndex) {
 
     openWorkoutCard(card);
     closeAllWorkoutCardsExcept(card);
-}
-
-// --- Timer --- //
-
-function startTimer(button, bigTimer) {
-    appState.activeTimer = true;
-    elapsedSeconds = 0;
-
-    bigTimer.textContent = "00:00";
-    button.textContent = "Stop set";
-    timerStartedAt = Date.now();
-
-    timerIntervalId = setInterval(function () {
-        const currentTime = Date.now();
-        const elapsedMilliseconds = currentTime - timerStartedAt;
-
-        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-
-        bigTimer.textContent = formatTimer(elapsedSeconds);
-    }, 250)
-}
-
-function stopTimer(exercise, card, button, bigTimer, weightInput) {
-    appState.activeTimer = false;
-    clearInterval(timerIntervalId);
-
-    saveWorkoutSet(exercise, elapsedSeconds, weightInput.value);
-
-    refreshWorkoutInputRow(exercise, card);
-}
-
-function formatTimer(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(seconds).padStart(2, "0");
-
-    return `${formattedMinutes}:${formattedSeconds}`;
-}
-
-// --- Recommendation helpers --- //
-
-function getRecommendationForExercise(exercise) {
-    const nextSetNumber = exercise.sets.length + 1;
-    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
-
-    if (lastSet === null) {
-        return null;
-    }
-
-    return {
-        lastSet: lastSet,
-        config: createRecommendationConfiguration(lastSet.timeUnderLoad)
-    };
-}
-
-function createRecommendationConfiguration(timeUnderLoad) {
-    if (timeUnderLoad < 50) {
-        return {
-            recommendationState: "bad",
-            indicationIconStyle: "fa-arrow-trend-down",
-            title: "Decrease weight this workout",
-            baseText: "Below ",
-            targetText: "0:50",
-            endText: " minimum"
-        };
-    }
-
-    if (timeUnderLoad >= 70) {
-        return {
-            recommendationState: "good",
-            indicationIconStyle: "fa-arrow-trend-up",
-            title: "Increase weight this workout",
-            baseText: "Above ",
-            targetText: "1:10",
-            endText: " target"
-        };
-    }
-
-    return {
-        recommendationState: "same",
-        indicationIconStyle: "fa-arrow-right-arrow-left",
-        title: "Stick to weight this workout",
-        baseText: "Within ",
-        targetText: "0:50 - 1:10",
-        endText: " range"
-    };
 }
 
 // --- Rendering --- //
@@ -479,6 +386,17 @@ function renderWorkoutSets(exercise, card) {
     }
 }
 
+function refreshWorkoutInputRow(exercise, card) {
+    const oldInputRow = card.querySelector(".workout-input-row");
+    const newInputRow = createWeightInputRow(exercise, card);
+
+    newInputRow.classList.remove("hidden");
+
+    card.replaceChild(newInputRow, oldInputRow);
+
+    renderWorkoutSets(exercise, card);
+}
+
 // --- DOM builders --- //
 
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
@@ -564,43 +482,6 @@ function createWeightInputRow(exercise, card) {
     return inputRow;
 }
 
-function createRecommendationCard(exercise) {
-    const recommendation = getRecommendationForExercise(exercise);
-
-    if (recommendation === null) {
-        return null;
-    }
-
-    const recommendationContainer = createElement("div", "recommendation-container", recommendation.config.recommendationState);
-    const infoContainer = createElement("div", "info-container");
-
-    const indicationIcon = createElement("div", "indication-icon");
-    const indicationIconSymbol = createIcon("fa-solid", recommendation.config.indicationIconStyle, "indication-icon-symbol");
-
-    const titleText = createText(recommendation.config.title, "text-field", "info-container-title");
-
-    const lastSessionTextContainer = createRecommendationTextRow("fa-regular", "fa-clock", "Last session: ", formatTimer(recommendation.lastSet.timeUnderLoad), " TUL");
-    const targetTextContainer = createRecommendationTextRow("fa-solid", "fa-bullseye", recommendation.config.baseText, recommendation.config.targetText, recommendation.config.endText);
-
-    indicationIcon.append(indicationIconSymbol);
-    infoContainer.append(titleText, lastSessionTextContainer, targetTextContainer);
-    recommendationContainer.append(indicationIcon, infoContainer);
-
-    return recommendationContainer;
-}
-
-function createRecommendationTextRow(iconType, iconStyle, startText, highlightText, endText) {
-    const container = createElement("div");
-    const icon = createIcon(iconType, iconStyle, "recommendation-text-icon");
-    const start = createText(startText, "text-field");
-    const highlight = createText(highlightText, "text-field", "recommend-highlight");
-    const end = createText(endText, "text-field");
-
-    container.append(icon, start, highlight, end);
-
-    return container;
-}
-
 function createWeightInput(exercise) {
     const nextSetNumber = exercise.sets.length + 1;
     const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
@@ -630,15 +511,20 @@ function createWeightInput(exercise) {
 function createTimerButton(weightInput, bigTimer, exercise, card) {
     const button = createButton("button-large");
     button.textContent = "Start set";
+
     let isStarted = false;
+    const setTimer = createTimerState();
 
     button.addEventListener("click", function () {
         if (isStarted === false && weightInput.value !== "") {
             isStarted = true;
-            startTimer(button, bigTimer);
-        } else if (isStarted === true) {
+            startSetTimer(setTimer, button, bigTimer);
+            return;
+        }
+
+        if (isStarted === true) {
             isStarted = false;
-            stopTimer(exercise, card, button, bigTimer, weightInput);
+            stopSetTimer(setTimer, exercise, card, weightInput);
         }
     });
 
