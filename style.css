@@ -203,6 +203,11 @@ main {
   padding: 12px;
 
   font-size: 16px;
+
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
 }
 
 .icon-button {
@@ -260,6 +265,19 @@ main {
 
   border-radius: var(--radius-small);
   border: none;
+
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
+}
+
+.save-button:active,
+.button-large:active {
+  -webkit-tap-highlight-color: transparent;
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .icon-badge {
@@ -938,6 +956,11 @@ main {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .workout-weight-input:focus {
@@ -1298,7 +1321,7 @@ main {
   margin-bottom: 12px;
 }
 
-.line-graph > div {
+.line-graph>div {
   height: 100%;
 }
 
@@ -1358,4 +1381,22 @@ main {
 
 .chevron-rotate {
   transform: rotate(90deg);
+}
+
+.input-attention {
+  border-color: #ef4444;
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.14),
+    0 8px 20px rgba(239, 68, 68, 0.12);
+  transform: translateY(-1px);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.button-pressed {
+    transform: translateY(1px) scale(0.985);
+    filter: brightness(0.92);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }

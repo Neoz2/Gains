@@ -95,10 +95,14 @@ function setupTrainingEmptyStateButtons() {
 
 function setupWorkoutButtons() {
     addToWorkoutButton.addEventListener("click", function () {
-        enterWorkoutState(appState.workoutSelectedExercises);
+        runWithPressFeedback(addToWorkoutButton, function () {
+            enterWorkoutState(appState.workoutSelectedExercises);
+        })
     });
 
-    finishWorkoutButton.addEventListener("click", enterEndOfWorkoutMode);
+    finishWorkoutButton.addEventListener("click", function () {
+        runWithPressFeedback(finishWorkoutButton, enterEndOfWorkoutMode);
+    });
 }
 
 function setupEndOfTrainingActions() {
@@ -295,6 +299,14 @@ function openSelectedWorkoutCard(card, exerciseIndex) {
 
     openWorkoutCard(card);
     closeAllWorkoutCardsExcept(card);
+}
+
+function showMissingWeightFeedback(weightInput) {
+    weightInput.classList.add("input-attention");
+
+    setTimeout(function () {
+        weightInput.classList.remove("input-attention");
+    }, 900);
 }
 
 // --- Rendering --- //
@@ -516,7 +528,14 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
     const setTimer = createTimerState();
 
     button.addEventListener("click", function () {
-        if (isStarted === false && weightInput.value !== "") {
+        showPressFeedback(button);
+
+        if (isStarted === false && weightInput.value === "") {
+            showMissingWeightFeedback(weightInput);
+            return;
+        }
+
+        if (isStarted === false) {
             isStarted = true;
             startSetTimer(setTimer, button, bigTimer);
             return;
@@ -524,7 +543,9 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
 
         if (isStarted === true) {
             isStarted = false;
-            stopSetTimer(setTimer, exercise, card, weightInput);
+            runWithPressFeedback(button, function () {
+                stopSetTimer(setTimer, exercise, card, weightInput);
+            })
         }
     });
 

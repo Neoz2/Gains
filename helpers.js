@@ -36,6 +36,23 @@ function changeVisibility(item) {
     item.classList.toggle("hidden");
 }
 
+function runWithPressFeedback(button, action) {
+    button.classList.add("button-pressed");
+
+    setTimeout(function () {
+        button.classList.remove("button-pressed");
+        action();
+    }, 120);
+}
+
+function showPressFeedback(button) {
+    button.classList.add("button-pressed");
+
+    setTimeout(function () {
+        button.classList.remove("button-pressed");
+    }, 120);
+}
+
 // =========================================================
 // VALIDATION HELPERS
 // =========================================================
