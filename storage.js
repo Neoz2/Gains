@@ -141,7 +141,7 @@ function getExercisesFromTemplate(template) {
         });
 
         if (exercise !== undefined) {
-         templateExercises.push(exercise);
+            templateExercises.push(exercise);
         }
     }
 

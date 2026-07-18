@@ -4,28 +4,41 @@
 // DOM REFERENCES
 // =========================================================
 
-const templateNameInput = document.getElementById("template-name-input");
-const saveTemplateButton = document.getElementById("save-template");
-const emptyCreateTemplateButton = document.getElementById("empty-create-template");
-const overviewCreateTemplateButton = document.getElementById("overview-create-template");
-const templateList = document.getElementById("template-list");
+//states
 const templatesEmptyState = document.querySelector(".templates-empty-state");
 const templatesOverviewState = document.querySelector(".templates-overview-state");
 const templatesFormState = document.querySelector(".templates-form-state");
 
+//mode titles
+const templateModeTitle = document.getElementById("template-page-title");
+const templateModeSubtitle = document.getElementById("template-page-subtitle");
+
+//buttons
+const saveTemplateButton = document.getElementById("save-template");
+const emptyCreateTemplateButton = document.getElementById("empty-create-template");
+const overviewCreateTemplateButton = document.getElementById("overview-create-template");
+
+//content
+const templateNameInput = document.getElementById("template-name-input");
+const templateList = document.getElementById("template-list");
+
+
 // =========================================================
 // TEMPLATE CONTROLLER
 // =========================================================
+
+const TEMPLATE_MODES = [];
 
 // --- Controller entry points --- //
 
 function setupTemplateController() {
     setupTemplateCreateButtons();
     setupTemplateSaveButton();
+    setupTemplateModes();
 }
 
 function refreshTemplateScreen(mode = null) {
-    if (mode === "form") {
+    if (mode === "template-create-mode") {
         enterCreateTemplateMode();
         return;
     }
@@ -35,9 +48,16 @@ function refreshTemplateScreen(mode = null) {
 
 // --- Setup --- //
 
+function setupTemplateModes() {
+    TEMPLATE_MODES.push(createMode(templatesEmptyState, "template-empty-mode", "Create templates", "Create your first workout template"));
+    TEMPLATE_MODES.push(createMode(templatesFormState, "template-create-mode", "Create template", "Combine exercises into a reusable plan"));
+    TEMPLATE_MODES.push(createMode(templatesFormState, "template-edit-mode", "Edit template", "Update this reusable workout plan"));
+    TEMPLATE_MODES.push(createMode(templatesOverviewState, "template-overview-mode", "Create templates", "Manage your saved workout templates"));
+}
+
 function setupTemplateCreateButtons() {
-    navigateOnClick(overviewCreateTemplateButton, "create-templates-screen", "form");
-    navigateOnClick(emptyCreateTemplateButton, "create-templates-screen", "form");
+    navigateOnClick(overviewCreateTemplateButton, "create-templates-screen", "template-create-mode");
+    navigateOnClick(emptyCreateTemplateButton, "create-templates-screen", "template-create-mode");
 }
 
 function setupTemplateSaveButton() {
@@ -49,17 +69,8 @@ function setupTemplateSaveButton() {
 // --- Modes --- //
 
 function showTemplateMode(mode) {
-    templatesEmptyState.classList.add("hidden");
-    templatesOverviewState.classList.add("hidden");
-    templatesFormState.classList.add("hidden");
-
-    if (mode === "empty") {
-        templatesEmptyState.classList.remove("hidden");
-    } else if (mode === "overview") {
-        templatesOverviewState.classList.remove("hidden");
-    } else if (mode === "form") {
-        templatesFormState.classList.remove("hidden");
-    }
+    hideAllStates(TEMPLATE_MODES);
+    showCurrentMode(mode, TEMPLATE_MODES, templateModeTitle, templateModeSubtitle);
 }
 
 function enterCreateTemplateMode() {
@@ -68,12 +79,12 @@ function enterCreateTemplateMode() {
     clearTemplateForm();
     updateSaveTemplateButtonText();
 
-    showTemplateMode("form");
+    showTemplateMode("template-create-mode");
 }
 
 function enterEditTemplateMode(template) {
     clearTemplateForm();
-    showTemplateMode("form");
+    showTemplateMode("template-edit-mode");
 
     appState.editingTemplateId = template.id;
     templateNameInput.value = template.name;
@@ -245,9 +256,9 @@ function renderTemplateOverview() {
     renderTemplateList(templates);
 
     if (templates.length === 0) {
-        showTemplateMode("empty");
+        showTemplateMode("template-empty-mode");
     } else {
-        showTemplateMode("overview");
+        showTemplateMode("template-overview-mode");
     }
 }
 

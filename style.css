@@ -625,7 +625,7 @@ main {
    SCREEN: START TRAINING
 ========================================================= */
 
-.summary-state {
+.training-end-of-workout-state {
   min-height: calc(100vh - 160px);
 
   display: flex;

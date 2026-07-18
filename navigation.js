@@ -121,6 +121,38 @@ function updateSelectedBottomNavButton(screenId) {
 }
 
 // =========================================================
+// MODE DISPLAY HELPERS
+// =========================================================
+
+function createMode(state, mode, title, subtitle) {
+	return {
+		state: state,
+		mode: mode,
+		title: title,
+		subtitle: subtitle
+	};
+}
+
+function hideAllStates(modes) {
+	modes.forEach(function (mode) {
+		mode.state.classList.add("hidden");
+	});
+}
+
+function showCurrentMode(currentMode, modes, modeTitleElement, modeSubtitleElement) {
+	const matchedMode = modes.find(function (mode) {
+		return mode.mode === currentMode;
+	});
+
+	if (matchedMode === undefined) {
+		return;
+	}
+
+	updatePageHeader(modeTitleElement, modeSubtitleElement, matchedMode.title, matchedMode.subtitle);
+	matchedMode.state.classList.remove("hidden");
+}
+
+// =========================================================
 // HISTORY HELPERS
 // =========================================================
 

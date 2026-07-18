@@ -4,20 +4,32 @@
 // DOM REFERENCES
 // =========================================================
 
-const exerciseNameInput = document.getElementById("exercise-name-input");
-const emptyCreateExerciseButton = document.getElementById("empty-create-exercise");
-const overviewCreateExerciseButton = document.getElementById("overview-create-exercise");
-const saveExerciseButton = document.getElementById("save-exercise");
-const exerciseList = document.getElementById("exercise-list");
-const addSetting = document.getElementById("add-setting");
-const settingsContainer = document.getElementById("settings-container");
+//states
 const exercisesEmptyState = document.querySelector(".exercises-empty-state");
 const exercisesFormState = document.querySelector(".exercises-form-state");
 const exercisesOverviewState = document.querySelector(".exercises-overview-state");
 
+//mode titles
+const exerciseModeTitle = document.getElementById("exercise-page-title");
+const exerciseModeSubtitle = document.getElementById("exercise-page-subtitle");
+
+//buttons
+const emptyCreateExerciseButton = document.getElementById("empty-create-exercise");
+const overviewCreateExerciseButton = document.getElementById("overview-create-exercise");
+const saveExerciseButton = document.getElementById("save-exercise");
+const addSettingButton = document.getElementById("add-setting");
+
+//content
+const exerciseNameInput = document.getElementById("exercise-name-input");
+const exerciseList = document.getElementById("exercise-list");
+const settingsContainer = document.getElementById("settings-container");
+
+
 // =========================================================
 // EXERCISE CONTROLLER
 // =========================================================
+
+const EXERCISE_MODES = [];
 
 // --- Controller entry points --- //
 
@@ -25,10 +37,11 @@ function setupExerciseController() {
     setupExerciseCreateButtons();
     setupExerciseForm();
     setupSettingsForm();
+    setupExerciseModes();
 }
 
 function refreshExerciseScreen(mode = null) {
-    if (mode === "form") {
+    if (mode === "exercise-create-mode") {
         enterCreateExerciseMode();
         return;
     }
@@ -38,9 +51,16 @@ function refreshExerciseScreen(mode = null) {
 
 // --- Setup --- //
 
+function setupExerciseModes() {
+    EXERCISE_MODES.push(createMode(exercisesEmptyState, "exercise-empty-mode", "Create exercises", "Create your first exercise to use in workouts"));
+    EXERCISE_MODES.push(createMode(exercisesFormState, "exercise-create-mode", "Create exercise", "Configure reusable machine settings"));
+    EXERCISE_MODES.push(createMode(exercisesFormState, "exercise-edit-mode", "Edit exercise", "Update machine settings for future workouts"));
+    EXERCISE_MODES.push(createMode(exercisesOverviewState, "exercise-overview-mode", "Create exercises", "Manage your saved exercises"));
+}
+
 function setupExerciseCreateButtons() {
-    navigateOnClick(overviewCreateExerciseButton, "create-exercises-screen", "form");
-    navigateOnClick(emptyCreateExerciseButton, "create-exercises-screen", "form");
+    navigateOnClick(overviewCreateExerciseButton, "create-exercises-screen", "exercise-create-mode");
+    navigateOnClick(emptyCreateExerciseButton, "create-exercises-screen", "exercise-create-mode");
 }
 
 function setupExerciseForm() {
@@ -50,7 +70,7 @@ function setupExerciseForm() {
 }
 
 function setupSettingsForm() {
-    addSetting.addEventListener("click", function () {
+    addSettingButton.addEventListener("click", function () {
         const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
         if (settingsRows.length >= 3) {
@@ -68,17 +88,8 @@ function setupSettingsForm() {
 // --- Modes --- //
 
 function showExerciseMode(mode) {
-    exercisesEmptyState.classList.add("hidden");
-    exercisesFormState.classList.add("hidden");
-    exercisesOverviewState.classList.add("hidden");
-
-    if (mode === "empty") {
-        exercisesEmptyState.classList.remove("hidden");
-    } else if (mode === "overview") {
-        exercisesOverviewState.classList.remove("hidden");
-    } else if (mode === "form") {
-        exercisesFormState.classList.remove("hidden");
-    }
+    hideAllStates(EXERCISE_MODES);
+    showCurrentMode(mode, EXERCISE_MODES, exerciseModeTitle, exerciseModeSubtitle);
 }
 
 function enterCreateExerciseMode() {
@@ -88,14 +99,14 @@ function enterCreateExerciseMode() {
     updateSettingsRowsVisibility();
     updateSaveExerciseButtonText();
 
-    showExerciseMode("form");
+    showExerciseMode("exercise-create-mode");
 }
 
 function enterEditExerciseMode(exercise) {
     appState.editingExerciseId = exercise.id;
 
     clearExerciseForm();
-    showExerciseMode("form");
+    showExerciseMode("exercise-edit-mode");
 
     exerciseNameInput.value = exercise.name;
 
@@ -142,7 +153,7 @@ function saveExerciseFromForm() {
         return;
     }
 
-    const exerciseWasSaved = saveExerciseToList(exercises, exerciseName);
+    const exerciseWasSaved = saveExerciseToList(exercises, exerciseName, settings);
 
     if (!exerciseWasSaved) {
         return;
@@ -257,7 +268,7 @@ function updateSettingsRowsVisibility() {
     }
 }
 
-function exerciseFormIsValid(exerciseName, exercises, settings) {
+function exerciseFormIsValid(exerciseName, exercises) {
     let formIsValid = true;
 
     if (exerciseName === "") {
@@ -281,9 +292,9 @@ function renderExerciseOverview() {
     renderExerciseList(exercises);
 
     if (exercises.length === 0) {
-        showExerciseMode("empty");
+        showExerciseMode("exercise-empty-mode");
     } else {
-        showExerciseMode("overview");
+        showExerciseMode("exercise-overview-mode");
     }
 }
 

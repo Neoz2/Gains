@@ -4,18 +4,27 @@
 // DOM REFERENCES
 // =========================================================
 
-const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
-const progressSelectionSpan = document.getElementById("progress-current-exercise");
-const graphSelectionState = document.querySelector(".graph-exercise-selection-state");
-const graphState = document.querySelector(".graphs-state");
-const progressPageTitle = document.getElementById("progress-page-title");
-const progressPageSubtitle = document.getElementById("progress-page-subtitle");
+//states
+const progressSelectionState = document.querySelector(".graph-exercise-selection-state");
 const progressEmptyState = document.getElementById("progress-empty-state");
+const progressGraphState = document.querySelector(".graphs-state");
+
+//mode titles
+const progressModeTitle = document.getElementById("progress-page-title");
+const progressModeSubtitle = document.getElementById("progress-page-subtitle");
+
+//buttons
+const exerciseDropdownButton = document.getElementById("progress-exercise-dropdown");
+
+//content
+const progressSelectionSpan = document.getElementById("progress-current-exercise");
 const progressChartContent = document.getElementById("progress-chart-content");
 
 // =========================================================
 // PROGRESS CONTROLLER
 // =========================================================
+
+const PROGRESS_MODES = [];
 
 let weightChart = null;
 let tulChart = null;
@@ -27,10 +36,11 @@ let selectedSet = 0;
 function setupProgressController() {
     setupExerciseDropdownButton();
     setupSetButtons();
+    setupProgressModes();
 }
 
 function refreshProgressScreen(mode = null) {
-    if (mode === "selection") {
+    if (mode === "progress-selection-mode") {
         enterSelectExerciseToAnalyseMode();
     } else {
         enterGraphsMode();
@@ -39,8 +49,13 @@ function refreshProgressScreen(mode = null) {
 
 // --- Setup --- //
 
+function setupProgressModes() {
+    PROGRESS_MODES.push(createMode(progressGraphState, "progress-graph-mode", "Exercise progress", "Track weight and time under load over time"));
+    PROGRESS_MODES.push(createMode(progressSelectionState, "progress-selection-mode", "Analyse progress", "Select an exercise to view your trends"));
+}
+
 function setupExerciseDropdownButton() {
-    navigateOnClick(exerciseDropdownButton, "analyse-progress-screen", "selection");
+    navigateOnClick(exerciseDropdownButton, "analyse-progress-screen", "progress-selection-mode");
 }
 
 function setupSetButtons() {
@@ -61,41 +76,8 @@ function setupSetButtons() {
 // --- Modes --- //
 
 function showProgressMode(mode) {
-    graphSelectionState.classList.add("hidden");
-    graphState.classList.add("hidden");
-    progressEmptyState.classList.add("hidden");
-    progressChartContent.classList.add("hidden");
-
-    if (mode === "graphs") {
-        graphState.classList.remove("hidden");
-        progressChartContent.classList.remove("hidden");
-
-        updatePageHeader(
-            progressPageTitle,
-            progressPageSubtitle,
-            "Analyse progress",
-            "Track performance over time"
-        );
-    } else if (mode === "empty") {
-        graphState.classList.remove("hidden");
-        progressEmptyState.classList.remove("hidden");
-
-        updatePageHeader(
-            progressPageTitle,
-            progressPageSubtitle,
-            "Analyse progress",
-            "Track performance over time"
-        );
-    } else if (mode === "selection") {
-        graphSelectionState.classList.remove("hidden");
-
-        updatePageHeader(
-            progressPageTitle,
-            progressPageSubtitle,
-            "Choose exercise",
-            "Select an exercise to analyse"
-        );
-    }
+    hideAllStates(PROGRESS_MODES);
+    showCurrentMode(mode, PROGRESS_MODES, progressModeTitle, progressModeSubtitle);
 }
 
 function enterGraphsMode() {
@@ -107,7 +89,8 @@ function enterGraphsMode() {
         if (exercises.length === 0) {
             destroyProgressCharts();
             progressSelectionSpan.textContent = "-";
-            showProgressMode("empty");
+            showProgressMode("progress-graph-mode");
+            showProgressEmptyContent();
             return;
         }
 
@@ -120,17 +103,19 @@ function enterGraphsMode() {
     if (points.length === 0) {
         destroyProgressCharts();
         progressSelectionSpan.textContent = selectedExercise.name;
-        showProgressMode("empty");
+        showProgressMode("progress-graph-mode");
+        showProgressEmptyContent();
         return;
     }
 
-    showProgressMode("graphs");
+    showProgressMode("progress-graph-mode");
+    showProgressChartContent();
     renderProgressGraphs(selectedExercise, points);
 }
 
 function enterSelectExerciseToAnalyseMode() {
     renderAvailableExercisesForGraphs();
-    showProgressMode("selection");
+    showProgressMode("progress-selection-mode");
 }
 
 // --- Helpers --- //
@@ -189,6 +174,16 @@ function destroyProgressCharts() {
     }
 }
 
+function showProgressChartContent() {
+    progressEmptyState.classList.add("hidden");
+    progressChartContent.classList.remove("hidden");
+}
+
+function showProgressEmptyContent() {
+    progressChartContent.classList.add("hidden");
+    progressEmptyState.classList.remove("hidden");
+}
+
 // --- Rendering --- //
 
 function renderAvailableExercisesForGraphs() {
@@ -207,7 +202,7 @@ function renderAvailableExercisesForGraphs() {
 
         row.addEventListener("click", function () {
             saveSelectedProgressExerciseId(exercise.id);
-            navigateToScreen("analyse-progress-screen", "graphs");
+            navigateToScreen("analyse-progress-screen", "progress-graph-mode");
         });
 
         availableExercisesList.append(row);

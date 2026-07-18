@@ -4,6 +4,20 @@
 // DOM REFERENCES
 // =========================================================
 
+//states
+const trainingExerciseEmptyState = document.querySelector(".training-exercise-empty-state");
+const trainingTemplateEmptyState = document.querySelector(".training-template-empty-state");
+const trainingStartState = document.querySelector(".training-overview-state");
+const trainingFromScratchState = document.querySelector(".training-add-exercises-state");
+const trainingFromTemplateState = document.querySelector(".select-template-state");
+const trainingWorkoutState = document.querySelector(".training-workout-state");
+const trainingEndOfWorkoutState = document.querySelector(".training-end-of-workout-state");
+
+//mode titles
+const trainingModeTitle = document.getElementById("training-page-title");
+const trainingModeSubtitle = document.getElementById("training-page-subtitle");
+
+//buttons
 const overviewStartTrainingButton = document.getElementById("choice-start-training");
 const overviewFromTemplateButton = document.getElementById("choice-from-template");
 const workoutEmptyStateAddExerciseButton = document.getElementById("empty-add-exercise");
@@ -11,24 +25,21 @@ const workoutEmptyStateAddTemplateButton = document.getElementById("empty-add-te
 const addToWorkoutButton = document.getElementById("add-to-workout");
 const finishWorkoutButton = document.getElementById("finish-workout");
 const trainingBackButton = document.querySelector("#start-training-screen .back-button");
-const trainingPageTitle = document.getElementById("training-page-title");
-const trainingPageSubtitle = document.getElementById("training-page-subtitle");
+
+//content
 const workoutExerciseList = document.getElementById("workout-exercise-list");
-const trainingExerciseEmptyState = document.querySelector(".training-exercise-empty-state");
-const trainingTemplateEmptyState = document.querySelector(".training-template-empty-state");
-const trainingOverviewState = document.querySelector(".training-overview-state");
-const addExercisesToWorkoutState = document.querySelector(".training-add-exercises-state");
-const selectTemplateState = document.querySelector(".select-template-state");
-const workoutState = document.querySelector(".training-workout-state");
-const summaryState = document.querySelector(".summary-state");
 
 // =========================================================
 // TRAINING CONTROLLER
 // =========================================================
 
+const TRAINING_MODES = [];
+
 let timerStartedAt = null;
 let timerIntervalId = null;
 let elapsedSeconds = 0;
+
+let unfoldedWorkoutCardIndex = 0;
 
 // --- Controller entry points --- //
 
@@ -36,35 +47,44 @@ function setupTrainingController() {
     setupTrainingChoiceButtons();
     setupTrainingEmptyStateButtons();
     setupWorkoutButtons();
-    setupSummaryActions();
+    setupEndOfTrainingActions();
+    setupTrainingModes();
 }
 
 function refreshTrainingScreen(mode = null) {
-    if (modeUsesExistingWorkoutState(mode)) {
-        showTrainingMode(mode);
+    if (appState.activeWorkout !== null) {
+        showTrainingMode("training-workout-mode");
+        renderWorkoutExerciseList(appState.activeWorkout);
+        openStoredWorkoutCard();
         return;
     }
 
-    clearWorkoutFormAndLoadPicker();
-
-    if (mode === "empty-exercises") {
-        showTrainingMode("empty-exercises");
-    } else if (mode === "empty-templates") {
-        showTrainingMode("empty-templates");
-    } else if (mode === "addExercises") {
-        showTrainingMode("addExercises");
-    } else if (mode === "selectTemplate") {
-        renderWorkoutTemplateList();
-        showTrainingMode("selectTemplate");
-    } else {
-        showTrainingMode("overview");
+    if (mode === null || mode === "training-workout-mode") {
+        showTrainingMode("training-start-workout-mode");
+        return;
     }
+
+    if (mode === "training-from-template-mode") {
+        renderWorkoutTemplateList();
+    }
+
+    showTrainingMode(mode);
 }
 
 // --- Setup --- //
 
+function setupTrainingModes() {
+    TRAINING_MODES.push(createMode(trainingEndOfWorkoutState, "training-end-of-workout-mode", "", ""));
+    TRAINING_MODES.push(createMode(trainingWorkoutState, "training-workout-mode", "Active training", ""));
+    TRAINING_MODES.push(createMode(trainingFromTemplateState, "training-from-template-mode", "Start from template", "Select a template for your workout"));
+    TRAINING_MODES.push(createMode(trainingFromScratchState, "training-from-scratch-mode", "Build from scratch", "Select exercises for your workout"));
+    TRAINING_MODES.push(createMode(trainingStartState, "training-start-workout-mode", "Start training", "Choose how you want to begin"));
+    TRAINING_MODES.push(createMode(trainingTemplateEmptyState, "training-no-available-templates-mode", "Start training", "Select a template for your workout"));
+    TRAINING_MODES.push(createMode(trainingExerciseEmptyState, "training-no-available-exercises-mode", "Start training", "Select exercises for your workout"));
+}
+
 function setupTrainingChoiceButtons() {
-    overviewStartTrainingButton.addEventListener("click", enterStartEmptyTrainingMode);
+    overviewStartTrainingButton.addEventListener("click", enterFromScratchMode);
     overviewFromTemplateButton.addEventListener("click", enterFromTemplateMode);
 }
 
@@ -78,61 +98,30 @@ function setupWorkoutButtons() {
         enterWorkoutState(appState.workoutSelectedExercises);
     });
 
-    finishWorkoutButton.addEventListener("click", enterSummaryMode);
+    finishWorkoutButton.addEventListener("click", enterEndOfWorkoutMode);
 }
 
-function setupSummaryActions() {
-    navigateOnClick(summaryState, "home-screen");
+function setupEndOfTrainingActions() {
+    navigateOnClick(trainingEndOfWorkoutState, "home-screen");
 }
 
 // --- Modes --- //
 
 function showTrainingMode(mode) {
-    hideAllTrainingStates();
-
-    if (appState.activeWorkout !== null) {
-        showActiveWorkoutMode();
-        updateTrainingBackButtonVisibility(mode);
-        return;
-    }
-
-    if (appState.activeWorkout === null) {
-        if (mode === "empty-exercises") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
-            trainingExerciseEmptyState.classList.remove("hidden");
-        } else if (mode === "overview") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start training", "Start a new session");
-            trainingOverviewState.classList.remove("hidden");
-        } else if (mode === "addExercises") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Build from scratch", "Select exercises for your workout");
-            addExercisesToWorkoutState.classList.remove("hidden");
-        } else if (mode === "workout") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
-            workoutState.classList.remove("hidden");
-        } else if (mode === "selectTemplate") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
-            selectTemplateState.classList.remove("hidden");
-        } else if (mode === "summary") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "", "");
-            summaryState.classList.remove("hidden");
-        } else if (mode === "empty-templates") {
-            updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Start from template", "Select a template for your workout");
-            trainingTemplateEmptyState.classList.remove("hidden");
-        }
-    }
-
+    hideAllStates(TRAINING_MODES);
+    showCurrentMode(mode, TRAINING_MODES, trainingModeTitle, trainingModeSubtitle);
     updateTrainingBackButtonVisibility(mode);
 }
 
-function enterStartEmptyTrainingMode() {
-    clearWorkoutFormAndLoadPicker()
+function enterFromScratchMode() {
+    resetWorkoutExercisePicker()
 
     const exercises = loadExercises();
 
     if (exercises.length > 0) {
-        navigateToScreen("start-training-screen", "addExercises");
+        navigateToScreen("start-training-screen", "training-from-scratch-mode");
     } else {
-        navigateToScreen("start-training-screen", "empty-exercises");
+        navigateToScreen("start-training-screen", "training-no-available-exercises-mode");
     }
 }
 
@@ -140,9 +129,9 @@ function enterFromTemplateMode() {
     const usableTemplates = getUsableTemplates();
 
     if (usableTemplates.length === 0) {
-        navigateToScreen("start-training-screen", "empty-templates");
+        navigateToScreen("start-training-screen", "training-no-available-templates-mode");
     } else {
-        navigateToScreen("start-training-screen", "selectTemplate");
+        navigateToScreen("start-training-screen", "training-from-template-mode");
     }
 }
 
@@ -156,30 +145,18 @@ function enterWorkoutState(exercises) {
     appState.activeWorkout = workout;
     addWorkout(workout);
 
-    navigateToScreen("start-training-screen", "workout");
+    unfoldedWorkoutCardIndex = 0;
 
-    const firstWorkoutCard = document.querySelector(".workout-card");
-
-    if (firstWorkoutCard === null) {
-        return;
-    }
-
-    openWorkoutCard(firstWorkoutCard);
-    closeAllWorkoutCardsExcept(firstWorkoutCard);
+    navigateToScreen("start-training-screen", "training-workout-mode");
 }
 
-function enterSummaryMode() {
+
+function enterEndOfWorkoutMode() {
     updateWorkout(appState.activeWorkout);
 
     appState.activeWorkout = null;
 
-    navigateToScreen("start-training-screen", "summary");
-}
-
-function showActiveWorkoutMode() {
-    updatePageHeader(trainingPageTitle, trainingPageSubtitle, "Active training", "");
-    renderWorkoutExerciseList(appState.activeWorkout);
-    workoutState.classList.remove("hidden");
+    navigateToScreen("start-training-screen", "training-end-of-workout-mode");
 }
 
 // --- Mutate actions --- //
@@ -192,7 +169,30 @@ function saveWorkoutSet(exercise, elapsedTime, weight) {
     updateWorkout(appState.activeWorkout);
 }
 
-// --- Selection actions --- //
+function deleteWorkoutSet(setNumber, exercise, card) {
+    exercise.sets.splice(setNumber - 1, 1);
+
+    updateWorkout(appState.activeWorkout);
+    renderWorkoutSets(exercise, card);
+}
+
+function decreaseSetTimeUnderLoad(set, exercise, card) {
+    if (set.timeUnderLoad > 0) {
+        set.timeUnderLoad -= 1;
+    }
+
+    updateWorkout(appState.activeWorkout);
+    renderWorkoutSets(exercise, card);
+}
+
+function increaseSetTimeUnderLoad(set, exercise, card) {
+    set.timeUnderLoad += 1;
+
+    updateWorkout(appState.activeWorkout);
+    renderWorkoutSets(exercise, card);
+}
+
+// --- Exercise picker actions --- //
 
 function selectWorkoutExercise(exercise) {
     removeSelectedExercise(appState.workoutUnselectedExercises, exercise);
@@ -210,7 +210,7 @@ function unselectWorkoutExercise(exercise) {
 
 // --- Form helpers --- //
 
-function clearWorkoutFormAndLoadPicker() {
+function resetWorkoutExercisePicker() {
     appState.workoutSelectedExercises.length = 0;
     appState.workoutUnselectedExercises.length = 0;
 
@@ -241,18 +241,22 @@ function closeAllWorkoutCardsExcept(activeCard) {
     }
 }
 
-function openWorkoutCard(card) {
-    const details = card.querySelector(".workout-card-details");
-    const inputRow = card.querySelector(".workout-input-row");
-    const chevron = card.querySelector(".chevron-button");
+function openStoredWorkoutCard() {
+    const workoutCards = document.querySelectorAll(".workout-card");
 
-    details.classList.remove("hidden");
-    inputRow.classList.remove("hidden");
-    chevron.classList.add("chevron-rotate");
+    if (workoutCards.length === 0) {
+        return;
+    }
+
+    const safeIndex = Math.min(unfoldedWorkoutCardIndex, workoutCards.length - 1);
+    const card = workoutCards[safeIndex];
+
+    openWorkoutCard(card);
+    closeAllWorkoutCardsExcept(card);
 }
 
 function updateTrainingBackButtonVisibility(mode) {
-    const shouldHideBackButton = appState.activeWorkout !== null || mode === "summary";
+    const shouldHideBackButton = hasActiveWorkout() || mode === "training-end-of-workout-mode";
 
     trainingBackButton.classList.toggle("invisible", shouldHideBackButton);
 }
@@ -276,8 +280,114 @@ function refreshWorkoutInputRow(exercise, card) {
     renderWorkoutSets(exercise, card);
 }
 
-function modeUsesExistingWorkoutState(mode) {
-    return mode === "workout" || mode === "summary";
+function openWorkoutCard(card) {
+    const details = card.querySelector(".workout-card-details");
+    const inputRow = card.querySelector(".workout-input-row");
+    const chevron = card.querySelector(".chevron-button");
+
+    details.classList.remove("hidden");
+    inputRow.classList.remove("hidden");
+    chevron.classList.add("chevron-rotate");
+}
+
+function openSelectedWorkoutCard(card, exerciseIndex) {
+    if (appState.activeTimer === true) {
+        return;
+    }
+
+    unfoldedWorkoutCardIndex = exerciseIndex;
+
+    openWorkoutCard(card);
+    closeAllWorkoutCardsExcept(card);
+}
+
+// --- Timer --- //
+
+function startTimer(button, bigTimer) {
+    appState.activeTimer = true;
+    elapsedSeconds = 0;
+
+    bigTimer.textContent = "00:00";
+    button.textContent = "Stop set";
+    timerStartedAt = Date.now();
+
+    timerIntervalId = setInterval(function () {
+        const currentTime = Date.now();
+        const elapsedMilliseconds = currentTime - timerStartedAt;
+
+        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+
+        bigTimer.textContent = formatTimer(elapsedSeconds);
+    }, 250)
+}
+
+function stopTimer(exercise, card, button, bigTimer, weightInput) {
+    appState.activeTimer = false;
+    clearInterval(timerIntervalId);
+
+    saveWorkoutSet(exercise, elapsedSeconds, weightInput.value);
+
+    refreshWorkoutInputRow(exercise, card);
+}
+
+function formatTimer(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+}
+
+// --- Recommendation helpers --- //
+
+function getRecommendationForExercise(exercise) {
+    const nextSetNumber = exercise.sets.length + 1;
+    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
+    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
+
+    if (lastSet === null) {
+        return null;
+    }
+
+    return {
+        lastSet: lastSet,
+        config: createRecommendationConfiguration(lastSet.timeUnderLoad)
+    };
+}
+
+function createRecommendationConfiguration(timeUnderLoad) {
+    if (timeUnderLoad < 50) {
+        return {
+            recommendationState: "bad",
+            indicationIconStyle: "fa-arrow-trend-down",
+            title: "Decrease weight this workout",
+            baseText: "Below ",
+            targetText: "0:50",
+            endText: " minimum"
+        };
+    }
+
+    if (timeUnderLoad >= 70) {
+        return {
+            recommendationState: "good",
+            indicationIconStyle: "fa-arrow-trend-up",
+            title: "Increase weight this workout",
+            baseText: "Above ",
+            targetText: "1:10",
+            endText: " target"
+        };
+    }
+
+    return {
+        recommendationState: "same",
+        indicationIconStyle: "fa-arrow-right-arrow-left",
+        title: "Stick to weight this workout",
+        baseText: "Within ",
+        targetText: "0:50 - 1:10",
+        endText: " range"
+    };
 }
 
 // --- Rendering --- //
@@ -369,55 +479,6 @@ function renderWorkoutSets(exercise, card) {
     }
 }
 
-function hideAllTrainingStates() {
-    trainingExerciseEmptyState.classList.add("hidden");
-    trainingTemplateEmptyState.classList.add("hidden");
-    trainingOverviewState.classList.add("hidden");
-    addExercisesToWorkoutState.classList.add("hidden");
-    selectTemplateState.classList.add("hidden");
-    workoutState.classList.add("hidden");
-    summaryState.classList.add("hidden");
-}
-
-// --- Timer --- //
-
-function startTimer(button, bigTimer) {
-    appState.activeTimer = true;
-    elapsedSeconds = 0;
-
-    bigTimer.textContent = "00:00";
-    button.textContent = "Stop set";
-    timerStartedAt = Date.now();
-
-    timerIntervalId = setInterval(function () {
-        const currentTime = Date.now();
-        const elapsedMilliseconds = currentTime - timerStartedAt;
-
-        elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-
-        bigTimer.textContent = formatTimer(elapsedSeconds);
-    }, 250)
-}
-
-function stopTimer(exercise, card, button, bigTimer, weightInput) {
-    appState.activeTimer = false;
-    clearInterval(timerIntervalId);
-
-    saveWorkoutSet(exercise, elapsedSeconds, weightInput.value);
-
-    refreshWorkoutInputRow(exercise, card);
-}
-
-function formatTimer(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(seconds).padStart(2, "0");
-
-    return `${formattedMinutes}:${formattedSeconds}`;
-}
-
 // --- DOM builders --- //
 
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
@@ -428,22 +489,9 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const body = createWorkoutExerciseCardBody(exercise, exerciseIndex);
     const details = createWorkoutExerciseCardDetails(exercise);
     const inputRow = createWeightInputRow(exercise, card);
-    const chevron = body.querySelector(".chevron-button");
 
     body.addEventListener("click", function () {
-        if (appState.activeTimer === true) {
-            return;
-        }
-
-        const currentDetails = card.querySelector(".workout-card-details");
-        const currentInputRow = card.querySelector(".workout-input-row");
-        const currentChevron = card.querySelector(".chevron-button");
-
-        rotateChevron(currentChevron);
-        changeVisibility(currentDetails);
-        changeVisibility(currentInputRow);
-
-        closeAllWorkoutCardsExcept(card);
+        openSelectedWorkoutCard(card, exerciseIndex);
     });
 
     content.append(body);
@@ -502,7 +550,7 @@ function createWeightInputRow(exercise, card) {
     const button = createTimerButton(weightInput, bigTimer, exercise, card);
     const setContainer = createSetContainer();
 
-    const recommendation = createRecommendation(exercise);
+    const recommendation = createRecommendationCard(exercise);
 
     headers.append(weightHeader, timerHeader);
     content.append(weightInput, bigTimer);
@@ -516,72 +564,41 @@ function createWeightInputRow(exercise, card) {
     return inputRow;
 }
 
-function createRecommendation(exercise) {
-    const nextSetNumber = exercise.sets.length + 1;
-    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
+function createRecommendationCard(exercise) {
+    const recommendation = getRecommendationForExercise(exercise);
 
-    if (lastSet === null) {
+    if (recommendation === null) {
         return null;
     }
 
-    let recommendationState = null;
-    let indicationIconStyle = null;
-    let title = null;
-    let baseText = null;
-    let TULtext = null;
-    let endText = null;
-
-    if (lastSet.timeUnderLoad < 50) {
-        title = "Decrease weight this workout";
-        baseText = "Below ";
-        TULtext = "0:50";
-        endText = " minimum";
-        indicationIconStyle = "fa-arrow-trend-down";
-        recommendationState = "bad";
-    } else if (lastSet.timeUnderLoad >= 70) {
-        title = "Increase weight this workout";
-        baseText = "Above ";
-        TULtext = "1:10";
-        endText = " target";
-        indicationIconStyle = "fa-arrow-trend-up";
-        recommendationState = "good";
-    } else {
-        title = "Stick to weight this workout";
-        baseText = "Within ";
-        TULtext = "0:50 - 1:10";
-        endText = " range";
-        indicationIconStyle = "fa-arrow-right-arrow-left";
-        recommendationState = "same";
-    }
-
-    const recommendationContainer = createElement("div", "recommendation-container", recommendationState);
+    const recommendationContainer = createElement("div", "recommendation-container", recommendation.config.recommendationState);
     const infoContainer = createElement("div", "info-container");
 
     const indicationIcon = createElement("div", "indication-icon");
-    const indicationIconSymbol = createIcon("fa-solid", indicationIconStyle, "indication-icon-symbol");
+    const indicationIconSymbol = createIcon("fa-solid", recommendation.config.indicationIconStyle, "indication-icon-symbol");
 
-    const titleText = createText(title, "text-field", "info-container-title");
+    const titleText = createText(recommendation.config.title, "text-field", "info-container-title");
 
-    const lastSessionTextContainer = createElement("div", "last-session-text-container");
-    const lastSessionIcon = createIcon("fa-regular", "fa-clock", "recommendation-text-icon");
-    const lastSessionStartText = createText("Last session: ", "text-field");
-    const lastSessionMidText = createText(formatTimer(lastSet.timeUnderLoad), "text-field", "recommend-highlight");
-    const lastSessionEndText = createText(" TUL", "text-field");
-
-    const targetTextContainer = createElement("div", "target-text-container");
-    const targetIcon = createIcon("fa-solid", "fa-bullseye", "recommendation-text-icon");
-    const targetStartText = createText(baseText, "text-field");
-    const targetMidText = createText(TULtext, "text-field", "recommend-highlight");
-    const targetEndText = createText(endText, "text-field");
+    const lastSessionTextContainer = createRecommendationTextRow("fa-regular", "fa-clock", "Last session: ", formatTimer(recommendation.lastSet.timeUnderLoad), " TUL");
+    const targetTextContainer = createRecommendationTextRow("fa-solid", "fa-bullseye", recommendation.config.baseText, recommendation.config.targetText, recommendation.config.endText);
 
     indicationIcon.append(indicationIconSymbol);
-    lastSessionTextContainer.append(lastSessionIcon, lastSessionStartText, lastSessionMidText, lastSessionEndText);
-    targetTextContainer.append(targetIcon, targetStartText, targetMidText, targetEndText);
     infoContainer.append(titleText, lastSessionTextContainer, targetTextContainer);
     recommendationContainer.append(indicationIcon, infoContainer);
 
     return recommendationContainer;
+}
+
+function createRecommendationTextRow(iconType, iconStyle, startText, highlightText, endText) {
+    const container = createElement("div");
+    const icon = createIcon(iconType, iconStyle, "recommendation-text-icon");
+    const start = createText(startText, "text-field");
+    const highlight = createText(highlightText, "text-field", "recommend-highlight");
+    const end = createText(endText, "text-field");
+
+    container.append(icon, start, highlight, end);
+
+    return container;
 }
 
 function createWeightInput(exercise) {
@@ -652,26 +669,15 @@ function createSetRow(setNumber, set, exercise, card) {
     const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
 
     deleteButton.addEventListener("click", function () {
-        exercise.sets.splice(setNumber - 1, 1);
-
-        updateWorkout(appState.activeWorkout);
-        renderWorkoutSets(exercise, card);
+        deleteWorkoutSet(setNumber, exercise, card);
     });
 
     minusButton.addEventListener("click", function () {
-        if (set.timeUnderLoad > 0) {
-            set.timeUnderLoad -= 1;
-        }
-
-        updateWorkout(appState.activeWorkout);
-        renderWorkoutSets(exercise, card);
+        decreaseSetTimeUnderLoad(set, exercise, card);
     });
 
     plusButton.addEventListener("click", function () {
-        set.timeUnderLoad += 1;
-
-        updateWorkout(appState.activeWorkout);
-        renderWorkoutSets(exercise, card);
+        increaseSetTimeUnderLoad(set, exercise, card);
     });
 
     weightText.append(weightValue, weightKg);

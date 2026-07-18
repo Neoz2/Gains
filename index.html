@@ -152,8 +152,8 @@
           </button>
         </div>
       </div>
-      <!-- summary state-->
-      <div class="empty-state summary-state hidden">
+      <!-- end of workout state-->
+      <div class="empty-state training-end-of-workout-state hidden">
         <div class="empty-state-icon">
           <i class="fa-solid fa-medal"></i>
         </div>
@@ -170,8 +170,8 @@
       </button>
 
       <div class="page-header">
-        <span class="page-title">Create exercises</span>
-        <span class="page-subtitle">Configure static machine settings for reuse</span>
+        <span id="exercise-page-title" class="page-title">Create exercises</span>
+        <span id="exercise-page-subtitle" class="page-subtitle">Configure static machine settings for reuse</span>
       </div>
 
       <div class="empty-state exercises-empty-state hidden">
@@ -225,8 +225,8 @@
       </button>
 
       <div class="page-header">
-        <span class="page-title">Create templates</span>
-        <span class="page-subtitle">Combine exercises into reusable plans</span>
+        <span id="template-page-title" class="page-title">Create templates</span>
+        <span id="template-page-subtitle" class="page-subtitle">Combine exercises into reusable plans</span>
       </div>
 
       <div class="empty-state templates-empty-state hidden">
@@ -285,12 +285,14 @@
         <span id="progress-page-title" class="page-title">Analyse progress</span>
         <span id="progress-page-subtitle" class="page-subtitle">Track performance over time</span>
       </div>
-      <!-- graphs -->
+
+      <!-- graph layout -->
       <div class="graphs-state hidden">
         <button id="progress-exercise-dropdown" class="progress-exercise-dropdown">
           <span id="progress-current-exercise">Exercise</span>
           <i class="fa-solid fa-chevron-right item-icon"></i>
         </button>
+
         <div class="set-segmented-control">
           <button class="segmented-control selected" data-set-index="0">Set 1</button>
           <button class="segmented-control" data-set-index="1">Set 2</button>
@@ -306,7 +308,7 @@
           <span class="empty-state-text">Complete this set in a workout to see progress.</span>
         </div>
 
-        <div id="progress-chart-content">
+        <div id="progress-chart-content" class="hidden">
           <div class="line-graph">
             <div class="chart-wrapper">
               <canvas id="weight-graph"></canvas>
