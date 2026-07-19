@@ -1267,7 +1267,7 @@ main {
   position: fixed;
   left: 50%;
   bottom: 63px;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(var(--keyboard-offset, 0px));
 
   width: 100%;
   max-width: 480px;
