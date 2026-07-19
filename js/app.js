@@ -25,7 +25,7 @@ setupTrainingController();
 setupExerciseController();
 setupTemplateController();
 setupProgressController();
-setupKeyboardAwareSaveBar()
+setupKeyboardAwareSaveBar();
 
 history.replaceState({ screenId: "home-screen" }, "", "#home");
 showScreen("home-screen");
@@ -35,9 +35,8 @@ function hasActiveWorkout() {
 }
 
 function setupKeyboardAwareSaveBar() {
-    const saveBars = document.querySelectorAll(".fixed-save-bar");
-
     if (!window.visualViewport) {
+        console.log("visualViewport not supported");
         return;
     }
 
@@ -45,13 +44,19 @@ function setupKeyboardAwareSaveBar() {
         const keyboardHeight = window.innerHeight - window.visualViewport.height;
         const offset = keyboardHeight > 0 ? `-${keyboardHeight}px` : "0px";
 
+        const saveBars = document.querySelectorAll(".fixed-save-bar");
+
         for (let i = 0; i < saveBars.length; i++) {
             saveBars[i].style.setProperty("--keyboard-offset", offset);
         }
+
+        console.log("keyboard height:", keyboardHeight, "offset:", offset);
     }
 
     window.visualViewport.addEventListener("resize", updateSaveBarPosition);
     window.visualViewport.addEventListener("scroll", updateSaveBarPosition);
+
+    updateSaveBarPosition();
 }
 
 
