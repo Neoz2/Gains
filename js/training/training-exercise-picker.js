@@ -102,7 +102,7 @@ function renderSelectedWorkoutExercises() {
 
     selectedExercisesList.innerHTML = "";
 
-    const activeWorkoutExercises = appState.workoutSelectedExercises.sort(function (a, b) {
+    const activeWorkoutExercises = [...appState.workoutSelectedExercises].sort(function (a, b) {
         return Number(canRemoveWorkoutExercise(a.id)) - Number(canRemoveWorkoutExercise(b.id));
     });
 

@@ -332,6 +332,7 @@ function createSettingRow(settingIndex) {
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
             settingsRow.remove();
+            renumberSettingRows();
             updateSettingsRowsVisibility();
         });
     });
@@ -340,6 +341,17 @@ function createSettingRow(settingIndex) {
     settingsRow.append(topRow, settingNameLabel, settingNameInput, settingValueLabel, settingValueInput);
 
     return settingsRow;
+}
+
+function renumberSettingRows() {
+    const settingRows = settingsContainer.querySelectorAll(".settings-row");
+
+    for (let settingIndex = 0; settingIndex < settingRows.length; settingIndex++) {
+        const settingRow = settingRows[settingIndex];
+        const indexCounter = settingRow.querySelector(".setting-index");
+
+        indexCounter.textContent = settingIndex + 1;
+    }
 }
 
 function createExerciseCard(exercise) {

@@ -82,7 +82,7 @@ function setupTrainingModes() {
     TRAINING_MODES.push(createMode(trainingStartState, "training-start-workout-mode", "Start training", "Choose how you want to begin"));
     TRAINING_MODES.push(createMode(trainingTemplateEmptyState, "training-no-available-templates-mode", "Start training", "Select a template for your workout"));
     TRAINING_MODES.push(createMode(trainingExerciseEmptyState, "training-no-available-exercises-mode", "Start training", "Select exercises for your workout"));
-    TRAINING_MODES.push(createMode(trainingFromScratchState, "training-edit-workout-mode", "Edit workout", "Add or remove exercises before continuing"));
+    TRAINING_MODES.push(createMode(trainingFromScratchState, "training-edit-workout-mode", "Edit workout", ""));
 }
 
 function setupTrainingChoiceButtons() {
@@ -129,7 +129,9 @@ function showTrainingMode(mode) {
 }
 
 function updateTrainingBackButtonVisibility(mode) {
-    const shouldHideBackButton = hasActiveWorkout() || mode === "training-end-of-workout-mode";
+    const shouldHideBackButton =
+        mode === "training-workout-mode" ||
+        mode === "training-end-of-workout-mode";
 
     trainingBackButton.classList.toggle("invisible", shouldHideBackButton);
 }
