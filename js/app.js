@@ -42,7 +42,8 @@ function setupKeyboardAwareSaveBar() {
 
     function updateSaveBarPosition() {
         const keyboardHeight = window.innerHeight - window.visualViewport.height;
-        const offset = keyboardHeight > 0 ? `-${keyboardHeight}px` : "0px";
+        const offset = "-250px";
+		//keyboardHeight > 0 ? `-${keyboardHeight}px` : "0px";
 
         const saveBars = document.querySelectorAll(".fixed-save-bar");
 
