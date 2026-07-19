@@ -65,6 +65,8 @@ function setupSetButtons() {
         const button = buttons[buttonIndex];
 
         button.addEventListener("click", function () {
+            showPressFeedback(button);
+
             setButtonSelectionStatus(button, buttons);
             selectedSet = Number(buttons[buttonIndex].dataset.setIndex);
 
@@ -201,8 +203,10 @@ function renderAvailableExercisesForGraphs() {
         const row = createExercisePickerRow(exercise, isSelected);
 
         row.addEventListener("click", function () {
-            saveSelectedProgressExerciseId(exercise.id);
-            navigateToScreen("analyse-progress-screen", "progress-graph-mode");
+            runWithPressFeedback(row, function () {
+                saveSelectedProgressExerciseId(exercise.id);
+                navigateToScreen("analyse-progress-screen", "progress-graph-mode");
+            }, 90);
         });
 
         availableExercisesList.append(row);

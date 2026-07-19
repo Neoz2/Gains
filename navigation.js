@@ -26,14 +26,22 @@ const ROUTES = {
 function setupNavigation() {
 	for (let i = 0; i < navButtons.length; i++) {
 		navButtons[i].addEventListener("click", function () {
-			const screenId = navButtons[i].dataset.screen;
-			navigateToScreen(screenId);
+			const button = navButtons[i];
+			const screenId = button.dataset.screen;
+
+			runWithPressFeedback(button, function () {
+				navigateToScreen(screenId);
+			}, 90);
 		});
 	}
 
 	for (let i = 0; i < goBackButtons.length; i++) {
 		goBackButtons[i].addEventListener("click", function () {
-			history.back();
+			const button = goBackButtons[i];
+
+			runWithPressFeedback(button, function () {
+				history.back();
+			}, 90);
 		});
 	}
 
@@ -50,7 +58,9 @@ function setupNavigation() {
 
 function navigateOnClick(element, screen, mode = null) {
 	element.addEventListener("click", function () {
-		navigateToScreen(screen, mode);
+		runWithPressFeedback(element, function () {
+			navigateToScreen(screen, mode);
+		}, 90);
 	});
 }
 

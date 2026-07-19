@@ -84,13 +84,18 @@ function setupTrainingModes() {
 }
 
 function setupTrainingChoiceButtons() {
-    overviewStartTrainingButton.addEventListener("click", enterFromScratchMode);
-    overviewFromTemplateButton.addEventListener("click", enterFromTemplateMode);
+    overviewStartTrainingButton.addEventListener("click", function () {
+        runWithPressFeedback(overviewStartTrainingButton, enterFromScratchMode, 90);
+    });
+
+    overviewFromTemplateButton.addEventListener("click", function () {
+        runWithPressFeedback(overviewFromTemplateButton, enterFromTemplateMode, 90);
+    });
 }
 
 function setupTrainingEmptyStateButtons() {
-    navigateOnClick(workoutEmptyStateAddExerciseButton, "create-exercises-screen", "form");
-    navigateOnClick(workoutEmptyStateAddTemplateButton, "create-templates-screen", "form");
+    navigateOnClick(workoutEmptyStateAddExerciseButton, "create-exercises-screen", "exercise-create-mode");
+    navigateOnClick(workoutEmptyStateAddTemplateButton, "create-templates-screen", "template-create-mode");
 }
 
 function setupWorkoutButtons() {
@@ -339,7 +344,9 @@ function renderAvailableWorkoutExercises() {
         const row = createExercisePickerRow(exercise, false);
 
         row.addEventListener("click", function () {
-            selectWorkoutExercise(exercise);
+            runWithPressFeedback(row, function () {
+                selectWorkoutExercise(exercise);
+            }, 60);
         });
 
         availableExercisesList.append(row);
@@ -357,7 +364,9 @@ function renderSelectedWorkoutExercises() {
         const row = createExercisePickerRow(exercise, true);
 
         row.addEventListener("click", function () {
-            unselectWorkoutExercise(exercise);
+            runWithPressFeedback(row, function () {
+                unselectWorkoutExercise(exercise);
+            }, 60);
         });
 
         selectedExercisesList.append(row);
@@ -421,6 +430,7 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const inputRow = createWeightInputRow(exercise, card);
 
     body.addEventListener("click", function () {
+        showPressFeedback(body);
         openSelectedWorkoutCard(card, exerciseIndex);
     });
 
@@ -433,7 +443,7 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
 }
 
 function createWorkoutExerciseCardBody(exercise, exerciseIndex) {
-    const body = createElement("div", "workout-card-body");
+    const body = createElement("div", "workout-card-body", "interactive-row");
 
     const index = createText(exerciseIndex + 1, "workout-exercise-index");
     const title = createText(exercise.name, "workout-exercise-title");
@@ -528,14 +538,14 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
     const setTimer = createTimerState();
 
     button.addEventListener("click", function () {
-        showPressFeedback(button);
-
         if (isStarted === false && weightInput.value === "") {
+            showPressFeedback(button);
             showMissingWeightFeedback(weightInput);
             return;
         }
 
         if (isStarted === false) {
+            showPressFeedback(button);
             isStarted = true;
             startSetTimer(setTimer, button, bigTimer);
             return;
@@ -576,14 +586,18 @@ function createSetRow(setNumber, set, exercise, card) {
     const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
 
     deleteButton.addEventListener("click", function () {
-        deleteWorkoutSet(setNumber, exercise, card);
+        runWithPressFeedback(deleteButton, function () {
+            deleteWorkoutSet(setNumber, exercise, card);
+        }, 80);
     });
 
     minusButton.addEventListener("click", function () {
+        showPressFeedback(minusButton);
         decreaseSetTimeUnderLoad(set, exercise, card);
     });
 
     plusButton.addEventListener("click", function () {
+        showPressFeedback(plusButton);
         increaseSetTimeUnderLoad(set, exercise, card);
     });
 
@@ -595,7 +609,7 @@ function createSetRow(setNumber, set, exercise, card) {
 }
 
 function createTemplateOption(template) {
-    const card = createElement("li", "item-card");
+    const card = createElement("li", "item-card", "interactive", "interactive-row");
     const header = createElement("div", "card-header");
 
     const iconBadge = createElement("span", "icon-badge");
@@ -615,8 +629,10 @@ function createTemplateOption(template) {
     card.append(header);
 
     card.addEventListener("click", function () {
-        const templateExercises = getExercisesFromTemplate(template);
-        enterWorkoutState(templateExercises);
+        runWithPressFeedback(card, function () {
+            const templateExercises = getExercisesFromTemplate(template);
+            enterWorkoutState(templateExercises);
+        }, 90);
     });
 
     return card;

@@ -63,7 +63,9 @@ function setupTemplateCreateButtons() {
 function setupTemplateSaveButton() {
     clearErrorWhenTyping(templateNameInput);
 
-    saveTemplateButton.addEventListener("click", saveTemplateFromForm);
+    saveTemplateButton.addEventListener("click", function () {
+        runWithPressFeedback(saveTemplateButton, saveTemplateFromForm);
+    });
 }
 
 // --- Modes --- //
@@ -288,7 +290,9 @@ function renderAvailableTemplateExercises() {
         const row = createExercisePickerRow(exercise, false);
 
         row.addEventListener("click", function () {
-            selectTemplateExercise(exercise);
+            runWithPressFeedback(row, function () {
+                selectTemplateExercise(exercise);
+            }, 60);
         });
 
         availableExercisesList.append(row);
@@ -306,7 +310,9 @@ function renderSelectedTemplateExercises() {
         const row = createExercisePickerRow(exercise, true);
 
         row.addEventListener("click", function () {
-            unselectTemplateExercise(exercise);
+            runWithPressFeedback(row, function () {
+                unselectTemplateExercise(exercise);
+            }, 60);
         });
 
         selectedExercisesList.append(row);
@@ -318,11 +324,14 @@ function renderSelectedTemplateExercises() {
 function createTemplateCard(template) {
     const card = createElement("li", "item-card");
     const header = createTemplateCardHeader(template);
+    header.classList.add("interactive", "interactive-row");
     const details = createTemplateCardDetails(template);
     const actions = createTemplateCardActions(template);
 
     const chevron = header.querySelector(".chevron-button");
+
     header.addEventListener("click", function () {
+        showPressFeedback(header);
         rotateChevron(chevron);
         changeVisibility(details);
     });
@@ -391,12 +400,16 @@ function createTemplateCardActions(template) {
     const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
 
     editButton.addEventListener("click", function () {
-        enterEditTemplateMode(template);
+        runWithPressFeedback(editButton, function () {
+            enterEditTemplateMode(template);
+        });
     });
 
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
-        deleteTemplate(template.id);
+        runWithPressFeedback(deleteButton, function () {
+            deleteTemplate(template.id);
+        });
     });
 
     actions.append(editButton, deleteButton);

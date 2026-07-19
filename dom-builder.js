@@ -41,6 +41,7 @@ function createTextInput(placeholder, ...classes) {
 function createIconButton(iconClassBase, iconClassIcon, ...classes) {
 	const button = createButton(...classes);
 	const icon = createIcon(iconClassBase, iconClassIcon);
+	button.classList.add("interactive-subtle");
 
 	button.append(icon);
 
@@ -69,6 +70,7 @@ function createButton(...classes) {
 	const button = document.createElement("button");
 	button.type = "button";
 
+	button.classList.add("interactive");
 	addClasses(button, classes);
 
 	return button;
@@ -89,29 +91,29 @@ function addClasses(element, classes) {
 // =========================================================
 
 function createExercisePickerRow(exercise, isSelected) {
-    const row = createButton();
+	const row = createButton("interactive-row");
 
-    if (isSelected) {
-        row.classList.add("selected-exercise-row");
+	if (isSelected) {
+		row.classList.add("selected-exercise-row");
 
-        const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
-        row.append(barsIcon);
-    } else {
-        row.classList.add("available-exercise-row");
-    }
+		const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
+		row.append(barsIcon);
+	} else {
+		row.classList.add("available-exercise-row");
+	}
 
-    const exerciseName = createText(exercise.name);
+	const exerciseName = createText(exercise.name);
 
-    let checkIcon;
+	let checkIcon;
 
-    if (isSelected) {
-        checkIcon = createIcon("fa-solid", "fa-circle-check");
-    } else {
-        checkIcon = createIcon("fa-regular", "fa-circle");
-    }
+	if (isSelected) {
+		checkIcon = createIcon("fa-solid", "fa-circle-check");
+	} else {
+		checkIcon = createIcon("fa-regular", "fa-circle");
+	}
 
-    row.append(exerciseName, checkIcon);
+	row.append(exerciseName, checkIcon);
 
-    return row;
+	return row;
 }
 

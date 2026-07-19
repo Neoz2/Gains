@@ -36,21 +36,24 @@ function changeVisibility(item) {
     item.classList.toggle("hidden");
 }
 
-function runWithPressFeedback(button, action) {
-    button.classList.add("button-pressed");
+function runWithPressFeedback(element, action, pressDelay = 120, releaseDelay = 60) {
+    element.classList.add("is-pressed");
 
     setTimeout(function () {
-        button.classList.remove("button-pressed");
-        action();
-    }, 120);
+        element.classList.remove("is-pressed");
+
+        setTimeout(function () {
+            action();
+        }, releaseDelay);
+    }, pressDelay);
 }
 
-function showPressFeedback(button) {
-    button.classList.add("button-pressed");
+function showPressFeedback(element, delay = 120) {
+    element.classList.add("is-pressed");
 
     setTimeout(function () {
-        button.classList.remove("button-pressed");
-    }, 120);
+        element.classList.remove("is-pressed");
+    }, delay);
 }
 
 // =========================================================

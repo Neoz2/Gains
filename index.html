@@ -27,7 +27,7 @@
         </div>
 
         <span class="home-nav-header">MAIN AREAS</span>
-        <button class="home-nav-item nav-button" data-screen="start-training-screen">
+        <button class="home-nav-item nav-button interactive" data-screen="start-training-screen">
           <i class="fa-solid fa-circle-play"></i>
           <span class="home-nav-text">
             <span>Training</span>
@@ -36,7 +36,7 @@
           <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <button class="home-nav-item nav-button" data-screen="create-exercises-screen">
+        <button class="home-nav-item nav-button interactive" data-screen="create-exercises-screen">
           <i class="fa-solid fa-dumbbell"></i>
           <span class="home-nav-text">
             <span>Exercises</span>
@@ -45,7 +45,7 @@
           <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <button class="home-nav-item nav-button" data-screen="create-templates-screen">
+        <button class="home-nav-item nav-button interactive" data-screen="create-templates-screen">
           <i class="fa-solid fa-clipboard-list"></i>
           <span class="home-nav-text">
             <span>Templates</span>
@@ -54,7 +54,7 @@
           <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <button class="home-nav-item nav-button" data-screen="analyse-progress-screen">
+        <button class="home-nav-item nav-button interactive" data-screen="analyse-progress-screen">
           <i class="fa-solid fa-chart-simple"></i>
           <span class="home-nav-text">
             <span>Progress</span>
@@ -67,7 +67,7 @@
 
     <!-- START TRAINING -->
     <section id="start-training-screen" class="hidden">
-      <button class="back-button">
+      <button class="back-button interactive">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
@@ -77,7 +77,7 @@
       </div>
       <!-- starting page -->
       <div class="start-training-content training-overview-state">
-        <button id="choice-start-training" class="choice-card">
+        <button id="choice-start-training" class="choice-card interactive">
           <i class="choice-card-icon fa-solid fa-plus"></i>
           <span class="choice-card-text">
             <span class="choice-card-title">Start training</span>
@@ -86,7 +86,7 @@
           <i class="choice-card-chevron fa-solid fa-chevron-right"></i>
         </button>
 
-        <button id="choice-from-template" class="choice-card">
+        <button id="choice-from-template" class="choice-card interactive">
           <i class="choice-card-icon fa-solid fa-clipboard-list"></i>
           <span class="choice-card-text">
             <span class="choice-card-title">From template</span>
@@ -103,7 +103,7 @@
 
         <span class="empty-state-title">No exercises yet</span>
         <span class="empty-state-text">Add your first exercise to start building workouts</span>
-        <button id="empty-add-exercise" class="button-large">
+        <button id="empty-add-exercise" class="button-large interactive">
           + Create exercise
         </button>
       </div>
@@ -115,7 +115,7 @@
 
         <span class="empty-state-title">No templates yet</span>
         <span class="empty-state-text">Add at least one exercise to a template before using it to start a workout</span>
-        <button id="empty-add-template" class="button-large">
+        <button id="empty-add-template" class="button-large interactive">
           + Create template
         </button>
       </div>
@@ -136,7 +136,7 @@
         <div class="training-unselected-items"></div>
 
         <div class="fixed-save-bar">
-          <button id="add-to-workout" class="save-button">
+          <button id="add-to-workout" class="save-button interactive">
             Add to workout
           </button>
         </div>
@@ -145,7 +145,7 @@
       <div class="training-workout-state hidden">
         <div class="section-header-row">
           <span class="content-header">WORKOUT</span>
-          <button id="edit-workout" class="header-action-button">
+          <button id="edit-workout" class="header-action-button interactive">
             <i class="fa-solid fa-pen"></i>
             <span>Edit workout</span>
           </button>
@@ -153,7 +153,7 @@
         <ul id="workout-exercise-list" class="content-list"></ul>
 
         <div class="fixed-save-bar">
-          <button id="finish-workout" class="save-button">
+          <button id="finish-workout" class="save-button interactive">
             Finish workout
           </button>
         </div>
@@ -171,7 +171,7 @@
 
     <!-- CREATE EXERCISES -->
     <section id="create-exercises-screen" class="hidden">
-      <button class="back-button">
+      <button class="back-button interactive">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
@@ -187,7 +187,7 @@
 
         <span class="empty-state-title">No exercises yet</span>
         <span class="empty-state-text">Create your first exercise to use in your workouts</span>
-        <button id="empty-create-exercise" class="button-large">
+        <button id="empty-create-exercise" class="button-large interactive">
           + Create exercise
         </button>
       </div>
@@ -195,7 +195,7 @@
       <div class="exercises-form-state hidden">
         <div class="section-header-row">
           <span class="content-header">EXERCISE</span>
-          <button id="add-setting" class="header-action-button">
+          <button id="add-setting" class="header-action-button interactive">
             <i class="fa-solid fa-plus"></i>
             <span>Add setting</span>
           </button>
@@ -205,7 +205,7 @@
         <div id="settings-container" class="hidden"></div>
 
         <div class="fixed-save-bar">
-          <button id="save-exercise" class="save-button">
+          <button id="save-exercise" class="save-button interactive">
             Save exercise
           </button>
         </div>
@@ -214,7 +214,7 @@
       <div class="exercises-overview-state hidden">
         <div class="section-header-row">
           <span class="content-header">EXERCISES</span>
-          <button id="overview-create-exercise" class="header-action-button">
+          <button id="overview-create-exercise" class="header-action-button interactive">
             <i class="fa-solid fa-plus"></i>
             <span>New exercise</span>
           </button>
@@ -226,7 +226,7 @@
 
     <!-- CREATE TEMPLATES -->
     <section id="create-templates-screen" class="hidden">
-      <button class="back-button">
+      <button class="back-button interactive">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
@@ -242,7 +242,7 @@
 
         <span class="empty-state-title">No templates yet</span>
         <span class="empty-state-text">Create your first workout template to quickly start future sessions</span>
-        <button id="empty-create-template" class="button-large">
+        <button id="empty-create-template" class="button-large interactive">
           + Create template
         </button>
       </div>
@@ -261,7 +261,7 @@
         <div class="template-unselected-items"></div>
 
         <div class="fixed-save-bar">
-          <button id="save-template" class="save-button">
+          <button id="save-template" class="save-button interactive">
             Save template
           </button>
         </div>
@@ -270,7 +270,7 @@
       <div class="templates-overview-state hidden">
         <div class="section-header-row">
           <span class="content-header">TEMPLATES</span>
-          <button id="overview-create-template" class="header-action-button">
+          <button id="overview-create-template" class="header-action-button interactive">
             <i class="fa-solid fa-plus"></i>
             <span>New template</span>
           </button>
@@ -283,7 +283,7 @@
 
     <!-- ANALYSE PROGRESS -->
     <section id="analyse-progress-screen" class="hidden">
-      <button class="back-button">
+      <button class="back-button interactive">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
@@ -294,15 +294,15 @@
 
       <!-- graph layout -->
       <div class="graphs-state hidden">
-        <button id="progress-exercise-dropdown" class="progress-exercise-dropdown">
+        <button id="progress-exercise-dropdown" class="progress-exercise-dropdown interactive">
           <span id="progress-current-exercise">Exercise</span>
           <i class="fa-solid fa-chevron-right item-icon"></i>
         </button>
 
         <div class="set-segmented-control">
-          <button class="segmented-control selected" data-set-index="0">Set 1</button>
-          <button class="segmented-control" data-set-index="1">Set 2</button>
-          <button class="segmented-control" data-set-index="2">Set 3</button>
+          <button class="segmented-control selected interactive" data-set-index="0">Set 1</button>
+          <button class="segmented-control interactive" data-set-index="1">Set 2</button>
+          <button class="segmented-control interactive" data-set-index="2">Set 3</button>
         </div>
 
         <div id="progress-empty-state" class="progress-empty-state empty-state hidden">
@@ -363,8 +363,6 @@
       </button>
     </nav>
   </main>
-
-  <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>

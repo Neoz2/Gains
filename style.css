@@ -203,11 +203,6 @@ main {
   padding: 12px;
 
   font-size: 16px;
-
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease,
-    filter 120ms ease;
 }
 
 .icon-button {
@@ -265,19 +260,6 @@ main {
 
   border-radius: var(--radius-small);
   border: none;
-
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease,
-    filter 120ms ease;
-}
-
-.save-button:active,
-.button-large:active {
-  -webkit-tap-highlight-color: transparent;
-  transform: translateY(1px) scale(0.985);
-  filter: brightness(0.92);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .icon-badge {
@@ -1395,8 +1377,32 @@ main {
     transform 160ms ease;
 }
 
-.button-pressed {
+/* =========================================================
+   INTERACTIONS
+========================================================= */
+
+.interactive {
+    transition:
+        transform 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.interactive:active,
+.interactive.is-pressed {
     transform: translateY(1px) scale(0.985);
     filter: brightness(0.92);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.interactive-subtle:active,
+.interactive-subtle.is-pressed {
+    transform: scale(0.98);
+    filter: brightness(0.94);
+}
+
+.interactive-row:active,
+.interactive-row.is-pressed {
+    transform: scale(0.992);
+    filter: brightness(1.08);
 }

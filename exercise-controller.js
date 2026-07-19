@@ -66,11 +66,15 @@ function setupExerciseCreateButtons() {
 function setupExerciseForm() {
     clearErrorWhenTyping(exerciseNameInput);
 
-    saveExerciseButton.addEventListener("click", saveExerciseFromForm);
+    saveExerciseButton.addEventListener("click", function () {
+        runWithPressFeedback(saveExerciseButton, saveExerciseFromForm, 120, 200);
+    });
 }
 
 function setupSettingsForm() {
     addSettingButton.addEventListener("click", function () {
+        showPressFeedback(addSettingButton);
+
         const settingsRows = settingsContainer.querySelectorAll(".settings-row");
 
         if (settingsRows.length >= 3) {
@@ -326,8 +330,10 @@ function createSettingRow(settingIndex) {
 
     const deleteButton = createIconButton("fa-regular", "fa-trash-can", "icon-button");
     deleteButton.addEventListener("click", function () {
-        settingsRow.remove();
-        updateSettingsRowsVisibility();
+        runWithPressFeedback(deleteButton, function () {
+            settingsRow.remove();
+            updateSettingsRowsVisibility();
+        });
     });
 
     topRow.append(settingIndexCounter, settingsHeader, deleteButton);
@@ -339,6 +345,7 @@ function createSettingRow(settingIndex) {
 function createExerciseCard(exercise) {
     const card = createElement("li", "item-card");
     const header = createExerciseCardHeader(exercise);
+    header.classList.add("interactive", "interactive-row");
     const details = createExerciseCardDetails(exercise);
     const actions = createExerciseCardActions(exercise);
 
@@ -411,12 +418,16 @@ function createExerciseCardActions(exercise) {
     const editButton = createActionButton("fa-solid", "fa-pencil", "Edit");
 
     editButton.addEventListener("click", function () {
-        enterEditExerciseMode(exercise);
+        runWithPressFeedback(editButton, function () {
+            enterEditExerciseMode(exercise);
+        });
     });
 
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
-        deleteExercise(exercise.id);
+        runWithPressFeedback(deleteButton, function () {
+            deleteExercise(exercise.id);
+        });
     });
 
     actions.append(editButton, deleteButton);
