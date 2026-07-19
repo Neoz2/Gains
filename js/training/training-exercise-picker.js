@@ -58,11 +58,13 @@ function setupEditWorkoutPicker() {
 }
 
 function canRemoveWorkoutExercise(exerciseId) {
-    for (let workoutExerciseIndex = 0; workoutExerciseIndex < appState.activeWorkout.exercises.length; workoutExerciseIndex++) {
-        const workoutExercise = appState.activeWorkout.exercises[workoutExerciseIndex];
+    if (appState.activeWorkout !== null) {
+        for (let workoutExerciseIndex = 0; workoutExerciseIndex < appState.activeWorkout.exercises.length; workoutExerciseIndex++) {
+            const workoutExercise = appState.activeWorkout.exercises[workoutExerciseIndex];
 
-        if (workoutExercise.exerciseId === exerciseId && workoutExercise.sets?.length > 0) {
-            return false;
+            if (workoutExercise.exerciseId === exerciseId && workoutExercise.sets?.length > 0) {
+                return false;
+            }
         }
     }
 
