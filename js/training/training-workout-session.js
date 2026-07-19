@@ -32,6 +32,10 @@ function enterEndOfWorkoutMode() {
 // --- Mutate actions --- //
 
 function saveWorkoutSelection() {
+    if (appState.workoutSelectedExercises.length === 0) {
+        return;
+    }
+
     if (appState.activeWorkout !== null) {
         updateActiveWorkoutExerciseSelection(appState.workoutSelectedExercises);
         return;

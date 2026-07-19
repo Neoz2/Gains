@@ -43,6 +43,12 @@
   --radius-medium: 8px;
   --radius-large: 10px;
   --radius-pill: 999px;
+
+  /* locked selected row */
+  --locked-text-color: rgba(255, 250, 240, 0.58);
+  --locked-bg-color: rgba(255, 255, 255, 0.035);
+  --locked-border-color: rgba(255, 255, 255, 0.10);
+  --locked-icon-color: #888888;
 }
 
 /* =========================================================
@@ -1240,6 +1246,23 @@ main {
   flex: 1;
 }
 
+.selected-exercise-row.locked {
+  background-color: var(--locked-bg-color);
+  border: 1px solid var(--locked-border-color);
+  color: var(--locked-text-color);
+  box-shadow: none;
+}
+
+.selected-exercise-row.locked i {
+  color: var(--locked-icon-color);
+}
+
+.selected-exercise-row.locked:active,
+.selected-exercise-row.locked.is-pressed {
+  transform: none;
+  filter: none;
+}
+
 .fixed-save-bar {
   position: fixed;
   left: 50%;
@@ -1382,27 +1405,27 @@ main {
 ========================================================= */
 
 .interactive {
-    transition:
-        transform 120ms ease,
-        filter 120ms ease,
-        box-shadow 120ms ease;
-    -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 120ms ease,
+    filter 120ms ease,
+    box-shadow 120ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .interactive:active,
 .interactive.is-pressed {
-    transform: translateY(1px) scale(0.985);
-    filter: brightness(0.92);
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(0.92);
 }
 
 .interactive-subtle:active,
 .interactive-subtle.is-pressed {
-    transform: scale(0.98);
-    filter: brightness(0.94);
+  transform: scale(0.98);
+  filter: brightness(0.94);
 }
 
 .interactive-row:active,
 .interactive-row.is-pressed {
-    transform: scale(0.992);
-    filter: brightness(1.08);
+  transform: scale(0.992);
+  filter: brightness(1.08);
 }

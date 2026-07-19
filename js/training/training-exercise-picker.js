@@ -10,10 +10,12 @@ function selectWorkoutExercise(exercise) {
 }
 
 function unselectWorkoutExercise(exercise) {
-    removeSelectedExercise(appState.workoutSelectedExercises, exercise);
-    addSelectedExercise(appState.workoutUnselectedExercises, exercise);
+    if (canRemoveWorkoutExercise(exercise.id)) {
+        removeSelectedExercise(appState.workoutSelectedExercises, exercise);
+        addSelectedExercise(appState.workoutUnselectedExercises, exercise);
 
-    renderWorkoutExercisePickerLists();
+        renderWorkoutExercisePickerLists();
+    }
 }
 
 // --- Exercise picker helpers --- //
@@ -55,6 +57,18 @@ function setupEditWorkoutPicker() {
     renderWorkoutExercisePickerLists();
 }
 
+function canRemoveWorkoutExercise(exerciseId) {
+    for (let workoutExerciseIndex = 0; workoutExerciseIndex < appState.activeWorkout.exercises.length; workoutExerciseIndex++) {
+        const workoutExercise = appState.activeWorkout.exercises[workoutExerciseIndex];
+
+        if (workoutExercise.exerciseId === exerciseId && workoutExercise.sets?.length > 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // --- Rendering --- //
 
 function renderWorkoutExercisePickerLists() {
@@ -71,6 +85,7 @@ function renderAvailableWorkoutExercises() {
         const exercise = appState.workoutUnselectedExercises[exerciseIndex];
 
         const row = createExercisePickerRow(exercise, false);
+        setToUnlockedAppearance(row);
 
         row.addEventListener("click", function () {
             runWithPressFeedback(row, function () {
@@ -87,17 +102,50 @@ function renderSelectedWorkoutExercises() {
 
     selectedExercisesList.innerHTML = "";
 
-    for (let exerciseIndex = 0; exerciseIndex < appState.workoutSelectedExercises.length; exerciseIndex++) {
-        const exercise = appState.workoutSelectedExercises[exerciseIndex];
+    const activeWorkoutExercises = appState.workoutSelectedExercises.sort(function (a, b) {
+        return Number(canRemoveWorkoutExercise(a.id)) - Number(canRemoveWorkoutExercise(b.id));
+    });
+
+    console.log(activeWorkoutExercises);
+
+    for (let exerciseIndex = 0; exerciseIndex < activeWorkoutExercises.length; exerciseIndex++) {
+        const exercise = activeWorkoutExercises[exerciseIndex];
 
         const row = createExercisePickerRow(exercise, true);
+        const canRemove = canRemoveWorkoutExercise(exercise.id);
 
-        row.addEventListener("click", function () {
-            runWithPressFeedback(row, function () {
-                unselectWorkoutExercise(exercise);
-            }, 60);
-        });
+        if (!canRemove) {
+            setToLockedAppearance(row);
+        } else {
+            row.addEventListener("click", function () {
+                runWithPressFeedback(row, function () {
+                    unselectWorkoutExercise(exercise);
+                }, 60);
+            });
+        }
 
         selectedExercisesList.append(row);
+    }
+}
+
+function setToLockedAppearance(row) {
+    row.classList.add("locked");
+
+    const icon = row.querySelector(".exercise-picker-status-icon");
+
+    if (icon !== null) {
+        icon.classList.remove("fa-circle-check");
+        icon.classList.add("fa-lock");
+    }
+}
+
+function setToUnlockedAppearance(row) {
+    row.classList.remove("locked");
+
+    const icon = row.querySelector(".exercise-picker-status-icon");
+
+    if (icon !== null) {
+        icon.classList.remove("fa-lock");
+        icon.classList.add("fa-circle");
     }
 }

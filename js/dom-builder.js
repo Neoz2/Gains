@@ -107,9 +107,9 @@ function createExercisePickerRow(exercise, isSelected) {
 	let checkIcon;
 
 	if (isSelected) {
-		checkIcon = createIcon("fa-solid", "fa-circle-check");
+		checkIcon = createIcon("fa-solid", "fa-circle-check", "exercise-picker-status-icon");
 	} else {
-		checkIcon = createIcon("fa-regular", "fa-circle");
+		checkIcon = createIcon("fa-regular", "fa-circle", "exercise-picker-status-icon");
 	}
 
 	row.append(exerciseName, checkIcon);
