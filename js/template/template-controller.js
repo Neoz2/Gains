@@ -22,12 +22,13 @@ const overviewCreateTemplateButton = document.getElementById("overview-create-te
 const templateNameInput = document.getElementById("template-name-input");
 const templateList = document.getElementById("template-list");
 
-
 // =========================================================
 // TEMPLATE CONTROLLER
 // =========================================================
 
 const TEMPLATE_MODES = [];
+let templateNoSelectedItems = null;
+let templateNoUnselectedItems = null;
 
 // --- Controller entry points --- //
 
@@ -61,8 +62,6 @@ function setupTemplateCreateButtons() {
 }
 
 function setupTemplateSaveButton() {
-    clearErrorWhenTyping(templateNameInput);
-
     saveTemplateButton.addEventListener("click", function () {
         runWithPressFeedback(saveTemplateButton, saveTemplateFromForm);
     });
@@ -232,19 +231,15 @@ function templateFormIsValid(templateName, templates) {
 
     if (templateName === "") {
         showInputError(templateNameInput);
-        console.log("Empty name not allowed");
         formIsValid = false;
     } else if (nameExistsInListExceptId(templates, templateName, appState.editingTemplateId)) {
         showInputError(templateNameInput);
-        console.log("Name exists");
         formIsValid = false;
-    } else {
-        clearInputError(templateNameInput);
     }
 
     if (appState.templateSelectedExercises.length === 0) {
         formIsValid = false;
-        console.log("Select at least one exercise");
+        showInputError(templateNoSelectedItems);
     }
 
     return formIsValid;
@@ -284,6 +279,12 @@ function renderAvailableTemplateExercises() {
 
     availableExercisesList.innerHTML = "";
 
+    if (appState.templateUnselectedExercises.length === 0) {
+        templateNoUnselectedItems = createText("All exercises are selected", "empty-list-message");
+        availableExercisesList.append(templateNoUnselectedItems);
+        return;
+    }
+
     for (let exerciseIndex = 0; exerciseIndex < appState.templateUnselectedExercises.length; exerciseIndex++) {
         const exercise = appState.templateUnselectedExercises[exerciseIndex];
 
@@ -303,6 +304,12 @@ function renderSelectedTemplateExercises() {
     const selectedExercisesList = document.querySelector(".template-selected-items");
 
     selectedExercisesList.innerHTML = "";
+
+    if (appState.templateSelectedExercises.length === 0) {
+        templateNoSelectedItems = createText("No exercises selected yet", "empty-list-message");
+        selectedExercisesList.append(templateNoSelectedItems);
+        return;
+    }
 
     for (let exerciseIndex = 0; exerciseIndex < appState.templateSelectedExercises.length; exerciseIndex++) {
         const exercise = appState.templateSelectedExercises[exerciseIndex];

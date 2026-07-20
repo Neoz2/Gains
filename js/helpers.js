@@ -5,23 +5,19 @@
 // =========================================================
 
 function showInputError(inputElement) {
-    inputElement.classList.add("input-error");
-}
+    inputElement.classList.remove("input-attention");
 
-function clearInputError(inputElement) {
-    inputElement.classList.remove("input-error");
+    requestAnimationFrame(function () {
+        inputElement.classList.add("input-attention");
+
+        setTimeout(function () {
+            inputElement.classList.remove("input-attention");
+        }, 900);
+    });
 }
 
 function inputHasText(inputElement) {
     return inputElement.value.trim().length > 0;
-}
-
-function clearErrorWhenTyping(inputElement) {
-    inputElement.addEventListener("input", function () {
-        if (inputHasText(inputElement)) {
-            clearInputError(inputElement);
-        }
-    });
 }
 
 // =========================================================

@@ -64,8 +64,6 @@ function setupExerciseCreateButtons() {
 }
 
 function setupExerciseForm() {
-    clearErrorWhenTyping(exerciseNameInput);
-
     saveExerciseButton.addEventListener("click", function () {
         runWithPressFeedback(saveExerciseButton, saveExerciseFromForm, 120, 200);
     });
@@ -147,13 +145,11 @@ function resetExerciseFormAndShowOverview() {
 function saveExerciseFromForm() {
     const exercises = loadExercises();
     const exerciseName = exerciseNameInput.value.trim();
+
     const settings = readSettingsFromPage();
+    const formIsValid = exerciseFormIsValid(exerciseName, exercises);
 
-    if (settings === null) {
-        return;
-    }
-
-    if (!exerciseFormIsValid(exerciseName, exercises)) {
+    if (settings === null || !formIsValid) {
         return;
     }
 
@@ -225,15 +221,11 @@ function readSettingsFromPage() {
         if (name === "") {
             showInputError(nameInput);
             settingsAreValid = false;
-        } else {
-            clearInputError(nameInput);
         }
 
         if (value === "") {
             showInputError(valueInput);
             settingsAreValid = false;
-        } else {
-            clearInputError(valueInput);
         }
 
         settings.push({
@@ -281,8 +273,6 @@ function exerciseFormIsValid(exerciseName, exercises) {
     } else if (nameExistsInListExceptId(exercises, exerciseName, appState.editingExerciseId)) {
         showInputError(exerciseNameInput);
         formIsValid = false;
-    } else {
-        clearInputError(exerciseNameInput);
     }
 
     return formIsValid;
@@ -324,9 +314,6 @@ function createSettingRow(settingIndex) {
     const settingNameInput = createTextInput("Name...", "setting-name");
     const settingValueLabel = createText("Value", "field-name");
     const settingValueInput = createTextInput("Setting value...", "setting-value");
-
-    clearErrorWhenTyping(settingNameInput);
-    clearErrorWhenTyping(settingValueInput);
 
     const deleteButton = createIconButton("fa-regular", "fa-trash-can", "icon-button");
     deleteButton.addEventListener("click", function () {

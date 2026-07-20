@@ -37,6 +37,7 @@
   --text-on-primary-color: black;
 
   --danger-color: red;
+  --attention-color: #EF4444;
   --selected-template-color: #4D0E26;
 
   --radius-small: 4px;
@@ -318,12 +319,12 @@ main {
   color: var(--placeholder-text-color);
 }
 
-.text-input.input-error {
-  border-color: var(--danger-color);
-}
-
 .text-input:focus {
   border-color: var(--primary-color);
+}
+
+.text-input.input-attention:focus {
+  border-color: var(--attention-color);
 }
 
 .field-name {
@@ -1178,6 +1179,10 @@ main {
 
 .training-selected-items,
 .template-selected-items {
+  margin-bottom: 8px;
+}
+
+.selected-item-picker-container {
   padding-bottom: 18px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--divider-color);
@@ -1186,7 +1191,7 @@ main {
 #workout-exercise-list,
 .training-unselected-items,
 .template-unselected-items {
-  padding-bottom: 55px;
+  padding-bottom: 80px;
 }
 
 .available-exercise-row,
@@ -1234,6 +1239,11 @@ main {
   border: none;
 }
 
+.available-exercise-row,
+.selected-exercise-row {
+  line-height: 20px;
+}
+
 .available-exercise-row i,
 .selected-exercise-row i {
   color: var(--primary-color);
@@ -1261,6 +1271,32 @@ main {
 .selected-exercise-row.locked.is-pressed {
   transform: none;
   filter: none;
+}
+
+.empty-list-message {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 12px;
+
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-large);
+
+  color: var(--muted-text-color);
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+}
+
+.available-exercise-row,
+.selected-exercise-row,
+.empty-list-message {
+  min-height: 42px;
 }
 
 .fixed-save-bar {
@@ -1389,15 +1425,11 @@ main {
 }
 
 .input-attention {
-  border-color: #ef4444;
+  outline: 1.5px solid #ff6b9a;
+  outline-offset: 1px;
   box-shadow:
-    0 0 0 3px rgba(239, 68, 68, 0.14),
-    0 8px 20px rgba(239, 68, 68, 0.12);
-  transform: translateY(-1px);
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    0 0 0 3px rgba(255, 107, 154, 0.14),
+    0 0 14px rgba(255, 107, 154, 0.16);
 }
 
 /* =========================================================

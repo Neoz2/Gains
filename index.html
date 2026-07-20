@@ -127,13 +127,17 @@
 
         <ul id="workout-template-list" class="content-list"></ul>
       </div>
-      <!-- add exercises -->
+      <!-- from scratch state -->
       <div class="training-add-exercises-state hidden">
-        <span class="content-header">SELECTED EXERCISES</span>
-        <div class="training-selected-items"></div>
+        <div class="selected-item-picker-container">
+          <span class="content-header">SELECTED EXERCISES</span>
+          <div class="training-selected-items"></div>
+        </div>
 
-        <span class="content-header">AVAILABLE EXERCISES</span>
-        <div class="training-unselected-items"></div>
+        <div class="unselected-item-picker-container">
+          <span class="content-header">AVAILABLE EXERCISES</span>
+          <div class="training-unselected-items"></div>
+        </div>
 
         <div class="fixed-save-bar">
           <button id="add-to-workout" class="save-button interactive">
@@ -253,12 +257,16 @@
         </div>
 
         <input id="template-name-input" class="text-input" placeholder="Template name">
+        <div class="selected-item-picker-container">
+          <span class="content-header">SELECTED EXERCISES</span>
+          <div class="template-selected-items"></div>
+        </div>
 
-        <span class="content-header">SELECTED EXERCISES</span>
-        <div class="template-selected-items"></div>
+        <div class="unselected-item-picker-container">
+          <span class="content-header">AVAILABLE EXERCISES</span>
+          <div class="template-unselected-items"></div>
+        </div>
 
-        <span class="content-header">AVAILABLE EXERCISES</span>
-        <div class="template-unselected-items"></div>
 
         <div class="fixed-save-bar">
           <button id="save-template" class="save-button interactive">

@@ -1,5 +1,8 @@
 //training-exercise-picker.js
 
+let workoutNoSelectedItems = null;
+let workoutNoUnselectedItems = null;
+
 // --- Exercise picker actions --- //
 
 function selectWorkoutExercise(exercise) {
@@ -83,6 +86,12 @@ function renderAvailableWorkoutExercises() {
 
     availableExercisesList.innerHTML = "";
 
+    if (appState.workoutUnselectedExercises.length === 0) {
+        workoutNoUnselectedItems = createText("All exercises are selected", "empty-list-message");
+        availableExercisesList.append(workoutNoUnselectedItems);
+        return;
+    }
+
     for (let exerciseIndex = 0; exerciseIndex < appState.workoutUnselectedExercises.length; exerciseIndex++) {
         const exercise = appState.workoutUnselectedExercises[exerciseIndex];
 
@@ -103,6 +112,12 @@ function renderSelectedWorkoutExercises() {
     const selectedExercisesList = document.querySelector(".training-selected-items");
 
     selectedExercisesList.innerHTML = "";
+
+    if (appState.workoutSelectedExercises.length === 0) {
+        workoutNoSelectedItems = createText("No exercises selected yet", "empty-list-message");
+        selectedExercisesList.append(workoutNoSelectedItems);
+        return;
+    }
 
     const activeWorkoutExercises = [...appState.workoutSelectedExercises].sort(function (a, b) {
         return Number(canRemoveWorkoutExercise(a.id)) - Number(canRemoveWorkoutExercise(b.id));

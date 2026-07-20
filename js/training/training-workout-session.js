@@ -33,6 +33,7 @@ function enterEndOfWorkoutMode() {
 
 function saveWorkoutSelection() {
     if (appState.workoutSelectedExercises.length === 0) {
+        showInputError(workoutNoSelectedItems);
         return;
     }
 

@@ -229,7 +229,7 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
     button.addEventListener("click", function () {
         if (isStarted === false && weightInput.value === "") {
             showPressFeedback(button);
-            showMissingWeightFeedback(weightInput);
+            showInputError(weightInput);
             return;
         }
 
@@ -295,14 +295,4 @@ function createSetRow(setNumber, set, exercise, card) {
     setRow.append(deleteButton, setNumberText, weightText, setTimeControl);
 
     return setRow;
-}
-
-// --- Helpers --- //
-
-function showMissingWeightFeedback(weightInput) {
-    weightInput.classList.add("input-attention");
-
-    setTimeout(function () {
-        weightInput.classList.remove("input-attention");
-    }, 900);
 }
