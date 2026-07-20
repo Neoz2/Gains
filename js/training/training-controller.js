@@ -34,6 +34,7 @@ const editWorkoutButton = document.getElementById("edit-workout");
 const TRAINING_MODES = [];
 
 const workoutSessionTimer = createTimerState();
+let finishWorkoutHoldTimer = null;
 
 // --- Controller entry points --- //
 
@@ -105,15 +106,30 @@ function setupWorkoutButtons() {
         runWithPressFeedback(addToWorkoutButton, saveWorkoutSelection);
     });
 
-    finishWorkoutButton.addEventListener("click", function () {
-        runWithPressFeedback(finishWorkoutButton, enterEndOfWorkoutMode);
+    finishWorkoutButton.addEventListener("pointerdown", function () {
+        finishWorkoutButton.textContent = "Release to cancel";
+        finishWorkoutButton.classList.add("is-holding");
+
+        finishWorkoutHoldTimer = setTimeout(function () {
+            enterEndOfWorkoutMode();
+        }, 2000);
     });
+
+    finishWorkoutButton.addEventListener("pointerup", cancelFinishWorkoutHold);
+    finishWorkoutButton.addEventListener("pointerleave", cancelFinishWorkoutHold);
+    finishWorkoutButton.addEventListener("pointercancel", cancelFinishWorkoutHold);
 
     editWorkoutButton.addEventListener("click", function () {
         runWithPressFeedback(editWorkoutButton, function () {
             navigateToScreen("start-training-screen", "training-edit-workout-mode");
         });
     });
+}
+
+function cancelFinishWorkoutHold() {
+    finishWorkoutButton.classList.remove("is-holding");
+    clearTimeout(finishWorkoutHoldTimer);
+    finishWorkoutButton.textContent = "Finish workout";
 }
 
 function setupEndOfTrainingActions() {
