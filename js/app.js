@@ -21,17 +21,30 @@ const appState = {
 
 setupNavigation();
 
+restoreActiveWorkout();
+
 setupTrainingController();
 setupExerciseController();
 setupTemplateController();
 setupProgressController();
 
-history.replaceState({ screenId: "home-screen" }, "", "#home");
-showScreen("home-screen");
+if (hasActiveWorkout()) {
+    history.replaceState(
+        {
+            screenId: "start-training-screen",
+            mode: "training-workout-mode"
+        },
+        "",
+        "#start-training/training-workout-mode"
+    );
 
-function hasActiveWorkout() {
-	return appState.activeWorkout !== null;
+    showScreen("start-training-screen");
+    refreshScreen("start-training-screen", "training-workout-mode");
+} else {
+    history.replaceState({ screenId: "home-screen" }, "", "#home");
+    showScreen("home-screen");
 }
+
 
 
 

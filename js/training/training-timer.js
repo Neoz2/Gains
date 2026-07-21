@@ -9,7 +9,7 @@ function createTimerState() {
 }
 
 function startTimer(timer, displayElement, formatter, intervalSpeed = 1000) {
-    timer.startedAt = Date.now();
+    timer.startedAt = new Date(appState.activeWorkout.startedAt).getTime();
     timer.elapsedSeconds = 0;
 
     updateTimer(timer, displayElement, formatter);

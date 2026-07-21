@@ -75,6 +75,7 @@ function createWorkout(selectedExercises) {
     return {
         id: createId(),
         startedAt: new Date().toISOString(),
+        finishedAt: null,
         exercises: workoutExercises
     };
 }

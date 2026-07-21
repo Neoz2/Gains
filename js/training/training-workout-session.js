@@ -10,6 +10,7 @@ function enterWorkoutState(exercises) {
     }
 
     appState.activeWorkout = workout;
+    appState.activeWorkout.startedAt = Date.now();
     addWorkout(workout);
 
     unfoldedWorkoutCardIndex = 0;
@@ -20,6 +21,8 @@ function enterWorkoutState(exercises) {
 }
 
 function enterEndOfWorkoutMode() {
+    appState.activeWorkout.finishedAt = new Date().toISOString();
+
     updateWorkout(appState.activeWorkout);
 
     stopTimerInterval(workoutSessionTimer.intervalId);

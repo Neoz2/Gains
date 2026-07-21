@@ -54,7 +54,7 @@ function refreshTrainingScreen(mode = null) {
 
     if (appState.activeWorkout !== null) {
         showTrainingMode("training-workout-mode");
-        updateTimer(workoutSessionTimer, trainingModeSubtitle, formatWorkoutSessionTime);
+        startWorkoutSessionTimer(workoutSessionTimer, trainingModeSubtitle);
 
         renderWorkoutExerciseList(appState.activeWorkout);
         openStoredWorkoutCard();
@@ -185,5 +185,23 @@ function enterFromTemplateMode() {
         navigateToScreen("start-training-screen", "training-no-available-templates-mode");
     } else {
         navigateToScreen("start-training-screen", "training-from-template-mode");
+    }
+}
+
+// --- Helpers --- //
+
+function hasActiveWorkout() {
+	return appState.activeWorkout !== null && appState.activeWorkout.finishedAt === null;
+}
+
+function restoreActiveWorkout() {
+    const workouts = loadWorkouts();
+
+    const activeWorkout = workouts.find(function (workout) {
+        return workout.finishedAt === null;
+    });
+
+    if (activeWorkout !== undefined) {
+        appState.activeWorkout = activeWorkout;
     }
 }
