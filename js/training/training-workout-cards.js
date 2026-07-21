@@ -235,6 +235,7 @@ function createTimerButton(weightInput, bigTimer, exercise, card) {
 
         if (isStarted === false) {
             showPressFeedback(button);
+            navigator.vibrate(80);
             isStarted = true;
             startSetTimer(setTimer, button, bigTimer);
             return;
