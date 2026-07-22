@@ -19,31 +19,43 @@ const appState = {
 // APP STARTUP
 // =========================================================
 
-setupNavigation();
-
-restoreActiveWorkout();
-
-setupTrainingController();
-setupExerciseController();
-setupTemplateController();
-setupProgressController();
-
-if (hasActiveWorkout()) {
-    history.replaceState(
-        {
-            screenId: "start-training-screen",
-            mode: "training-workout-mode"
-        },
-        "",
-        "#start-training/training-workout-mode"
-    );
-
-    showScreen("start-training-screen");
-    refreshScreen("start-training-screen", "training-workout-mode");
+if (window.firebaseStorage) {
+	startApp();
 } else {
-    history.replaceState({ screenId: "home-screen" }, "", "#home");
-    showScreen("home-screen");
+	window.addEventListener("firebaseStorageReady", startApp);
 }
+
+async function startApp() {
+	await firebaseStorage.setupFirebaseSync();
+
+	setupNavigation();
+
+	restoreActiveWorkout();
+
+	setupTrainingController();
+	setupExerciseController();
+	setupTemplateController();
+	setupProgressController();
+
+	if (hasActiveWorkout()) {
+		history.replaceState(
+			{
+				screenId: "start-training-screen",
+				mode: "training-workout-mode"
+			},
+			"",
+			"#start-training/training-workout-mode"
+		);
+
+		showScreen("start-training-screen");
+		refreshScreen("start-training-screen", "training-workout-mode");
+	} else {
+		history.replaceState({ screenId: "home-screen" }, "", "#home");
+		showScreen("home-screen");
+	}
+}
+
+
 
 
 

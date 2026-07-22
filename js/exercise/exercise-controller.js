@@ -142,7 +142,7 @@ function resetExerciseFormAndShowOverview() {
 
 // --- Mutate actions --- //
 
-function saveExerciseFromForm() {
+async function saveExerciseFromForm() {
     const exercises = loadExercises();
     const exerciseName = exerciseNameInput.value.trim();
 
@@ -159,7 +159,7 @@ function saveExerciseFromForm() {
         return;
     }
 
-    saveExercises(exercises);
+    await saveExercises(exercises);
     resetExerciseFormAndShowOverview();
 }
 
@@ -189,15 +189,21 @@ function saveExerciseToList(exercises, exerciseName, settings) {
     return true;
 }
 
-function deleteExercise(exerciseId) {
+async function deleteExerciseAndCleanTemplates(exerciseId) {
     const exercises = loadExercises();
+    const templates = loadTemplates();
 
     const updatedExercises = exercises.filter(function (exercise) {
         return exercise.id !== exerciseId;
     });
 
-    saveExercises(updatedExercises);
-    removeExerciseFromTemplates(exerciseId);
+    const updatedTemplates = removeExerciseIdFromTemplates(templates, exerciseId);
+
+    saveItemsToLocalStorage(STORAGE_KEYS.exercises, updatedExercises);
+    saveItemsToLocalStorage(STORAGE_KEYS.templates, updatedTemplates);
+
+    const appData = firebaseStorage.createAppDataFromLocalStorage();
+    await firebaseStorage.saveAllToFirebase(appData);
 
     renderExerciseOverview();
 }
@@ -425,7 +431,7 @@ function createExerciseCardActions(exercise) {
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
-            deleteExercise(exercise.id);
+            deleteExerciseAndCleanTemplates(exercise.id);
         });
     });
 

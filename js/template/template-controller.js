@@ -111,7 +111,7 @@ function resetTemplateFormAndShowOverview() {
 
 // --- Mutate actions --- //
 
-function saveTemplateFromForm() {
+async function saveTemplateFromForm() {
     const templates = loadTemplates();
     const templateName = templateNameInput.value.trim();
 
@@ -126,7 +126,7 @@ function saveTemplateFromForm() {
         return;
     }
 
-    saveTemplates(templates);
+    await saveTemplates(templates);
     resetTemplateFormAndShowOverview();
 }
 
@@ -156,29 +156,26 @@ function saveTemplateToList(templates, templateName, exerciseIds) {
     return true;
 }
 
-function deleteTemplate(templateId) {
+async function deleteTemplate(templateId) {
     const templates = loadTemplates();
 
     const updatedTemplates = templates.filter(function (template) {
         return template.id !== templateId;
     });
 
-    saveTemplates(updatedTemplates);
+    await saveTemplates(updatedTemplates);
     renderTemplateOverview();
 }
 
-function removeExerciseFromTemplates(deletedExerciseId) {
-    const templates = loadTemplates();
-
-    for (let templateIndex = 0; templateIndex < templates.length; templateIndex++) {
-        const template = templates[templateIndex];
-
-        template.exerciseIds = template.exerciseIds.filter(function (exerciseId) {
-            return exerciseId !== deletedExerciseId;
-        });
-    }
-
-    saveTemplates(templates);
+function removeExerciseIdFromTemplates(templates, deletedExerciseId) {
+    return templates.map(function (template) {
+        return {
+            ...template,
+            exerciseIds: template.exerciseIds.filter(function (exerciseId) {
+                return exerciseId !== deletedExerciseId;
+            })
+        };
+    });
 }
 
 // --- Selection actions --- //

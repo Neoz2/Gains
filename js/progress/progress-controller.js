@@ -82,7 +82,7 @@ function showProgressMode(mode) {
     showCurrentMode(mode, PROGRESS_MODES, progressModeTitle, progressModeSubtitle);
 }
 
-function enterGraphsMode() {
+async function enterGraphsMode() {
     let selectedExercise = getSelectedProgressExercise();
 
     if (selectedExercise === null) {
@@ -96,7 +96,7 @@ function enterGraphsMode() {
             return;
         }
 
-        saveSelectedProgressExerciseId(exercises[0].id);
+        await saveSelectedProgressExerciseId(exercises[0].id);
         selectedExercise = exercises[0];
     }
 
@@ -203,8 +203,8 @@ function renderAvailableExercisesForGraphs() {
         const row = createExercisePickerRow(exercise, isSelected);
 
         row.addEventListener("click", function () {
-            runWithPressFeedback(row, function () {
-                saveSelectedProgressExerciseId(exercise.id);
+            runWithPressFeedback(row, async function () {
+                await saveSelectedProgressExerciseId(exercise.id);
                 navigateToScreen("analyse-progress-screen", "progress-graph-mode");
             }, 90);
         });
