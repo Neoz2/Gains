@@ -40,6 +40,7 @@ const auth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 
 let currentUser = null;
+let saveQueue = Promise.resolve();
 
 console.log("Firebase connected", firestore);
 
@@ -51,34 +52,17 @@ async function setupFirebaseSync() {
     const firebaseAppData = await loadAllFromFirebase();
 
     if (firebaseAppData === null) {
-        const emptyAppData = {
-            exercises: [],
-            templates: [],
-            workouts: [],
-            selectedProgressExerciseId: null
-        };
+        const localAppData = createAppDataFromLocalStorage();
+        await saveAllToFirebase(localAppData);
 
-        await saveAllToFirebase(emptyAppData);
-        saveAppDataToLocalStorage(emptyAppData);
+        console.log("Created Firebase data from local storage");
         return;
     }
 
     saveAppDataToLocalStorage(firebaseAppData);
+    console.log("Restored app data from Firebase");
 }
 
-function getAppDataRef() {
-    if (!currentUser) {
-        throw new Error("Cannot access Firebase storage without a logged-in user");
-    }
-
-    return doc(
-        firestore,
-        "users",
-        currentUser.uid,
-        "appData",
-        "current"
-    );
-}
 
 // =========================================================
 // STORAGE FUNCTIONS
@@ -86,7 +70,7 @@ function getAppDataRef() {
 
 async function loadAllFromFirebase() {
     const appDataRef = getAppDataRef();
-    const snapshot = await getDoc(APP_DATA_REF);
+    const snapshot = await getDoc(appDataRef);
 
     if (!snapshot.exists()) {
         console.log("No Firebase app data yet");
@@ -99,15 +83,27 @@ async function loadAllFromFirebase() {
     return data;
 }
 
-async function saveAllToFirebase(appData) {
+async function performFirebaseSave(appData) {
     const appDataRef = getAppDataRef();
 
-    await setDoc(APP_DATA_REF, {
+    await setDoc(appDataRef, {
         ...appData,
         updatedAt: new Date().toISOString()
     });
 
     console.log("Saved Firebase app data:", appData);
+}
+
+function saveAllToFirebase(appData) {
+    saveQueue = saveQueue
+        .catch(function (error) {
+            console.error("Previous Firebase save failed:", error);
+        })
+        .then(function () {
+            return performFirebaseSave(appData);
+        });
+
+    return saveQueue;
 }
 
 // =========================================================
@@ -150,6 +146,20 @@ async function signOutUser() {
 
 function isSignedIn() {
     return currentUser !== null;
+}
+
+function getAppDataRef() {
+    if (!currentUser) {
+        throw new Error("Cannot access Firebase storage without a logged-in user");
+    }
+
+    return doc(
+        firestore,
+        "users",
+        currentUser.uid,
+        "appData",
+        "current"
+    );
 }
 
 // =========================================================

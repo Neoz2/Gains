@@ -59,6 +59,7 @@ async function startApp() {
 
 		showScreen("start-training-screen");
 		refreshScreen("start-training-screen", "training-workout-mode");
+		return;
 	}
 
 	history.replaceState({ screenId: "home-screen" }, "", "#home");

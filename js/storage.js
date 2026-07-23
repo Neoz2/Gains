@@ -119,7 +119,7 @@ function loadExercises() {
 }
 
 async function saveExercises(exercises) {
-    saveItems(STORAGE_KEYS.exercises, exercises);
+    return saveItems(STORAGE_KEYS.exercises, exercises);
 }
 
 function getExerciseById(exerciseId) {
@@ -139,7 +139,7 @@ function loadTemplates() {
 }
 
 async function saveTemplates(templates) {
-    saveItems(STORAGE_KEYS.templates, templates);
+    return saveItems(STORAGE_KEYS.templates, templates);
 }
 
 function getExercisesFromTemplate(template) {
@@ -170,7 +170,7 @@ function loadWorkouts() {
 }
 
 async function saveWorkouts(workouts) {
-    saveItems(STORAGE_KEYS.workouts, workouts);
+    return saveItems(STORAGE_KEYS.workouts, workouts);
 }
 
 async function addWorkout(workout) {
@@ -260,7 +260,7 @@ async function saveSelectedProgressExerciseId(exerciseId) {
     localStorage.setItem(STORAGE_KEYS.selectedProgressExerciseId, exerciseId);
 
     const appData = firebaseStorage.createAppDataFromLocalStorage();
-    firebaseStorage.saveAllToFirebase(appData);
+    return firebaseStorage.saveAllToFirebase(appData);
 }
 
 function getSelectedProgressExercise() {
