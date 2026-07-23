@@ -26,16 +26,26 @@ if (window.firebaseStorage) {
 }
 
 async function startApp() {
-	await firebaseStorage.setupFirebaseSync();
+	await firebaseStorage.waitForAuthReady();
 
 	setupNavigation();
+	setupLoginController();
 
-	restoreActiveWorkout();
+	if (!firebaseStorage.getCurrentUser()) {
+		navigateToScreen("login-screen");
+		hideBottomNav();
+		return;
+	}
 
+	showBottomNav();
 	setupTrainingController();
 	setupExerciseController();
 	setupTemplateController();
 	setupProgressController();
+
+	await firebaseStorage.setupFirebaseSync();
+
+	restoreActiveWorkout();
 
 	if (hasActiveWorkout()) {
 		history.replaceState(
@@ -49,10 +59,10 @@ async function startApp() {
 
 		showScreen("start-training-screen");
 		refreshScreen("start-training-screen", "training-workout-mode");
-	} else {
-		history.replaceState({ screenId: "home-screen" }, "", "#home");
-		showScreen("home-screen");
 	}
+
+	history.replaceState({ screenId: "home-screen" }, "", "#home");
+	showScreen("home-screen");
 }
 
 

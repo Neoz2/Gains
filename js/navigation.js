@@ -4,6 +4,7 @@
 // DOM REFERENCES
 // =========================================================
 
+const bottomNavItems = document.getElementById('bottom-nav');
 const navButtons = document.querySelectorAll(".nav-button");
 const goBackButtons = document.querySelectorAll(".back-button");
 
@@ -12,6 +13,7 @@ const goBackButtons = document.querySelectorAll(".back-button");
 // =========================================================
 
 const ROUTES = {
+	"login-screen": "#login",
 	"home-screen": "#home",
 	"start-training-screen": "#start-training",
 	"create-exercises-screen": "#create-exercises",
@@ -185,4 +187,16 @@ function pushScreenToHistory(screenId, mode) {
 			url
 		);
 	}
+}
+
+// =========================================================
+// UI RENDERING
+// =========================================================
+
+function hideBottomNav() {
+    bottomNavItems.classList.add("hidden");
+}
+
+function showBottomNav() {
+    bottomNavItems.classList.remove("hidden");
 }

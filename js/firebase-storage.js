@@ -5,7 +5,20 @@
 // =========================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc
+}
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 // =========================================================
 // CONSTANTS
@@ -23,8 +36,10 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const firestore = getFirestore(firebaseApp);
 
-const USER_ID = "personal";
-const APP_DATA_REF = doc(firestore, "users", USER_ID, "appData", "current");
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
+let currentUser = null;
 
 console.log("Firebase connected", firestore);
 
@@ -41,14 +56,28 @@ async function setupFirebaseSync() {
             templates: [],
             workouts: [],
             selectedProgressExerciseId: null
-        };    
+        };
 
-    await saveAllToFirebase(emptyAppData);
-    saveAppDataToLocalStorage(emptyAppData);
-    return;
+        await saveAllToFirebase(emptyAppData);
+        saveAppDataToLocalStorage(emptyAppData);
+        return;
     }
 
     saveAppDataToLocalStorage(firebaseAppData);
+}
+
+function getAppDataRef() {
+    if (!currentUser) {
+        throw new Error("Cannot access Firebase storage without a logged-in user");
+    }
+
+    return doc(
+        firestore,
+        "users",
+        currentUser.uid,
+        "appData",
+        "current"
+    );
 }
 
 // =========================================================
@@ -56,6 +85,7 @@ async function setupFirebaseSync() {
 // =========================================================
 
 async function loadAllFromFirebase() {
+    const appDataRef = getAppDataRef();
     const snapshot = await getDoc(APP_DATA_REF);
 
     if (!snapshot.exists()) {
@@ -70,12 +100,56 @@ async function loadAllFromFirebase() {
 }
 
 async function saveAllToFirebase(appData) {
+    const appDataRef = getAppDataRef();
+
     await setDoc(APP_DATA_REF, {
         ...appData,
         updatedAt: new Date().toISOString()
     });
 
     console.log("Saved Firebase app data:", appData);
+}
+
+// =========================================================
+// AUTHENTICATION
+// =========================================================
+
+async function signInWithGoogle() {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
+}
+
+const authReadyPromise = new Promise(function (resolve) {
+    onAuthStateChanged(auth, function (user) {
+        currentUser = user;
+
+        if (user) {
+            console.log("Logged in as", user.uid);
+        } else {
+            console.log("No user logged in");
+        }
+
+        resolve(user);
+    });
+});
+
+function waitForAuthReady() {
+    return authReadyPromise;
+}
+
+function getCurrentUser() {
+    return currentUser;
+}
+
+async function signOutUser() {
+    await signOut(auth);
+    navigateToScreen("login-screen");
+    hideBottomNav();
+    console.log("Signed out");
+}
+
+function isSignedIn() {
+    return currentUser !== null;
 }
 
 // =========================================================
@@ -116,7 +190,12 @@ window.firebaseStorage = {
     saveAllToFirebase,
     createAppDataFromLocalStorage,
     saveAppDataToLocalStorage,
-    setupFirebaseSync
+    setupFirebaseSync,
+    signInWithGoogle,
+    signOutUser,
+    isSignedIn,
+    waitForAuthReady,
+    getCurrentUser
 };
 
 window.dispatchEvent(new Event("firebaseStorageReady"));

@@ -515,6 +515,22 @@ main {
 }
 
 /* =========================================================
+   SCREEN: LOGIN
+========================================================= */
+
+.google-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: #111;
+    font-weight: 800;
+}
+
+/* =========================================================
    SCREEN: HOME
 ========================================================= */
 

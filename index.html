@@ -15,8 +15,29 @@
 <body>
   <main>
 
+    <section id="login-screen" class="hidden">
+      <div class="login-card">
+        <div class="login-logo">G</div>
+
+        <h1>Gains</h1>
+
+        <p class="login-subtitle">
+          Track your workouts and progress.
+        </p>
+
+        <button id="google-login-button" class="login-google-button">
+          <span class="google-mark">G</span>
+          <span>Continue with Google</span>
+        </button>
+
+        <p class="login-note">
+          Your data syncs securely to your account.
+        </p>
+      </div>
+    </section>
+
     <!-- HOME -->
-    <section id="home-screen">
+    <section id="home-screen" class="hidden">
       <div class="home-content">
         <div class="home-welcome-block">
           <span class="home-welcome-block-text">
@@ -344,7 +365,7 @@
     </section>
 
     <!-- BOTTOM NAVIGATION -->
-    <nav class="bottom-nav">
+    <nav id="bottom-nav" class="bottom-nav">
       <button class="bottom-nav-item nav-button" data-screen="home-screen">
         <i class="fa-solid fa-house"></i>
         <span>Home</span>
@@ -375,6 +396,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 
+  <script src="js/login-controller.js?v=6"></script>
   <script src="js/storage.js?v=6"></script>
   <script type="module" src="js/firebase-storage.js?v=1"></script>
   <script src="js/helpers.js?v=6"></script>
