@@ -52,10 +52,12 @@ async function setupFirebaseSync() {
     const firebaseAppData = await loadAllFromFirebase();
 
     if (firebaseAppData === null) {
-        const localAppData = createAppDataFromLocalStorage();
-        await saveAllToFirebase(localAppData);
+        const emptyAppData = createEmptyAppData();
 
-        console.log("Created Firebase data from local storage");
+        await saveAllToFirebase(emptyAppData);
+        saveAppDataToLocalStorage(emptyAppData);
+
+        console.log("Created new empty data for user");
         return;
     }
 
@@ -139,6 +141,9 @@ function getCurrentUser() {
 
 async function signOutUser() {
     await signOut(auth);
+
+    clearLocalAppData();
+    
     console.log("Signed out");
 }
 
@@ -168,6 +173,15 @@ function subscribeToAuthChanges(callback) {
 // HELPERS
 // =========================================================
 
+function createEmptyAppData() {
+    return {
+        exercises: [],
+        templates: [],
+        workouts: [],
+        selectedProgressExerciseId: null
+    };
+}
+
 function createAppDataFromLocalStorage() {
     return {
         exercises: loadExercises(),
@@ -191,6 +205,10 @@ function saveAppDataToLocalStorage(appData) {
         STORAGE_KEYS.selectedProgressExerciseId,
         appData.selectedProgressExerciseId
     );
+}
+
+function clearLocalAppData() {
+    saveAppDataToLocalStorage(createEmptyAppData());
 }
 
 // =========================================================
