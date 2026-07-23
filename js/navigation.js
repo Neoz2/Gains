@@ -4,7 +4,7 @@
 // DOM REFERENCES
 // =========================================================
 
-const bottomNavItems = document.getElementById('bottom-nav');
+const bottomNavItems = document.getElementById("bottom-nav");
 const navButtons = document.querySelectorAll(".nav-button");
 const goBackButtons = document.querySelectorAll(".back-button");
 
@@ -48,10 +48,18 @@ function setupNavigation() {
 	}
 
 	window.addEventListener("popstate", function (event) {
-		if (!firebaseStorage.getCurrentUser()) {
+		const currentUser = firebaseStorage.getCurrentUser();
+
+		if (!currentUser) {
 			hideBottomNav();
 			replaceScreenInHistory("login-screen");
 			showScreen("login-screen");
+			return;
+		}
+
+		if (event.state?.screenId === "login-screen") {
+			replaceScreenInHistory("home-screen");
+			showScreen("home-screen");
 			return;
 		}
 
@@ -95,10 +103,16 @@ function refreshScreen(screenId, mode = null) {
 }
 
 function navigateToScreen(screenId, mode = null) {
-	if (
-		screenId === "login-screen" &&
-		firebaseStorage.getCurrentUser()
-	) {
+	const currentUser = firebaseStorage.getCurrentUser();
+
+	if (!currentUser && screenId !== "login-screen") {
+		hideBottomNav();
+		replaceScreenInHistory("login-screen");
+		showScreen("login-screen");
+		return;
+	}
+
+	if (currentUser && screenId === "login-screen") {
 		return;
 	}
 
