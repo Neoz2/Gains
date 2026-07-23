@@ -518,16 +518,117 @@ main {
    SCREEN: LOGIN
 ========================================================= */
 
-.google-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    color: #111;
-    font-weight: 800;
+.login-logo {
+	display: block;
+	width: 160px;
+	height: 160px;
+	margin: 100px auto 18px;
+
+	object-fit: contain;
+
+	filter:
+		drop-shadow(0 0 10px rgba(255, 30, 150, 0.35))
+		drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+}
+
+.login-title {
+	margin: 0;
+
+	text-align: center;
+	font-size: 64px;
+	font-style: italic;
+	font-weight: 900;
+	font-family: "MicroExtendFLF", sans-serif;
+	line-height: 1;
+}
+
+.login-subtitle {
+	margin: 12px 0 0;
+
+	text-align: center;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.58);
+}
+
+.login-text {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	margin-top: 28px;
+	text-align: center;
+}
+
+.login-divider {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 14px;
+
+	margin: 30px 0 22px;
+}
+
+.login-divider::before,
+.login-divider::after {
+	content: "";
+	flex: 1;
+	height: 2px;
+	background-color: rgba(255, 42, 152, 0.6);
+}
+
+.login-divider i {
+	flex-shrink: 0;
+
+	font-size: 24px;
+	color: #ff2a98;
+	filter: drop-shadow(0 0 6px rgba(255, 42, 152, 0.4));
+}
+
+.login-text {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	text-align: center;
+}
+
+.welcome-text {
+	font-size: 28px;
+	font-weight: 800;
+}
+
+.welcome-subtext {
+	margin-top: 8px;
+
+	font-size: 15px;
+	color: rgba(255, 255, 255, 0.55);
+}
+
+.login-subtitle {
+	color: rgba(255, 255, 255, 0.58);
+}
+
+.button-large.login-google-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+
+	margin-top: 42px;
+}
+
+.login-google-button i {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 48px;
+	height: 48px;
+	padding: 0;
+
+	font-size: 25px;
+	border-radius: var(--radius-pill);
+	background-color: #4d0e26;
 }
 
 /* =========================================================

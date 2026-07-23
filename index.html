@@ -13,28 +13,45 @@
 </head>
 
 <body>
-  <main>
+	<main>
 
-    <section id="login-screen" class="hidden">
-      <div class="login-card">
-        <div class="login-logo">G</div>
+		<section id="login-screen" class="hidden">
+			<div class="login-card">
 
-        <h1>Gains</h1>
+				<img
+					src="icons/icon_512.png"
+					alt="Gains logo"
+					class="login-logo"
+				>
 
-        <p class="login-subtitle">
-          Track your workouts and progress.
-        </p>
+				<h1 class="login-title">Gains</h1>
 
-        <button id="google-login-button" class="login-google-button">
-          <span class="google-mark">G</span>
-          <span>Continue with Google</span>
-        </button>
+				<p class="login-subtitle">
+					Track your workouts and progress.
+				</p>
 
-        <p class="login-note">
-          Your data syncs securely to your account.
-        </p>
-      </div>
-    </section>
+				<div class="login-divider">
+					<i class="fa-solid fa-dumbbell"></i>
+				</div>
+
+				<div class="login-text">
+					<span class="welcome-text">Welcome back!</span>
+
+					<span class="welcome-subtext">
+						Log in to start storing your progress
+					</span>
+				</div>
+
+				<button
+					id="google-login-button"
+					class="login-google-button button-large"
+				>
+					<i class="fa-brands fa-google"></i>
+					<span>Continue with Google</span>
+				</button>
+
+			</div>
+		</section>
 
     <!-- HOME -->
     <section id="home-screen" class="hidden">

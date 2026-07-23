@@ -14,9 +14,10 @@ const loginWithGoogleButton = document.getElementById("google-login-button");
 
 function setupLoginController() {
     console.log(loginWithGoogleButton);
-    loginWithGoogleButton.addEventListener("click", startAuthProcess);
+    loginWithGoogleButton.addEventListener("click", function () {
+        runWithPressFeedback(loginWithGoogleButton, startAuthProcess, 120, 200);
+    });
 }
-
 
 async function startAuthProcess() {
     console.log("hi");
