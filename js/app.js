@@ -15,6 +15,10 @@ const appState = {
 	activeSetTimer: false
 };
 
+let appStarted = false;
+let authenticatedControllersReady = false;
+let authChangeQueue = Promise.resolve();
+
 // =========================================================
 // APP STARTUP
 // =========================================================
@@ -22,29 +26,67 @@ const appState = {
 if (window.firebaseStorage) {
 	startApp();
 } else {
-	window.addEventListener("firebaseStorageReady", startApp);
+	window.addEventListener(
+		"firebaseStorageReady",
+		startApp,
+		{ once: true }
+	);
 }
 
-async function startApp() {
-	await firebaseStorage.waitForAuthReady();
+function startApp() {
+	if (appStarted) {
+		return;
+	}
+
+	appStarted = true;
 
 	setupNavigation();
 	setupLoginController();
 
-	if (!firebaseStorage.getCurrentUser()) {
-		navigateToScreen("login-screen");
-		hideBottomNav();
+	firebaseStorage.subscribeToAuthChanges(function (user) {
+		authChangeQueue = authChangeQueue
+			.then(function () {
+				return handleAuthState(user);
+			})
+			.catch(function (error) {
+				console.error("Failed to handle auth state:", error);
+			});
+	});
+}
+
+// =========================================================
+// AUTH STATE
+// =========================================================
+
+async function handleAuthState(user) {
+	if (!user) {
+		showLoggedOutApp();
 		return;
 	}
 
-	showBottomNav();
-	setupTrainingController();
-	setupExerciseController();
-	setupTemplateController();
-	setupProgressController();
+	await showLoggedInApp();
+}
 
+function showLoggedOutApp() {
+	hideBottomNav();
+
+	replaceScreenInHistory("login-screen");
+	showScreen("login-screen");
+}
+
+async function showLoggedInApp() {
 	await firebaseStorage.setupFirebaseSync();
 
+	if (!authenticatedControllersReady) {
+		setupTrainingController();
+		setupExerciseController();
+		setupTemplateController();
+		setupProgressController();
+
+		authenticatedControllersReady = true;
+	}
+
+	showBottomNav();
 	restoreActiveWorkout();
 
 	if (hasActiveWorkout()) {
@@ -58,27 +100,22 @@ async function startApp() {
 		);
 
 		showScreen("start-training-screen");
-		refreshScreen("start-training-screen", "training-workout-mode");
+
+		refreshScreen(
+			"start-training-screen",
+			"training-workout-mode"
+		);
+
 		return;
 	}
 
-	history.replaceState({ screenId: "home-screen" }, "", "#home");
+	history.replaceState(
+		{
+			screenId: "home-screen"
+		},
+		"",
+		"#home"
+	);
+
 	showScreen("home-screen");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

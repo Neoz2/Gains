@@ -139,8 +139,6 @@ function getCurrentUser() {
 
 async function signOutUser() {
     await signOut(auth);
-    navigateToScreen("login-screen");
-    hideBottomNav();
     console.log("Signed out");
 }
 
@@ -160,6 +158,10 @@ function getAppDataRef() {
         "appData",
         "current"
     );
+}
+
+function subscribeToAuthChanges(callback) {
+    return onAuthStateChanged(auth, callback);
 }
 
 // =========================================================
@@ -205,7 +207,8 @@ window.firebaseStorage = {
     signOutUser,
     isSignedIn,
     waitForAuthReady,
-    getCurrentUser
+    getCurrentUser,
+    subscribeToAuthChanges
 };
 
 window.dispatchEvent(new Event("firebaseStorageReady"));

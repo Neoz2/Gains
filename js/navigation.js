@@ -48,12 +48,20 @@ function setupNavigation() {
 	}
 
 	window.addEventListener("popstate", function (event) {
+		if (!firebaseStorage.getCurrentUser()) {
+			hideBottomNav();
+			replaceScreenInHistory("login-screen");
+			showScreen("login-screen");
+			return;
+		}
+
 		if (event.state?.screenId) {
 			showScreen(event.state.screenId);
 			refreshScreen(event.state.screenId, event.state.mode);
 			return;
 		}
 
+		replaceScreenInHistory("home-screen");
 		showScreen("home-screen");
 	});
 }
@@ -87,6 +95,13 @@ function refreshScreen(screenId, mode = null) {
 }
 
 function navigateToScreen(screenId, mode = null) {
+	if (
+		screenId === "login-screen" &&
+		firebaseStorage.getCurrentUser()
+	) {
+		return;
+	}
+
 	showScreen(screenId);
 	pushScreenToHistory(screenId, mode);
 	refreshScreen(screenId, mode);
@@ -189,14 +204,37 @@ function pushScreenToHistory(screenId, mode) {
 	}
 }
 
+function replaceScreenInHistory(screenId, mode = null) {
+	const route = ROUTES[screenId];
+
+	if (!route) {
+		return;
+	}
+
+	let url = route;
+
+	if (mode !== null) {
+		url += "/" + mode;
+	}
+
+	history.replaceState(
+		{
+			screenId: screenId,
+			mode: mode
+		},
+		"",
+		url
+	);
+}
+
 // =========================================================
 // UI RENDERING
 // =========================================================
 
 function hideBottomNav() {
-    bottomNavItems.classList.add("hidden");
+	bottomNavItems.classList.add("hidden");
 }
 
 function showBottomNav() {
-    bottomNavItems.classList.remove("hidden");
+	bottomNavItems.classList.remove("hidden");
 }
