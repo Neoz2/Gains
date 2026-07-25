@@ -87,7 +87,7 @@ function enterCreateExerciseMode() {
     appState.editingExerciseId = null;
 
     clearExerciseForm();
-    updateSettingsRowsVisibility();
+    renderEmptySettingsCard();
     updateSaveExerciseButtonText();
 
     showExerciseMode("exercise-create-mode");
@@ -115,7 +115,7 @@ function enterEditExerciseMode(exercise) {
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
-    updateSettingsRowsVisibility();
+    renderEmptySettingsCard();
     updateSaveExerciseButtonText();
 }
 
@@ -124,7 +124,6 @@ function resetExerciseFormAndShowOverview() {
 
     updateSaveExerciseButtonText();
     clearExerciseForm();
-    updateSettingsRowsVisibility();
 
     renderExerciseOverview();
 }
@@ -309,7 +308,23 @@ function renderSettingsCards() {
     const settingsRow = createSettingRow(settingIndex);
 
     settingsContainer.append(settingsRow);
-    updateSettingsRowsVisibility();
+
+    renderEmptySettingsCard();
+}
+
+function renderEmptySettingsCard() {
+    const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+
+    if (settingsRows.length === 0) {
+        const noSettingRowsState = createText("Add optional machine settings here", "empty-setting-card");
+        settingsContainer.append(noSettingRowsState);
+    } else {
+        const noSettingRowsState = settingsContainer.querySelector(".empty-setting-card");
+
+        if (noSettingRowsState) {
+            noSettingRowsState.remove();
+        }
+    }
 }
 
 // --- DOM builders --- //
@@ -329,7 +344,7 @@ function createSettingRow(settingIndex) {
         runWithPressFeedback(deleteButton, function () {
             settingsRow.remove();
             renumberSettingRows();
-            updateSettingsRowsVisibility();
+            renderEmptySettingsCard();
         });
     });
 
