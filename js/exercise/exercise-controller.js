@@ -72,18 +72,7 @@ function setupExerciseForm() {
 function setupSettingsForm() {
     addSettingButton.addEventListener("click", function () {
         showPressFeedback(addSettingButton);
-
-        const settingsRows = settingsContainer.querySelectorAll(".settings-row");
-
-        if (settingsRows.length >= 3) {
-            return;
-        }
-
-        const settingIndex = settingsRows.length + 1;
-        const settingsRow = createSettingRow(settingIndex);
-
-        settingsContainer.append(settingsRow);
-        updateSettingsRowsVisibility();
+        renderSettingsCards();
     });
 }
 
@@ -307,6 +296,20 @@ function renderExerciseList(exercises) {
 
         exerciseList.append(exerciseCard);
     }
+}
+
+function renderSettingsCards() {
+    const settingsRows = settingsContainer.querySelectorAll(".settings-row");
+
+    if (settingsRows.length >= 3) {
+        return;
+    }
+
+    const settingIndex = settingsRows.length + 1;
+    const settingsRow = createSettingRow(settingIndex);
+
+    settingsContainer.append(settingsRow);
+    updateSettingsRowsVisibility();
 }
 
 // --- DOM builders --- //

@@ -42,8 +42,6 @@ const googleProvider = new GoogleAuthProvider();
 let currentUser = null;
 let saveQueue = Promise.resolve();
 
-console.log("Firebase connected", firestore);
-
 // =========================================================
 // FIREBASE CONTROLLER
 // =========================================================
@@ -57,12 +55,10 @@ async function setupFirebaseSync() {
         await saveAllToFirebase(emptyAppData);
         saveAppDataToLocalStorage(emptyAppData);
 
-        console.log("Created new empty data for user");
         return;
     }
 
     saveAppDataToLocalStorage(firebaseAppData);
-    console.log("Restored app data from Firebase");
 }
 
 
@@ -75,12 +71,10 @@ async function loadAllFromFirebase() {
     const snapshot = await getDoc(appDataRef);
 
     if (!snapshot.exists()) {
-        console.log("No Firebase app data yet");
         return null;
     }
 
     const data = snapshot.data();
-    console.log("Loaded Firebase app data:", data);
 
     return data;
 }
@@ -92,8 +86,6 @@ async function performFirebaseSave(appData) {
         ...appData,
         updatedAt: new Date().toISOString()
     });
-
-    console.log("Saved Firebase app data:", appData);
 }
 
 function saveAllToFirebase(appData) {
@@ -120,13 +112,6 @@ async function signInWithGoogle() {
 const authReadyPromise = new Promise(function (resolve) {
     onAuthStateChanged(auth, function (user) {
         currentUser = user;
-
-        if (user) {
-            console.log("Logged in as", user.uid);
-        } else {
-            console.log("No user logged in");
-        }
-
         resolve(user);
     });
 });
@@ -143,8 +128,6 @@ async function signOutUser() {
     await signOut(auth);
 
     clearLocalAppData();
-    
-    console.log("Signed out");
 }
 
 function isSignedIn() {
