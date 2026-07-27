@@ -4,6 +4,10 @@
 // CONSTANTS
 // =========================================================
 
+const startBeep = new Audio("sounds/startBeep.mp3");
+const middleBeep = new Audio("sounds/middleBeep.mp3");
+const endBeep = new Audio("sounds/endBeep.mp3");
+
 const TIMER_STATES = Object.freeze({
     IDLE: "IDLE",
     COUNTDOWN: "COUNTDOWN",
@@ -89,7 +93,7 @@ function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000
     appState.activeSetTimer = true;
     button.textContent = "Cancel countdown";
 
-    updateCountdownTimer(timer, button, displayElement)
+    updateCountdownTimer(timer, button, displayElement);
 
     if (timer.intervalId === null) {
         timer.intervalId = setInterval(function () {
@@ -108,11 +112,13 @@ function updateCountdownTimer(timer, button, displayElement) {
         timer.remainingCountdownSeconds = 0;
     } else {
         timer.remainingCountdownSeconds = 10 - elapsedSeconds;
+        playCountdownSounds(timer.remainingCountdownSeconds);
     }
 
     displayElement.textContent = timer.remainingCountdownSeconds;
 
     if (timer.remainingCountdownSeconds <= 0) {
+        playCountdownSounds(timer.remainingCountdownSeconds);
         stopTimerInterval(timer);
         startSetTimer(timer, button, displayElement, formatTimer, 250);
     }
@@ -159,6 +165,20 @@ function updateWorkoutTimer(timer, displayElement, formatter) {
 // =========================================================
 // HELPERS
 // =========================================================
+
+function playCountdownSounds(secondsRemaining) {
+    if (secondsRemaining === 10) {
+        startBeep.play();
+    }
+
+    if (secondsRemaining === 3 || secondsRemaining === 2 || secondsRemaining === 1) {
+        middleBeep.play();
+    }
+
+    if (secondsRemaining === 0) {
+        endBeep.play();
+    }
+}
 
 function stopTimerInterval(timer) {
     clearInterval(timer.intervalId);
