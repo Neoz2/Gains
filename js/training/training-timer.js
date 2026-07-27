@@ -33,7 +33,8 @@ function createSetTimerState() {
         setStartTime: null,
         intervalId: null,
         remainingCountdownSeconds: null,
-        elapsedSetSeconds: 0
+        elapsedSetSeconds: 0,
+        lastPlayedCountdownSecond: null
     }
 }
 
@@ -93,6 +94,9 @@ function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000
     appState.activeSetTimer = true;
     button.textContent = "Cancel countdown";
 
+    playAudioFromStart(startBeep);
+    timer.lastPlayedCountdownSecond = 10;
+
     updateCountdownTimer(timer, button, displayElement);
 
     if (timer.intervalId === null) {
@@ -112,13 +116,16 @@ function updateCountdownTimer(timer, button, displayElement) {
         timer.remainingCountdownSeconds = 0;
     } else {
         timer.remainingCountdownSeconds = 10 - elapsedSeconds;
-        playCountdownSounds(timer.remainingCountdownSeconds);
     }
 
     displayElement.textContent = timer.remainingCountdownSeconds;
 
-    if (timer.remainingCountdownSeconds <= 0) {
+    if (timer.remainingCountdownSeconds !== timer.lastPlayedCountdownSecond) {
         playCountdownSounds(timer.remainingCountdownSeconds);
+        timer.lastPlayedCountdownSecond = timer.remainingCountdownSeconds;
+    }
+
+    if (timer.remainingCountdownSeconds <= 0) {
         stopTimerInterval(timer);
         startSetTimer(timer, button, displayElement, formatTimer, 250);
     }
@@ -128,6 +135,8 @@ function stopCountdownTimer(timer, button, displayElement) {
     timer.currentState = TIMER_STATES.IDLE;
     timer.remainingCountdownSeconds = null;
     timer.countdownStartTime = null;
+    timer.lastPlayedCountdownSecond = null;
+
     appState.activeSetTimer = false;
     button.textContent = "Start set";
     displayElement.textContent = formatTimer(0);
@@ -167,17 +176,25 @@ function updateWorkoutTimer(timer, displayElement, formatter) {
 // =========================================================
 
 function playCountdownSounds(secondsRemaining) {
-    if (secondsRemaining === 10) {
-        startBeep.play();
-    }
-
-    if (secondsRemaining === 3 || secondsRemaining === 2 || secondsRemaining === 1) {
-        middleBeep.play();
+    if (
+        secondsRemaining === 3 ||
+        secondsRemaining === 2 ||
+        secondsRemaining === 1
+    ) {
+        playAudioFromStart(middleBeep);
     }
 
     if (secondsRemaining === 0) {
-        endBeep.play();
+        playAudioFromStart(endBeep);
     }
+}
+
+function playAudioFromStart(audio) {
+    audio.currentTime = 0;
+
+    audio.play().catch(function (error) {
+        console.error("Could not play countdown sound:", error);
+    });
 }
 
 function stopTimerInterval(timer) {
