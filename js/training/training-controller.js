@@ -54,7 +54,10 @@ function refreshTrainingScreen(mode = null) {
 
     if (appState.activeWorkout !== null) {
         showTrainingMode("training-workout-mode");
-        startWorkoutSessionTimer(workoutSessionTimer, trainingModeSubtitle);
+
+        if (workoutSessionTimer.intervalId === null) {
+            startWorkoutTimer(workoutSessionTimer, trainingModeSubtitle, formatWorkoutSessionTime, 250);
+        }
 
         renderWorkoutExerciseList(appState.activeWorkout);
         openStoredWorkoutCard();
@@ -80,7 +83,7 @@ function setupTrainingModes() {
     TRAINING_MODES.push(createMode(trainingWorkoutState, "training-workout-mode", "Active training", ""));
     TRAINING_MODES.push(createMode(trainingFromTemplateState, "training-from-template-mode", "Start from template", "Select a template for your workout"));
     TRAINING_MODES.push(createMode(trainingFromScratchState, "training-from-scratch-mode", "Build from scratch", "Select exercises for your workout"));
-    TRAINING_MODES.push(createMode(trainingStartState, "training-start-workout-mode", "Start training", "Choose how you want to begin"));
+    TRAINING_MODES.push(createMode(trainingStartState, "training-start-workout-mode", "New workout", "Choose how you want to begin"));
     TRAINING_MODES.push(createMode(trainingTemplateEmptyState, "training-no-available-templates-mode", "Start training", "Select a template for your workout"));
     TRAINING_MODES.push(createMode(trainingExerciseEmptyState, "training-no-available-exercises-mode", "Start training", "Select exercises for your workout"));
     TRAINING_MODES.push(createMode(trainingFromScratchState, "training-edit-workout-mode", "Edit workout", ""));
@@ -106,18 +109,37 @@ function setupWorkoutButtons() {
         runWithPressFeedback(addToWorkoutButton, saveWorkoutSelection);
     });
 
-    finishWorkoutButton.addEventListener("pointerdown", function () {
+    finishWorkoutButton.addEventListener("pointerdown", function (event) {
+        finishWorkoutButton.setPointerCapture(event.pointerId);
+
         finishWorkoutButton.textContent = "Release to cancel";
         finishWorkoutButton.classList.add("is-holding");
 
         finishWorkoutHoldTimer = setTimeout(function () {
+            finishWorkoutHoldTimer = null;
+
+            finishWorkoutButton.classList.remove("is-holding");
+            finishWorkoutButton.textContent = "Finish workout";
+
             enterEndOfWorkoutMode();
-        }, 2000);
+        }, 1500);
     });
 
-    finishWorkoutButton.addEventListener("pointerup", cancelFinishWorkoutHold);
-    finishWorkoutButton.addEventListener("pointerleave", cancelFinishWorkoutHold);
-    finishWorkoutButton.addEventListener("pointercancel", cancelFinishWorkoutHold);
+    finishWorkoutButton.addEventListener("pointerup", function (event) {
+        if (finishWorkoutButton.hasPointerCapture(event.pointerId)) {
+            finishWorkoutButton.releasePointerCapture(event.pointerId);
+        }
+
+        cancelFinishWorkoutHold();
+    });
+
+    finishWorkoutButton.addEventListener("pointercancel", function (event) {
+        if (finishWorkoutButton.hasPointerCapture(event.pointerId)) {
+            finishWorkoutButton.releasePointerCapture(event.pointerId);
+        }
+
+        cancelFinishWorkoutHold();
+    });
 
     editWorkoutButton.addEventListener("click", function () {
         runWithPressFeedback(editWorkoutButton, function () {
@@ -127,8 +149,12 @@ function setupWorkoutButtons() {
 }
 
 function cancelFinishWorkoutHold() {
+    if (finishWorkoutHoldTimer !== null) {
+        clearTimeout(finishWorkoutHoldTimer);
+        finishWorkoutHoldTimer = null;
+    }
+
     finishWorkoutButton.classList.remove("is-holding");
-    clearTimeout(finishWorkoutHoldTimer);
     finishWorkoutButton.textContent = "Finish workout";
 }
 
@@ -191,7 +217,7 @@ function enterFromTemplateMode() {
 // --- Helpers --- //
 
 function hasActiveWorkout() {
-	return appState.activeWorkout !== null && appState.activeWorkout.finishedAt === null;
+    return appState.activeWorkout !== null && appState.activeWorkout.finishedAt === null;
 }
 
 function restoreActiveWorkout() {

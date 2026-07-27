@@ -16,8 +16,6 @@ function enterWorkoutState(exercises) {
     unfoldedWorkoutCardIndex = 0;
 
     navigateToScreen("start-training-screen", "training-workout-mode");
-
-    startWorkoutSessionTimer(workoutSessionTimer, trainingModeSubtitle);
 }
 
 function enterEndOfWorkoutMode() {
@@ -25,7 +23,7 @@ function enterEndOfWorkoutMode() {
 
     updateWorkout(appState.activeWorkout);
 
-    stopTimerInterval(workoutSessionTimer.intervalId);
+    stopTimerInterval(workoutSessionTimer);
 
     appState.activeWorkout = null;
 

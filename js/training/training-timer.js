@@ -1,5 +1,19 @@
 //training-timer.js
 
+// =========================================================
+// CONSTANTS
+// =========================================================
+
+const TIMER_STATES = Object.freeze({
+    IDLE: "IDLE",
+    COUNTDOWN: "COUNTDOWN",
+    RUNNING: "RUNNING",
+});
+
+// =========================================================
+// SETUP
+// =========================================================
+
 function createTimerState() {
     return {
         startedAt: null,
@@ -8,47 +22,147 @@ function createTimerState() {
     };
 }
 
-function startTimer(timer, displayElement, formatter, intervalSpeed = 1000) {
+function createSetTimerState() {
+    return {
+        currentState: TIMER_STATES.IDLE,
+        countdownStartTime: null,
+        setStartTime: null,
+        intervalId: null,
+        remainingCountdownSeconds: null,
+        elapsedSetSeconds: 0
+    }
+}
+
+// =========================================================
+// SET TIMER LOGIC
+// =========================================================
+
+function startSetTimer(timer, button, displayElement, formatter, intervalSpeed = 1000) {
+    timer.currentState = TIMER_STATES.RUNNING;
+    timer.countdownStartTime = null;
+    timer.remainingCountdownSeconds = null;
+    timer.setStartTime = Date.now();
+    timer.elapsedSetSeconds = 0;
+    button.textContent = "Stop set";
+
+    updateSetTimer(timer, displayElement, formatter)
+
+    if (timer.intervalId === null) {
+        timer.intervalId = setInterval(function () {
+            updateSetTimer(timer, displayElement, formatter);
+        }, intervalSpeed);
+    } else {
+        console.error("A timer is already running");
+    }
+}
+
+function updateSetTimer(timer, displayElement, formatter) {
+    const elapsedMilliseconds = Date.now() - timer.setStartTime;
+    const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+
+    timer.elapsedSetSeconds = elapsedSeconds;
+
+    displayElement.textContent = formatter(timer.elapsedSetSeconds);
+}
+
+function stopSetTimer(timer, exercise, card, weightInput) {
+    saveWorkoutSet(exercise, timer.elapsedSetSeconds, weightInput.value);
+
+    timer.currentState = TIMER_STATES.IDLE;
+    timer.setStartTime = null;
+    timer.elapsedSetSeconds = null;
+    appState.activeSetTimer = false;
+
+    stopTimerInterval(timer);
+
+    refreshWorkoutInputRow(exercise, card);
+}
+
+// =========================================================
+// COUNTDOWN TIMER LOGIC
+// =========================================================
+
+function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000) {
+    timer.currentState = TIMER_STATES.COUNTDOWN;
+    timer.countdownStartTime = Date.now();
+    timer.remainingCountdownSeconds = 10;
+    appState.activeSetTimer = true;
+    button.textContent = "Cancel countdown";
+
+    updateCountdownTimer(timer, button, displayElement)
+
+    if (timer.intervalId === null) {
+        timer.intervalId = setInterval(function () {
+            updateCountdownTimer(timer, button, displayElement);
+        }, intervalSpeed);
+    } else {
+        console.error("A timer is already running");
+    }
+}
+
+function updateCountdownTimer(timer, button, displayElement) {
+    const elapsedMilliseconds = Date.now() - timer.countdownStartTime;
+    const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+
+    if (10 - elapsedSeconds <= 0) {
+        timer.remainingCountdownSeconds = 0;
+    } else {
+        timer.remainingCountdownSeconds = 10 - elapsedSeconds;
+    }
+
+    displayElement.textContent = timer.remainingCountdownSeconds;
+
+    if (timer.remainingCountdownSeconds <= 0) {
+        stopTimerInterval(timer);
+        startSetTimer(timer, button, displayElement, formatTimer, 250);
+    }
+}
+
+function stopCountdownTimer(timer, button, displayElement) {
+    timer.currentState = TIMER_STATES.IDLE;
+    timer.remainingCountdownSeconds = null;
+    timer.countdownStartTime = null;
+    appState.activeSetTimer = false;
+    button.textContent = "Start set";
+    displayElement.textContent = formatTimer(0);
+
+    stopTimerInterval(timer);
+}
+
+
+// =========================================================
+// WORKOUT TIMER LOGIC
+// =========================================================
+
+function startWorkoutTimer(timer, displayElement, formatter, intervalSpeed = 1000) {
     timer.startedAt = new Date(appState.activeWorkout.startedAt).getTime();
     timer.elapsedSeconds = 0;
 
-    updateTimer(timer, displayElement, formatter);
+    updateWorkoutTimer(timer, displayElement, formatter);
 
-    timer.intervalId = setInterval(function () {
-        updateTimer(timer, displayElement, formatter);
-    }, intervalSpeed);
+    if (timer.intervalId === null) {
+        timer.intervalId = setInterval(function () {
+            updateWorkoutTimer(timer, displayElement, formatter);
+        }, intervalSpeed);
+    } else {
+        console.error("A timer is already running");
+    }
 }
 
-function updateTimer(timer, displayElement, formatter) {
+function updateWorkoutTimer(timer, displayElement, formatter) {
     const elapsedMilliseconds = Date.now() - timer.startedAt;
     timer.elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
 
     displayElement.textContent = formatter(timer.elapsedSeconds);
 }
 
-function stopTimerInterval(intervalId) {
-    clearInterval(intervalId);
-}
+// =========================================================
+// HELPERS
+// =========================================================
 
-function startSetTimer(timer, button, displayElement) {
-    appState.activeSetTimer = true;
-
-    button.textContent = "Stop set";
-
-    startTimer(timer, displayElement, formatTimer, 250);
-}
-
-function stopSetTimer(timer, exercise, card, weightInput) {
-    appState.activeSetTimer = false;
-
-    stopTimerInterval(timer.intervalId);
-
-    saveWorkoutSet(exercise, timer.elapsedSeconds, weightInput.value);
-    refreshWorkoutInputRow(exercise, card);
-}
-
-function startWorkoutSessionTimer(timer, displayElement) {
-    startTimer(timer, displayElement, formatWorkoutSessionTime, 1000);
+function stopTimerInterval(timer) {
+    clearInterval(timer.intervalId);
+    timer.intervalId = null;
 }
 
 function formatTimer(totalSeconds) {

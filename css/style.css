@@ -1463,6 +1463,10 @@ main {
   color: #111;
 }
 
+#finish-workout {
+    touch-action: none;
+}
+
 .training-save-bar .save-button,
 .template-save-bar .save-button {
   margin: 0;

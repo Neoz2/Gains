@@ -221,32 +221,40 @@ function createWeightInput(exercise) {
 
 function createTimerButton(weightInput, bigTimer, exercise, card) {
     const button = createButton("button-large");
-    button.textContent = "Start set";
+    button.textContent = "Start countdown";
 
-    let isStarted = false;
-    const setTimer = createTimerState();
+    const setTimer = createSetTimerState();
 
     button.addEventListener("click", function () {
-        if (isStarted === false && weightInput.value === "") {
-            showPressFeedback(button);
-            showInputError(weightInput);
-            return;
-        }
-
-        if (isStarted === false) {
-            if ("vibrate" in navigator) {
-                navigator.vibrate(100);
+        // start countdown
+        if (setTimer.currentState === TIMER_STATES.IDLE) {
+            // input validation
+            if (weightInput.value === "") {
+                showPressFeedback(button);
+                showInputError(weightInput);
+                return;
             }
 
+            //start countdown
             showPressFeedback(button);
-            isStarted = true;
-            startSetTimer(setTimer, button, bigTimer);
+
+            startCountdownTimer(setTimer, button, bigTimer, 250);
+
             return;
         }
 
-        if (isStarted === true) {
-            isStarted = false;
+        // stop countdown
+        if (setTimer.currentState === TIMER_STATES.COUNTDOWN) {
+            showPressFeedback(button);
+            stopCountdownTimer(setTimer, button, bigTimer);
+
+            return;
+        }
+
+        // stop set timer
+        if (setTimer.currentState === TIMER_STATES.RUNNING) {
             runWithPressFeedback(button, function () {
+                setTimer.currentState = TIMER_STATES.IDLE;
                 stopSetTimer(setTimer, exercise, card, weightInput);
             })
         }
