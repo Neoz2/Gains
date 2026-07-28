@@ -30,12 +30,14 @@ let weightChart = null;
 let tulChart = null;
 
 let selectedSet = 0;
+let selectedAggregation = 0;
 
 // --- Controller entry points --- //
 
 function setupProgressController() {
     setupExerciseDropdownButton();
     setupSetButtons();
+    setupAggregationButtons();
     setupProgressModes();
 }
 
@@ -71,6 +73,23 @@ function setupSetButtons() {
             selectedSet = Number(buttons[buttonIndex].dataset.setIndex);
 
             enterGraphsMode();
+        });
+    }
+}
+
+function setupAggregationButtons() {
+    const buttons = document.querySelectorAll(".pill-segmented-control");
+
+    for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
+        const button = buttons[buttonIndex];
+
+        button.addEventListener("click", function () {
+            showPressFeedback(button);
+
+            setButtonSelectionStatus(button, buttons);
+            selectedAggregation = Number(buttons[buttonIndex].dataset.setIndex);
+
+            //enterGraphsMode();
         });
     }
 }

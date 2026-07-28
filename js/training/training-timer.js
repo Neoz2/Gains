@@ -42,13 +42,15 @@ function createSetTimerState() {
 // SET TIMER LOGIC
 // =========================================================
 
-function startSetTimer(timer, button, displayElement, formatter, intervalSpeed = 1000) {
+function startSetTimer(timer, button, displayElement, formatter, intervalSpeed = 1000, timerHeader) {
     timer.currentState = TIMER_STATES.RUNNING;
     timer.countdownStartTime = null;
     timer.remainingCountdownSeconds = null;
     timer.setStartTime = Date.now();
     timer.elapsedSetSeconds = 0;
     button.textContent = "Stop set";
+    button.classList.remove("cancel-state");
+    timerHeader.textContent = "Time under load";
 
     updateSetTimer(timer, displayElement, formatter)
 
@@ -87,28 +89,31 @@ function stopSetTimer(timer, exercise, card, weightInput) {
 // COUNTDOWN TIMER LOGIC
 // =========================================================
 
-function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000) {
+function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000, timerHeader) {
     timer.currentState = TIMER_STATES.COUNTDOWN;
     timer.countdownStartTime = Date.now();
     timer.remainingCountdownSeconds = 10;
     appState.activeSetTimer = true;
+
     button.textContent = "Cancel countdown";
+    button.classList.add("cancel-state");
+    timerHeader.textContent = "Get ready";
 
     playAudioFromStart(startBeep);
     timer.lastPlayedCountdownSecond = 10;
 
-    updateCountdownTimer(timer, button, displayElement);
+    updateCountdownTimer(timer, button, displayElement, timerHeader);
 
     if (timer.intervalId === null) {
         timer.intervalId = setInterval(function () {
-            updateCountdownTimer(timer, button, displayElement);
+            updateCountdownTimer(timer, button, displayElement, timerHeader);
         }, intervalSpeed);
     } else {
         console.error("A timer is already running");
     }
 }
 
-function updateCountdownTimer(timer, button, displayElement) {
+function updateCountdownTimer(timer, button, displayElement, timerHeader) {
     const elapsedMilliseconds = Date.now() - timer.countdownStartTime;
     const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
 
@@ -127,18 +132,20 @@ function updateCountdownTimer(timer, button, displayElement) {
 
     if (timer.remainingCountdownSeconds <= 0) {
         stopTimerInterval(timer);
-        startSetTimer(timer, button, displayElement, formatTimer, 250);
+        startSetTimer(timer, button, displayElement, formatTimer, 250, timerHeader);
     }
 }
 
-function stopCountdownTimer(timer, button, displayElement) {
+function stopCountdownTimer(timer, button, displayElement, timerHeader) {
     timer.currentState = TIMER_STATES.IDLE;
     timer.remainingCountdownSeconds = null;
     timer.countdownStartTime = null;
     timer.lastPlayedCountdownSecond = null;
-
     appState.activeSetTimer = false;
+
     button.textContent = "Start set";
+    button.classList.remove("cancel-state");
+    timerHeader.textContent = "Time under load";
     displayElement.textContent = formatTimer(0);
 
     stopTimerInterval(timer);

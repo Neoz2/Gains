@@ -176,7 +176,7 @@ function createWeightInputRow(exercise, card) {
     const weightInput = createWeightInput(exercise);
     const bigTimer = createText("00:00", "workout-big-timer");
 
-    const button = createTimerButton(weightInput, bigTimer, exercise, card);
+    const button = createTimerButton(weightInput, bigTimer, exercise, card, timerHeader);
     const setContainer = createSetContainer();
 
     const recommendation = createRecommendationCard(exercise);
@@ -219,39 +219,32 @@ function createWeightInput(exercise) {
     return weightInput;
 }
 
-function createTimerButton(weightInput, bigTimer, exercise, card) {
+function createTimerButton(weightInput, bigTimer, exercise, card, timerHeader) {
     const button = createButton("button-large");
-    button.textContent = "Start countdown";
+    button.textContent = "Start set";
+    button.classList.remove("cancel-state");
 
     const setTimer = createSetTimerState();
 
     button.addEventListener("click", function () {
-        // start countdown
         if (setTimer.currentState === TIMER_STATES.IDLE) {
-            // input validation
             if (weightInput.value === "") {
                 showPressFeedback(button);
                 showInputError(weightInput);
                 return;
             }
 
-            //start countdown
             showPressFeedback(button);
-
-            startCountdownTimer(setTimer, button, bigTimer, 250);
-
+            startCountdownTimer(setTimer, button, bigTimer, 250, timerHeader);
             return;
         }
 
-        // stop countdown
         if (setTimer.currentState === TIMER_STATES.COUNTDOWN) {
             showPressFeedback(button);
-            stopCountdownTimer(setTimer, button, bigTimer);
-
+            stopCountdownTimer(setTimer, button, bigTimer, timerHeader);
             return;
         }
 
-        // stop set timer
         if (setTimer.currentState === TIMER_STATES.RUNNING) {
             runWithPressFeedback(button, function () {
                 setTimer.currentState = TIMER_STATES.IDLE;

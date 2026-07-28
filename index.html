@@ -13,45 +13,38 @@
 </head>
 
 <body>
-	<main>
+  <main>
 
-		<section id="login-screen" class="hidden">
-			<div class="login-card">
+    <section id="login-screen" class="hidden">
+      <div class="login-card">
 
-				<img
-					src="icons/icon_512.png"
-					alt="Gains logo"
-					class="login-logo"
-				>
+        <img src="icons/icon_512.png" alt="Gains logo" class="login-logo">
 
-				<h1 class="login-title">Gains</h1>
+        <h1 class="login-title">Gains</h1>
 
-				<p class="login-subtitle">
-					Track your workouts and progress.
-				</p>
+        <p class="login-subtitle">
+          Track your workouts and progress.
+        </p>
 
-				<div class="login-divider">
-					<i class="fa-solid fa-dumbbell"></i>
-				</div>
+        <div class="login-divider">
+          <i class="fa-solid fa-dumbbell"></i>
+        </div>
 
-				<div class="login-text">
-					<span class="welcome-text">Welcome back!</span>
+        <div class="login-text">
+          <span class="welcome-text">Welcome back!</span>
 
-					<span class="welcome-subtext">
-						Log in to start storing your progress
-					</span>
-				</div>
+          <span class="welcome-subtext">
+            Log in to start storing your progress
+          </span>
+        </div>
 
-				<button
-					id="google-login-button"
-					class="login-google-button button-large"
-				>
-					<i class="fa-brands fa-google"></i>
-					<span>Continue with Google</span>
-				</button>
+        <button id="google-login-button" class="login-google-button button-large">
+          <i class="fa-brands fa-google"></i>
+          <span>Continue with Google</span>
+        </button>
 
-			</div>
-		</section>
+      </div>
+    </section>
 
     <!-- HOME -->
     <section id="home-screen" class="hidden">
@@ -351,6 +344,21 @@
           <button class="segmented-control interactive" data-set-index="2">Set 3</button>
         </div>
 
+        <div class="aggregation-segmented-control">
+          <button class="pill-segmented-control selected interactive" data-set-index="0">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Day</span>
+          </button>
+          <button class="pill-segmented-control interactive" data-set-index="1">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Week</span>
+          </button>
+          <button class="pill-segmented-control interactive" data-set-index="2">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Month</span>
+          </button>
+        </div>
+
         <div id="progress-empty-state" class="progress-empty-state empty-state hidden">
           <div class="empty-state-icon">
             <i class="fa-solid fa-chart-simple"></i>
@@ -413,6 +421,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 
+  <script src="js/mock-data.js"></script>
   <script src="js/login-controller.js?v=6"></script>
   <script src="js/storage.js?v=6"></script>
   <script type="module" src="js/firebase-storage.js?v=1"></script>
