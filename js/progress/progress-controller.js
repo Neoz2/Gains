@@ -89,7 +89,7 @@ function setupAggregationButtons() {
             setButtonSelectionStatus(button, buttons);
             selectedAggregation = Number(buttons[buttonIndex].dataset.setIndex);
 
-            //enterGraphsMode();
+            enterGraphsMode();
         });
     }
 }
@@ -176,11 +176,151 @@ function loadGraphExerciseData(selectedExercise) {
         points.push({
             label: formatWorkoutDate(workout.startedAt),
             weight: Number(set.weight),
-            timeUnderLoad: Number(set.timeUnderLoad)
+            timeUnderLoad: Number(set.timeUnderLoad),
+            periodKey: createPeriodKey(workout.startedAt)
         });
     }
 
-    return points;
+    const filteredPoints = filterHighestInPeriod(points);
+
+    return filteredPoints;
+}
+
+function createPeriodKey(startedAt) {
+    const date = new Date(startedAt);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const monday = getMondayOfWeek(date);
+
+    const mondayYear = monday.getFullYear();
+    const mondayMonth = String(monday.getMonth() + 1).padStart(2, "0");
+    const mondayDay = String(monday.getDate()).padStart(2, "0");
+
+    return {
+        day: `${year}-${month}-${day}`,
+        week: `${mondayYear}-${mondayMonth}-${mondayDay}`,
+        month: `${year}-${month}`
+    };
+}
+
+function getMondayOfWeek(date) {
+    const day = date.getDay();
+
+    const daysSinceMonday = day === 0
+        ? 6
+        : day - 1;
+
+    const monday = new Date(date);
+    monday.setDate(monday.getDate() - daysSinceMonday);
+
+    return monday;
+}
+
+function filterHighestInPeriod(points) {
+
+    if (selectedAggregation === 0) {
+        return points;
+    }
+
+    if (selectedAggregation === 1) {
+        const weekEntries = [];
+
+        for (let pointIndex = 0; pointIndex < points.length; pointIndex++) {
+            const weekKey = points[pointIndex].periodKey.week;
+
+            const existingWeek = weekEntries.find(function (entry) {
+                return entry.key === weekKey;
+            });
+
+            if (!existingWeek) {
+                weekEntries.push({
+                    key: weekKey,
+                    points: [points[pointIndex]]
+                });
+            }
+            else {
+                existingWeek.points.push(points[pointIndex]);
+            }
+        }
+
+        const filteredWeek = [];
+
+        for (let weekIndex = 0; weekIndex < weekEntries.length; weekIndex++) {
+            const week = weekEntries[weekIndex];
+
+            let bestPoint = null;
+
+            for (let pointIndex = 0; pointIndex < week.points.length; pointIndex++) {
+                const point = week.points[pointIndex];
+
+                if (bestPoint === null) {
+                    bestPoint = point;
+                } else if (bestPoint.weight === point.weight) {
+                    if (bestPoint.timeUnderLoad < point.timeUnderLoad) {
+                        bestPoint = point;
+                    }
+                } else if (bestPoint.weight < point.weight) {
+                    bestPoint = point;
+                }
+            }
+
+            filteredWeek.push(bestPoint);
+
+        }
+
+        return filteredWeek;
+    }
+
+    if (selectedAggregation === 2) {
+        const monthEntries = [];
+
+        for (let pointIndex = 0; pointIndex < points.length; pointIndex++) {
+            const monthKey = points[pointIndex].periodKey.month;
+
+            const existingMonth = monthEntries.find(function (entry) {
+                return entry.key === monthKey;
+            });
+
+            if (!existingMonth) {
+                monthEntries.push({
+                    key: monthKey,
+                    points: [points[pointIndex]]
+                });
+            }
+            else {
+                existingMonth.points.push(points[pointIndex]);
+            }
+        }
+
+        const filteredMonth = [];
+
+        for (let monthIndex = 0; monthIndex < monthEntries.length; monthIndex++) {
+            const month = monthEntries[monthIndex];
+
+            let bestPoint = null;
+
+            for (let pointIndex = 0; pointIndex < month.points.length; pointIndex++) {
+                const point = month.points[pointIndex];
+
+                if (bestPoint === null) {
+                    bestPoint = point;
+                } else if (bestPoint.weight === point.weight) {
+                    if (bestPoint.timeUnderLoad < point.timeUnderLoad) {
+                        bestPoint = point;
+                    }
+                } else if (bestPoint.weight < point.weight) {
+                    bestPoint = point;
+                }
+            }
+
+            filteredMonth.push(bestPoint);
+        }
+
+        return filteredMonth;
+    }
 }
 
 function destroyProgressCharts() {
