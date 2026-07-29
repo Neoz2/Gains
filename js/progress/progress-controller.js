@@ -387,62 +387,117 @@ function renderAvailableExercisesForGraphs() {
 function renderProgressGraphs(selectedExercise, points) {
     progressSelectionSpan.textContent = selectedExercise.name;
 
-    const labels = points.map(point => point.label);
+    const labels = points.map(function (point) {
+        return point.label;
+    });
 
     const weightCanvas = document.getElementById("weight-graph");
-    const weightGradient = createChartFillGradient(weightCanvas);
     const weightTitle = "Weight";
-    const weightData = points.map(point => point.weight);
+
+    const weightData = points.map(function (point) {
+        return point.weight;
+    });
 
     if (weightChart !== null) {
         weightChart.destroy();
     }
 
-    weightChart = createProgressChart(weightCanvas, weightTitle, weightData, labels, weightGradient, false);
+    weightChart = createProgressChart(
+        weightCanvas,
+        weightTitle,
+        weightData,
+        labels,
+        false
+    );
 
     const tulCanvas = document.getElementById("tul-graph");
-    const tulGradient = createChartFillGradient(tulCanvas);
     const tulTitle = "Time under load";
-    const tulData = points.map(point => point.timeUnderLoad);
+
+    const tulData = points.map(function (point) {
+        return point.timeUnderLoad;
+    });
 
     if (tulChart !== null) {
         tulChart.destroy();
     }
 
-    tulChart = createProgressChart(tulCanvas, tulTitle, tulData, labels, tulGradient, true);
+    tulChart = createProgressChart(
+        tulCanvas,
+        tulTitle,
+        tulData,
+        labels,
+        true
+    );
 }
 
-function createProgressChart(canvas, title, data, labels, gradient, showTargetLines) {
+function createProgressChart(canvas, title, data, labels, showTargetLines) {
     return new Chart(canvas, {
         type: "line",
+
         data: {
             labels: labels,
+
             datasets: [
                 {
                     data: data,
+
                     borderColor: "#EA2266",
-                    backgroundColor: gradient,
-                    fill: true
+                    borderWidth: 2,
+
+                    backgroundColor: function (context) {
+                        const chart = context.chart;
+                        const chartArea = chart.chartArea;
+
+                        if (!chartArea) {
+                            return "rgba(234, 34, 102, 0.1)";
+                        }
+
+                        const gradient = chart.ctx.createLinearGradient(
+                            0,
+                            chartArea.top,
+                            0,
+                            chartArea.bottom
+                        );
+
+                        gradient.addColorStop(0, "rgba(234, 34, 102, 0.55)");
+                        gradient.addColorStop(0.25, "rgba(234, 34, 102, 0.3)");
+                        gradient.addColorStop(0.6, "rgba(234, 34, 102, 0.12)");
+                        gradient.addColorStop(1, "rgba(234, 34, 102, 0)");
+
+                        return gradient;
+                    },
+
+                    fill: true,
+                    tension: 0.25,
+
+                    pointRadius: 3,
+                    pointHoverRadius: 5
                 }
             ]
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
+
             scales: {
                 x: {
                     grid: {
                         display: false
                     }
                 },
+
                 y: {
                     min: 0,
+
                     grid: {
                         display: false
                     },
+
                     grace: "25%"
                 }
             },
+
             layout: {
                 padding: {
                     top: 4,
@@ -451,23 +506,28 @@ function createProgressChart(canvas, title, data, labels, gradient, showTargetLi
                     right: 8
                 }
             },
+
             plugins: {
                 legend: {
                     display: false
                 },
+
                 title: {
                     display: true,
                     text: title,
                     align: "start",
                     color: "floralwhite",
+
                     font: {
                         size: 14
                     },
+
                     padding: {
                         top: 4,
                         bottom: 15
                     }
                 },
+
                 annotation: {
                     annotations: {
                         minTargetLine: {
@@ -479,6 +539,7 @@ function createProgressChart(canvas, title, data, labels, gradient, showTargetLi
                             borderWidth: 2,
                             borderDash: [6, 6]
                         },
+
                         maxTargetLine: {
                             display: showTargetLines,
                             type: "line",
@@ -493,17 +554,4 @@ function createProgressChart(canvas, title, data, labels, gradient, showTargetLi
             }
         }
     });
-}
-
-function createChartFillGradient(canvas) {
-    const context = canvas.getContext("2d");
-
-    const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
-
-    gradient.addColorStop(0, "rgba(234, 34, 102, 0.3)");
-    gradient.addColorStop(0.25, "rgba(234, 34, 102, 0.1)");
-    gradient.addColorStop(0.5, "rgba(234, 34, 102, 0.02)");
-    gradient.addColorStop(1, "rgba(234, 34, 102, 0)");
-
-    return gradient;
 }
