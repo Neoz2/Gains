@@ -202,7 +202,14 @@ function createPeriodKey(startedAt) {
     return {
         day: `${year}-${month}-${day}`,
         week: `${mondayYear}-${mondayMonth}-${mondayDay}`,
-        month: `${year}-${month}`
+        month: `${year}-${month}`,
+
+        dayLabel: formatWorkoutDate(date),
+        weekLabel: formatWorkoutDate(monday),
+        monthLabel: date.toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric"
+        })
     };
 }
 
@@ -267,8 +274,10 @@ function filterHighestInPeriod(points) {
                 }
             }
 
-            filteredWeek.push(bestPoint);
-
+            filteredWeek.push({
+                ...bestPoint,
+                label: week.points[0].periodKey.weekLabel
+            });
         }
 
         return filteredWeek;
@@ -316,7 +325,10 @@ function filterHighestInPeriod(points) {
                 }
             }
 
-            filteredMonth.push(bestPoint);
+            filteredMonth.push({
+                ...bestPoint,
+                label: month.points[0].periodKey.monthLabel
+            });
         }
 
         return filteredMonth;
