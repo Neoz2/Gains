@@ -335,12 +335,24 @@ function createSetRow(setNumber, set, exercise, card) {
 
     minusButton.addEventListener("click", function () {
         showPressFeedback(minusButton);
-        decreaseSetTimeUnderLoad(set, exercise, card);
+        decreaseSetTimeUnderLoad(set, exercise, card)
+            .catch(function (error) {
+                console.error(
+                    "Could not update set time:",
+                    error
+                );
+            });
     });
 
     plusButton.addEventListener("click", function () {
         showPressFeedback(plusButton);
-        increaseSetTimeUnderLoad(set, exercise, card);
+        increaseSetTimeUnderLoad(set, exercise, card)
+            .catch(function (error) {
+                console.error(
+                    "Could not update set time:",
+                    error
+                );
+            });
     });
 
     weightText.append(weightValue, weightKg);

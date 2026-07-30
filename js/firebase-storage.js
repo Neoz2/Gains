@@ -125,6 +125,7 @@ function getCurrentUser() {
 }
 
 async function signOutUser() {
+    await waitForPendingSaves();
     await signOut(auth);
 
     clearLocalAppData();
@@ -150,6 +151,10 @@ function getAppDataRef() {
 
 function subscribeToAuthChanges(callback) {
     return onAuthStateChanged(auth, callback);
+}
+
+async function waitForPendingSaves() {
+    await saveQueue;
 }
 
 // =========================================================
