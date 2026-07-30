@@ -39,7 +39,11 @@ function runWithPressFeedback(element, action, pressDelay = 120, releaseDelay = 
         element.classList.remove("is-pressed");
 
         setTimeout(function () {
-            action();
+            Promise.resolve()
+                .then(action)
+                .catch(function (error) {
+                    console.error("Action failed:", error);
+                });
         }, releaseDelay);
     }, pressDelay);
 }

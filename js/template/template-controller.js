@@ -412,7 +412,7 @@ function createTemplateCardActions(template) {
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
-            deleteTemplate(template.id);
+            return deleteTemplate(template.id);
         });
     });
 

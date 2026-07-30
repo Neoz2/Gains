@@ -49,7 +49,7 @@ function createTemplateOption(template) {
     card.addEventListener("click", function () {
         runWithPressFeedback(card, function () {
             const templateExercises = getExercisesFromTemplate(template);
-            enterWorkoutState(templateExercises);
+            return enterWorkoutState(templateExercises);
         }, 90);
     });
 

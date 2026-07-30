@@ -295,8 +295,7 @@ function createTimerButton(weightInput, bigTimer, exercise, card, timerHeader) {
 
         if (setTimer.currentState === TIMER_STATES.RUNNING) {
             runWithPressFeedback(button, function () {
-                setTimer.currentState = TIMER_STATES.IDLE;
-                stopSetTimer(setTimer, exercise, card, weightInput);
+                return stopSetTimer(setTimer, exercise, card, weightInput);
             })
         }
     });
@@ -329,7 +328,7 @@ function createSetRow(setNumber, set, exercise, card) {
 
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
-            deleteWorkoutSet(setNumber, exercise, card);
+            return deleteWorkoutSet(setNumber, exercise, card);
         }, 80);
     });
 

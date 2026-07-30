@@ -449,7 +449,7 @@ function createExerciseCardActions(exercise) {
     const deleteButton = createActionButton("fa-regular", "fa-trash-can", "Delete");
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
-            deleteExerciseAndCleanTemplates(exercise.id);
+            return deleteExerciseAndCleanTemplates(exercise.id);
         });
     });
 

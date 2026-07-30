@@ -72,8 +72,12 @@ function updateSetTimer(timer, displayElement, formatter) {
     displayElement.textContent = formatter(timer.elapsedSetSeconds);
 }
 
-function stopSetTimer(timer, exercise, card, weightInput) {
-    saveWorkoutSet(exercise, timer.elapsedSetSeconds, weightInput.value);
+async function stopSetTimer(timer, exercise, card, weightInput) {
+    const saved = await saveWorkoutSet(exercise, timer.elapsedSetSeconds, weightInput.value);
+
+    if (!saved) {
+        return;
+    }
 
     timer.currentState = TIMER_STATES.IDLE;
     timer.setStartTime = null;

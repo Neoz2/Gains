@@ -45,7 +45,9 @@ function refreshProgressScreen(mode = null) {
     if (mode === "progress-selection-mode") {
         enterSelectExerciseToAnalyseMode();
     } else {
-        enterGraphsMode();
+        enterGraphsMode().catch(function (error) {
+            console.error("Could not load progress graphs:", error);
+        });
     }
 }
 
@@ -72,7 +74,9 @@ function setupSetButtons() {
             setButtonSelectionStatus(button, buttons);
             selectedSet = Number(buttons[buttonIndex].dataset.setIndex);
 
-            enterGraphsMode();
+            enterGraphsMode().catch(function (error) {
+                console.error("Could not load progress graphs:", error);
+            });
         });
     }
 }
@@ -89,7 +93,9 @@ function setupAggregationButtons() {
             setButtonSelectionStatus(button, buttons);
             selectedAggregation = Number(buttons[buttonIndex].dataset.setIndex);
 
-            enterGraphsMode();
+            enterGraphsMode().catch(function (error) {
+                console.error("Could not load progress graphs:", error);
+            });
         });
     }
 }

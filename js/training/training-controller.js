@@ -121,7 +121,9 @@ function setupWorkoutButtons() {
             finishWorkoutButton.classList.remove("is-holding");
             finishWorkoutButton.textContent = "Finish workout";
 
-            enterEndOfWorkoutMode();
+            enterEndOfWorkoutMode().catch(function (error) {
+                console.error("Could not finish workout:", error);
+            });
         }, 1500);
     });
 
