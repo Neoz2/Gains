@@ -18,7 +18,8 @@ const ROUTES = {
 	"start-training-screen": "#start-training",
 	"create-exercises-screen": "#create-exercises",
 	"create-templates-screen": "#create-templates",
-	"analyse-progress-screen": "#analyse-progress"
+	"analyse-progress-screen": "#analyse-progress",
+	"settings-screen": "#settings"
 };
 
 // =========================================================

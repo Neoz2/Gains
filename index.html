@@ -93,6 +93,15 @@
           </span>
           <i class="fa-solid fa-chevron-right"></i>
         </button>
+
+        <button class="home-nav-item nav-button interactive" data-screen="settings-screen">
+          <i class="fa-solid fa-gear"></i>
+          <span class="home-nav-text">
+            <span>Settings</span>
+            <span>Customize your training preferences</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
       </div>
     </section>
 
@@ -386,6 +395,122 @@
       <div class="graph-exercise-selection-state hidden">
         <span class="content-header">EXERCISES</span>
         <div class="graphs-unselected-items"></div>
+      </div>
+    </section>
+
+    <!-- Setings -->
+    <section id="settings-screen" class="hidden">
+      <button class="back-button interactive">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="page-header">
+        <span id="progress-page-title" class="page-title">Settings</span>
+        <span id="progress-page-subtitle" class="page-subtitle">Customize your training preferences</span>
+      </div>
+
+      <!-- settings page -->
+      <div class="settings-state">
+        <span class="home-nav-header">SETTINGS</span>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-icon">
+              <i class="fa-solid fa-arrows-up-to-line"></i>
+            </div>
+
+            <div class="setting-copy">
+              <span class="setting-text">Maximum TUL target</span>
+              <span class="setting-subtext">Upper target before increasing weight</span>
+            </div>
+          </div>
+
+          <div class="setting-time-adjuster">
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+
+            <div class="setting-time-display">
+              <span class="setting-time-number">70</span>
+              <span class="setting-time-unit">sec</span>
+            </div>
+
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-icon">
+              <i class="fa-solid fa-arrows-down-to-line"></i>
+
+            </div>
+
+            <div class="setting-copy">
+              <span class="setting-text">Minimum TUL target</span>
+              <span class="setting-subtext">Below this means the weight was too heavy</span>
+            </div>
+          </div>
+
+          <div class="setting-time-adjuster">
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+
+            <div class="setting-time-display">
+              <span class="setting-time-number">50</span>
+              <span class="setting-time-unit">sec</span>
+            </div>
+
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-icon">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+
+            <div class="setting-copy">
+              <span class="setting-text">Countdown duration</span>
+              <span class="setting-subtext">Delay before the set timer starts</span>
+            </div>
+          </div>
+
+          <div class="setting-time-adjuster">
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+
+            <div class="setting-time-display">
+              <span class="setting-time-number">10</span>
+              <span class="setting-time-unit">sec</span>
+            </div>
+
+            <button class="setting-adjust-button" type="button">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <button id="logout-button" class="setting-row logout-setting" type="button">
+          <div class="setting-left">
+            <div class="setting-icon">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+
+            <div class="setting-copy">
+              <span class="setting-text">Log out</span>
+              <span class="setting-subtext">Sign out of your account</span>
+            </div>
+          </div>
+
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
       </div>
     </section>
 
