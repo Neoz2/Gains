@@ -651,22 +651,16 @@ main {
   margin-top: 20px;
 }
 
-.home-welcome-block i {
-  width: 60px;
-  height: 60px;
+.home-welcome-block img {
+  width: 80px;
+  height: 80px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
-
-  color: var(--primary-color);
-  background: var(--border-color);
-  border-radius: var(--radius-pill);
-  border: 2px solid var(--primary-color);
-
-  font-size: 35px;
+  margin-right: 10px;
 }
 
 .home-welcome-block-text {

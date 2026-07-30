@@ -195,28 +195,76 @@ function createWeightInputRow(exercise, card) {
 
 function createWeightInput(exercise) {
     const nextSetNumber = exercise.sets.length + 1;
-    const ignoredWorkoutId = appState.activeWorkout === null ? null : appState.activeWorkout.id;
-    const lastSet = getSetOfLastSession(exercise, nextSetNumber, ignoredWorkoutId);
+    const ignoredWorkoutId =
+        appState.activeWorkout === null
+            ? null
+            : appState.activeWorkout.id;
 
-    const weightInput = createElement("input", "workout-weight-input");
-    weightInput.type = "number";
-    weightInput.min = "0";
+    const lastSet = getSetOfLastSession(
+        exercise,
+        nextSetNumber,
+        ignoredWorkoutId
+    );
+
+    const weightInput = createElement(
+        "input",
+        "workout-weight-input"
+    );
+
+    weightInput.type = "text";
+    weightInput.inputMode = "decimal";
     weightInput.placeholder = "-";
+    weightInput.autocomplete = "off";
 
     if (lastSet !== null) {
-        weightInput.value = lastSet.weight;
+        weightInput.value = String(lastSet.weight).replace(".", ",");
     }
 
     weightInput.addEventListener("input", function () {
-        if (!weightInput.validity.valid) {
+        let value = weightInput.value;
+
+        value = value.replace(/[^0-9.,]/g, "");
+
+        const separatorIndex = value.search(/[.,]/);
+
+        if (separatorIndex !== -1) {
+            const wholePart = value.slice(0, separatorIndex);
+            const decimalPart = value.slice(separatorIndex + 1).replace(/[.,]/g, "");
+
+            value = wholePart + value[separatorIndex] + decimalPart;
+        }
+
+        weightInput.value = value;
+    });
+
+    weightInput.addEventListener("blur", function () {
+        const numericWeight = getNumericWeight(weightInput.value);
+
+        if (numericWeight === null) {
             weightInput.value = "";
+            return;
         }
-        if (weightInput.value !== "") {
-            weightInput.value = parseInt(weightInput.value);
-        }
+
+        weightInput.value = String(numericWeight).replace(".", ",");
     });
 
     return weightInput;
+}
+
+function getNumericWeight(value) {
+    const normalizedValue = value.trim().replace(",", ".");
+
+    if (normalizedValue === "") {
+        return null;
+    }
+
+    const numericWeight = Number(normalizedValue);
+
+    if (!Number.isFinite(numericWeight) || numericWeight < 0) {
+        return null;
+    }
+
+    return numericWeight;
 }
 
 function createTimerButton(weightInput, bigTimer, exercise, card, timerHeader) {
