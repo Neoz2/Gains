@@ -482,14 +482,16 @@ function createProgressChart(canvas, title, data, labels, showTargetLines) {
 
             scales: {
                 x: {
+
+                    ticks: {
+                        display: false
+                    },
                     grid: {
                         display: false
                     }
                 },
 
                 y: {
-                    min: 0,
-
                     grid: {
                         display: false
                     },

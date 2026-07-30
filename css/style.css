@@ -1487,7 +1487,7 @@ main {
 }
 
 .graphs-state {
-  height: calc(100dvh - 210px);
+  height: calc(100dvh - 180px);
   display: flex;
   flex-direction: column;
   min-height: 0;
