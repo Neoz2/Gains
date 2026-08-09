@@ -38,6 +38,7 @@ function setupProgressController() {
     setupExerciseDropdownButton();
     setupSetButtons();
     setupAggregationButtons();
+    setupExerciseSwipe();
     setupProgressModes();
 }
 
@@ -100,6 +101,40 @@ function setupAggregationButtons() {
     }
 }
 
+function setupExerciseSwipe() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    progressGraphState.addEventListener("touchstart", function (event) {
+        touchStartX = event.changedTouches[0].screenX;
+        touchStartY = event.changedTouches[0].screenY;
+    });
+
+    progressGraphState.addEventListener("touchend", function (event) {
+        const touchEndX = event.changedTouches[0].screenX;
+        const touchEndY = event.changedTouches[0].screenY;
+
+        const horizontalDistance = touchEndX - touchStartX;
+        const verticalDistance = touchEndY - touchStartY;
+
+        const minimumSwipeDistance = 50;
+
+        if (Math.abs(horizontalDistance) < minimumSwipeDistance) {
+            return;
+        }
+
+        if (Math.abs(verticalDistance) > Math.abs(horizontalDistance)) {
+            return;
+        }
+
+        if (horizontalDistance < 0) {
+            switchProgressExercise(1);
+        } else {
+            switchProgressExercise(-1);
+        }
+    });
+}
+
 // --- Modes --- //
 
 function showProgressMode(mode) {
@@ -143,6 +178,42 @@ async function enterGraphsMode() {
 function enterSelectExerciseToAnalyseMode() {
     renderAvailableExercisesForGraphs();
     showProgressMode("progress-selection-mode");
+}
+
+// --- Swipe action --- //
+
+async function switchProgressExercise(direction) {
+    const exercises = loadExercises();
+
+    if (exercises.length === 0) {
+        return;
+    }
+
+    const selectedExerciseId = loadSelectedProgressExerciseId();
+
+    let currentIndex = exercises.findIndex(function (exercise) {
+        return exercise.id === selectedExerciseId;
+    });
+
+    if (currentIndex === -1) {
+        currentIndex = 0;
+    }
+
+    let newIndex = currentIndex + direction;
+
+    if (newIndex < 0) {
+        newIndex = exercises.length - 1;
+    }
+
+    if (newIndex >= exercises.length) {
+        newIndex = 0;
+    }
+
+    await saveSelectedProgressExerciseId(
+        exercises[newIndex].id
+    );
+
+    await enterGraphsMode();
 }
 
 // --- Helpers --- //
