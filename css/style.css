@@ -1082,6 +1082,22 @@ main {
   border: none;
 }
 
+.workout-set-weight-input {
+    width: 40px;
+    padding: 0;
+
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--primary-color);
+
+    color: var(--text-color);
+    font: inherit;
+    font-weight: inherit;
+    text-align: center;
+
+    outline: none;
+}
+
 /* ---------- Set rows ---------- */
 
 .workout-set-row {

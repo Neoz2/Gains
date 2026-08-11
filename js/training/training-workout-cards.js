@@ -107,6 +107,58 @@ function openSelectedWorkoutCard(card, exerciseIndex) {
     closeAllWorkoutCardsExcept(card);
 }
 
+function createSetWeightInput(
+    weightText,
+    set,
+    exercise,
+    card
+) {
+    const input = document.createElement("input");
+
+    input.type = "text";
+    input.inputMode = "decimal";
+    input.value = String(set.weight).replace(".", ",");
+    input.classList.add("workout-set-weight-input");
+
+    weightText.replaceWith(input);
+
+    input.focus();
+    input.select();
+
+    input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            input.blur();
+        }
+    });
+
+    input.addEventListener("blur", async function () {
+        const newWeight = getNumericWeight(input.value);
+
+        if (newWeight === null) {
+            renderWorkoutSets(exercise, card);
+            return;
+        }
+
+        if (newWeight === set.weight) {
+            renderWorkoutSets(exercise, card);
+            return;
+        }
+
+        set.weight = newWeight;
+
+        renderWorkoutSets(exercise, card);
+
+        try {
+            await updateWorkout(appState.activeWorkout);
+        } catch (error) {
+            console.error(
+                "Could not update set weight:",
+                error
+            );
+        }
+    });
+}
+
 // --- DOM builders --- //
 
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
@@ -320,11 +372,20 @@ function createSetRow(setNumber, set, exercise, card) {
 
     const deleteButton = createIconButton("fa-regular", "fa-trash-can", "workout-set-delete-button");
     const setNumberText = createText(`Set ${setNumber}`, "workout-set-muted", "workout-set-index");
-    const weightValue = createText(set.weight, "workout-set-value");
+    const weightValue = createText(set.weight, "workout-set-value", "editable-set-weight");
     const weightKg = createText("kg", "workout-set-muted");
     const timeUnderLoadText = createText(formatTimer(set.timeUnderLoad), "workout-set-value");
     const plusButton = createIconButton("fa-solid", "fa-plus", "workout-set-action-button");
     const minusButton = createIconButton("fa-solid", "fa-minus", "workout-set-action-button");
+
+    weightValue.addEventListener("click", function () {
+        createSetWeightInput(
+            weightValue,
+            set,
+            exercise,
+            card
+        );
+    });
 
     deleteButton.addEventListener("click", function () {
         runWithPressFeedback(deleteButton, function () {
