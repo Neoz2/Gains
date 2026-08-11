@@ -1,5 +1,7 @@
 //training-workout-session.js
 
+let setTimeSaveTimeout = null;
+
 // --- Workout lifecycle --- //
 
 async function enterWorkoutState(exercises) {
@@ -23,15 +25,35 @@ async function enterEndOfWorkoutMode() {
         return;
     }
 
-    appState.activeWorkout.finishedAt = new Date().toISOString();
+    const workout = appState.activeWorkout;
 
-    await updateWorkout(appState.activeWorkout);
+    if (!workoutHasRecordedSets(workout)) {
+        await deleteWorkout(workout.id);
+
+        stopTimerInterval(workoutSessionTimer);
+
+        appState.activeWorkout = null;
+
+        navigateToScreen(
+            "start-training-screen",
+            "training-end-of-workout-mode"
+        );
+
+        return;
+    }
+
+    workout.finishedAt = new Date().toISOString();
+
+    await updateWorkout(workout);
 
     stopTimerInterval(workoutSessionTimer);
 
     appState.activeWorkout = null;
 
-    navigateToScreen("start-training-screen", "training-end-of-workout-mode");
+    navigateToScreen(
+        "start-training-screen",
+        "training-end-of-workout-mode"
+    );
 }
 
 // --- Mutate actions --- //
@@ -104,7 +126,7 @@ async function deleteWorkoutSet(setNumber, exercise, card) {
     renderWorkoutSets(exercise, card);
 }
 
-async function decreaseSetTimeUnderLoad(set, exercise, card) {
+function decreaseSetTimeUnderLoad(set, exercise, card) {
     if (set.timeUnderLoad <= 0) {
         return;
     }
@@ -112,12 +134,34 @@ async function decreaseSetTimeUnderLoad(set, exercise, card) {
     set.timeUnderLoad -= 1;
     renderWorkoutSets(exercise, card);
 
-    await updateWorkout(appState.activeWorkout);
+    scheduleSetTimeSave();
 }
 
-async function increaseSetTimeUnderLoad(set, exercise, card) {
+function increaseSetTimeUnderLoad(set, exercise, card) {
     set.timeUnderLoad += 1;
     renderWorkoutSets(exercise, card);
 
-    await updateWorkout(appState.activeWorkout);
+    scheduleSetTimeSave();
+}
+
+function scheduleSetTimeSave() {
+    clearTimeout(setTimeSaveTimeout);
+
+    setTimeSaveTimeout = setTimeout(function () {
+        setTimeSaveTimeout = null;
+
+        updateWorkout(appState.activeWorkout)
+            .catch(function (error) {
+                console.error(
+                    "Could not save set time:",
+                    error
+                );
+            });
+    }, 1000);
+}
+
+function workoutHasRecordedSets(workout) {
+    return workout.exercises.some(function (exercise) {
+        return exercise.sets.length > 0;
+    });
 }

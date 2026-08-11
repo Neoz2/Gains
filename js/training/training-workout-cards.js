@@ -105,6 +105,39 @@ function openSelectedWorkoutCard(card, exerciseIndex) {
 
     openWorkoutCard(card);
     closeAllWorkoutCardsExcept(card);
+
+    requestAnimationFrame(function () {
+        scrollWorkoutCardIntoView(card);
+    });
+}
+
+function scrollWorkoutCardIntoView(card) {
+    const rect = card.getBoundingClientRect();
+
+    const topPadding = 10;
+    const bottomPadding = 190;
+
+    const visibleBottom =
+        window.innerHeight - bottomPadding;
+
+    if (rect.bottom > visibleBottom) {
+        const scrollAmount =
+            rect.bottom - visibleBottom;
+
+        window.scrollBy({
+            top: scrollAmount,
+            behavior: "smooth"
+        });
+
+        return;
+    }
+
+    if (rect.top < topPadding) {
+        window.scrollBy({
+            top: rect.top - topPadding,
+            behavior: "smooth"
+        });
+    }
 }
 
 function createSetWeightInput(
@@ -395,24 +428,12 @@ function createSetRow(setNumber, set, exercise, card) {
 
     minusButton.addEventListener("click", function () {
         showPressFeedback(minusButton);
-        decreaseSetTimeUnderLoad(set, exercise, card)
-            .catch(function (error) {
-                console.error(
-                    "Could not update set time:",
-                    error
-                );
-            });
+        decreaseSetTimeUnderLoad(set, exercise, card);
     });
 
     plusButton.addEventListener("click", function () {
         showPressFeedback(plusButton);
-        increaseSetTimeUnderLoad(set, exercise, card)
-            .catch(function (error) {
-                console.error(
-                    "Could not update set time:",
-                    error
-                );
-            });
+        increaseSetTimeUnderLoad(set, exercise, card);
     });
 
     weightText.append(weightValue, weightKg);

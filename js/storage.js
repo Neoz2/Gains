@@ -173,6 +173,20 @@ async function saveWorkouts(workouts) {
     return saveItems(STORAGE_KEYS.workouts, workouts);
 }
 
+async function deleteWorkout(workoutId) {
+    const workouts = loadWorkouts();
+
+    const updatedWorkouts = workouts.filter(function (workout) {
+        return workout.id !== workoutId;
+    });
+
+    if (updatedWorkouts.length === workouts.length) {
+        return;
+    }
+
+    await saveWorkouts(updatedWorkouts);
+}
+
 async function addWorkout(workout) {
     const workouts = loadWorkouts();
     workouts.push(workout);
