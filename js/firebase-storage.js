@@ -51,31 +51,20 @@ let saveQueue = Promise.resolve();
 // =========================================================
 
 async function setupFirebaseSync() {
-    await retryPendingFirebaseWrites();
+    const syncPromise =
+        loadFirebaseAppData();
 
-    const exercises =
-        await loadCollectionFromFirebase(
-            "exercises"
+    const appData =
+        await withTimeout(
+            syncPromise,
+            4000
         );
-
-    const templates =
-        await loadCollectionFromFirebase(
-            "templates"
-        );
-
-    const workouts =
-        await loadCollectionFromFirebase(
-            "workouts"
-        );
-
-    const appData = {
-        exercises: exercises,
-        templates: templates,
-        workouts: workouts
-    };
 
     validateAppData(appData);
-    saveAppDataToLocalStorage(appData);
+
+    saveAppDataToLocalStorage(
+        appData
+    );
 }
 
 // =========================================================
@@ -104,15 +93,16 @@ function getCurrentUser() {
 
 async function signOutUser() {
     try {
-        await waitForPendingSaves();
+        await withTimeout(
+            saveQueue,
+            3000
+        );
     } catch (error) {
-        console.error(
-            "Pending Firebase save failed:",
+        console.warn(
+            "Signing out with unsynced Firebase writes:",
             error
         );
     }
-
-    await retryPendingFirebaseWrites();
 
     await signOut(auth);
 
@@ -224,20 +214,12 @@ function saveDocumentToFirebase(
         pendingWrite
     );
 
-    return queueFirebaseWrite(
+    queuePendingWriteInBackground(
         user,
-        async function () {
-            await performPendingWrite(
-                user,
-                pendingWrite
-            );
-
-            removePendingWrite(
-                user.uid,
-                pendingWrite.id
-            );
-        }
+        pendingWrite
     );
+
+    return Promise.resolve();
 }
 
 function deleteDocumentFromFirebase(
@@ -266,20 +248,12 @@ function deleteDocumentFromFirebase(
         pendingWrite
     );
 
-    return queueFirebaseWrite(
+    queuePendingWriteInBackground(
         user,
-        async function () {
-            await performPendingWrite(
-                user,
-                pendingWrite
-            );
-
-            removePendingWrite(
-                user.uid,
-                pendingWrite.id
-            );
-        }
+        pendingWrite
     );
+
+    return Promise.resolve();
 }
 
 async function loadCollectionFromFirebase(collectionName) {
@@ -460,12 +434,14 @@ async function performPendingWrite(
     );
 }
 
-async function retryPendingFirebaseWrites() {
+function retryPendingFirebaseWrites() {
     const user = currentUser;
 
     if (user === null) {
-        throw new Error(
-            "Cannot retry writes without logged-in user"
+        return Promise.reject(
+            new Error(
+                "Cannot retry writes without logged-in user"
+            )
         );
     }
 
@@ -473,18 +449,90 @@ async function retryPendingFirebaseWrites() {
         loadPendingWrites(user.uid);
 
     for (let i = 0; i < pendingWrites.length; i++) {
-        const pendingWrite = pendingWrites[i];
-
-        await performPendingWrite(
+        queuePendingWrite(
             user,
-            pendingWrite
-        );
-
-        removePendingWrite(
-            user.uid,
-            pendingWrite.id
+            pendingWrites[i]
         );
     }
+
+    return saveQueue;
+}
+
+function queuePendingWrite(user, pendingWrite) {
+    return queueFirebaseWrite(
+        user,
+        async function () {
+            await performPendingWrite(
+                user,
+                pendingWrite
+            );
+
+            removePendingWrite(
+                user.uid,
+                pendingWrite.id
+            );
+        }
+    );
+}
+
+function queuePendingWriteInBackground(
+    user,
+    pendingWrite
+) {
+    queuePendingWrite(
+        user,
+        pendingWrite
+    ).catch(function (error) {
+        console.warn(
+            "Firebase sync delayed:",
+            error
+        );
+    });
+}
+
+function withTimeout(promise, milliseconds) {
+    return new Promise(function (resolve, reject) {
+        const timeoutId = setTimeout(function () {
+            reject(
+                new Error("Firebase sync timed out")
+            );
+        }, milliseconds);
+
+        promise
+            .then(function (value) {
+                clearTimeout(timeoutId);
+                resolve(value);
+            })
+            .catch(function (error) {
+                clearTimeout(timeoutId);
+                reject(error);
+            });
+    });
+}
+
+async function loadFirebaseAppData() {
+    await retryPendingFirebaseWrites();
+
+    const exercises =
+        await loadCollectionFromFirebase(
+            "exercises"
+        );
+
+    const templates =
+        await loadCollectionFromFirebase(
+            "templates"
+        );
+
+    const workouts =
+        await loadCollectionFromFirebase(
+            "workouts"
+        );
+
+    return {
+        exercises: exercises,
+        templates: templates,
+        workouts: workouts
+    };
 }
 
 // =========================================================

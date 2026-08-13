@@ -77,19 +77,26 @@ function showLoggedOutApp() {
 }
 
 async function showLoggedInApp() {
-	await firebaseStorage.setupFirebaseSync();
+    try {
+        await firebaseStorage.setupFirebaseSync();
+    } catch (error) {
+        console.error(
+            "Could not sync Firebase. Using local data:",
+            error
+        );
+    }
 
-	if (!authenticatedControllersReady) {
-		setupTrainingController();
-		setupExerciseController();
-		setupTemplateController();
-		setupProgressController();
+    if (!authenticatedControllersReady) {
+        setupTrainingController();
+        setupExerciseController();
+        setupTemplateController();
+        setupProgressController();
 
-		authenticatedControllersReady = true;
-	}
+        authenticatedControllersReady = true;
+    }
 
-	showBottomNav();
-	restoreActiveWorkout();
+    showBottomNav();
+    restoreActiveWorkout();
 
 	if (hasActiveWorkout()) {
 		history.replaceState(
