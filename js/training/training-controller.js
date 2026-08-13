@@ -229,7 +229,5 @@ function restoreActiveWorkout() {
         return workout.finishedAt === null;
     });
 
-    if (activeWorkout !== undefined) {
-        appState.activeWorkout = activeWorkout;
-    }
+    appState.activeWorkout = activeWorkout === undefined ? null : activeWorkout;
 }

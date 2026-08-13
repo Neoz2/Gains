@@ -68,10 +68,12 @@ async function handleAuthState(user) {
 }
 
 function showLoggedOutApp() {
-	hideBottomNav();
+    resetUserRuntimeState();
 
-	replaceScreenInHistory("login-screen");
-	showScreen("login-screen");
+    hideBottomNav();
+
+    replaceScreenInHistory("login-screen");
+    showScreen("login-screen");
 }
 
 async function showLoggedInApp() {
@@ -118,4 +120,26 @@ async function showLoggedInApp() {
 	);
 
 	showScreen("home-screen");
+}
+
+// =========================================================
+// Helpers
+// =========================================================
+
+function resetUserRuntimeState() {
+    appState.editingExerciseId = null;
+    appState.editingTemplateId = null;
+
+    appState.templateSelectedExercises = [];
+    appState.templateUnselectedExercises = [];
+
+    appState.workoutSelectedExercises = [];
+    appState.workoutUnselectedExercises = [];
+
+    appState.activeWorkout = null;
+    appState.activeSetTimer = false;
+
+    cancelPendingSetTimeSave();
+    stopTimerInterval(workoutSessionTimer);
+    cancelFinishWorkoutHold();
 }

@@ -119,22 +119,43 @@ async function saveTemplateFromForm() {
         return;
     }
 
-    const exerciseIds = getExerciseIdsFromSelectedExercises(appState.templateSelectedExercises);
-    const templateWasSaved = saveTemplateToList(templates, templateName, exerciseIds);
+    const exerciseIds =
+        getExerciseIdsFromSelectedExercises(
+            appState.templateSelectedExercises
+        );
 
-    if (!templateWasSaved) {
+    const savedTemplate = saveTemplateToList(
+        templates,
+        templateName,
+        exerciseIds
+    );
+
+    if (savedTemplate === null) {
         return;
     }
 
-    await saveTemplates(templates);
+    await saveTemplate(
+        templates,
+        savedTemplate
+    );
+
     resetTemplateFormAndShowOverview();
 }
 
-function saveTemplateToList(templates, templateName, exerciseIds) {
+function saveTemplateToList(
+    templates,
+    templateName,
+    exerciseIds
+) {
     if (appState.editingTemplateId === null) {
-        const template = createTemplate(templateName, exerciseIds);
+        const template = createTemplate(
+            templateName,
+            exerciseIds
+        );
+
         templates.push(template);
-        return true;
+
+        return template;
     }
 
     const templateIndex = templates.findIndex(function (template) {
@@ -142,18 +163,20 @@ function saveTemplateToList(templates, templateName, exerciseIds) {
     });
 
     if (templateIndex === -1) {
-        return false;
+        return null;
     }
 
     const existingTemplate = templates[templateIndex];
 
-    templates[templateIndex] = {
+    const updatedTemplate = {
         ...existingTemplate,
         name: templateName,
         exerciseIds: exerciseIds
     };
 
-    return true;
+    templates[templateIndex] = updatedTemplate;
+
+    return updatedTemplate;
 }
 
 async function deleteTemplate(templateId) {
@@ -163,7 +186,15 @@ async function deleteTemplate(templateId) {
         return template.id !== templateId;
     });
 
-    await saveTemplates(updatedTemplates);
+    saveItemsToLocalStorage(
+        STORAGE_KEYS.templates,
+        updatedTemplates
+    );
+
+    await firebaseStorage.deleteTemplateFromFirebase(
+        templateId
+    );
+
     renderTemplateOverview();
 }
 

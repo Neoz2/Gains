@@ -141,21 +141,23 @@ async function saveExerciseFromForm() {
         return;
     }
 
-    const exerciseWasSaved = saveExerciseToList(exercises, exerciseName, settings);
+    const savedExercise = saveExerciseToList(exercises, exerciseName, settings);
 
-    if (!exerciseWasSaved) {
+    if (savedExercise === null) {
         return;
     }
 
-    await saveExercises(exercises);
+    await saveExercise(exercises, savedExercise);
     resetExerciseFormAndShowOverview();
 }
 
 function saveExerciseToList(exercises, exerciseName, settings) {
     if (appState.editingExerciseId === null) {
         const exercise = createExercise(exerciseName, settings);
+
         exercises.push(exercise);
-        return true;
+
+        return exercise;
     }
 
     const exerciseIndex = exercises.findIndex(function (exercise) {
@@ -163,18 +165,20 @@ function saveExerciseToList(exercises, exerciseName, settings) {
     });
 
     if (exerciseIndex === -1) {
-        return false;
+        return null;
     }
 
     const existingExercise = exercises[exerciseIndex];
 
-    exercises[exerciseIndex] = {
+    const updatedExercise = {
         ...existingExercise,
         name: exerciseName,
         settings: settings
     };
 
-    return true;
+    exercises[exerciseIndex] = updatedExercise;
+
+    return updatedExercise;
 }
 
 async function deleteExerciseAndCleanTemplates(exerciseId) {
@@ -185,13 +189,45 @@ async function deleteExerciseAndCleanTemplates(exerciseId) {
         return exercise.id !== exerciseId;
     });
 
-    const updatedTemplates = removeExerciseIdFromTemplates(templates, exerciseId);
+    const affectedTemplateIds = templates
+        .filter(function (template) {
+            return template.exerciseIds.includes(
+                exerciseId
+            );
+        })
+        .map(function (template) {
+            return template.id;
+        });
 
-    saveItemsToLocalStorage(STORAGE_KEYS.exercises, updatedExercises);
-    saveItemsToLocalStorage(STORAGE_KEYS.templates, updatedTemplates);
+    const updatedTemplates =
+        removeExerciseIdFromTemplates(
+            templates,
+            exerciseId
+        );
 
-    const appData = firebaseStorage.createAppDataFromLocalStorage();
-    await firebaseStorage.saveAllToFirebase(appData);
+    saveItemsToLocalStorage(
+        STORAGE_KEYS.exercises,
+        updatedExercises
+    );
+
+    saveItemsToLocalStorage(
+        STORAGE_KEYS.templates,
+        updatedTemplates
+    );
+
+    await firebaseStorage.deleteExerciseFromFirebase(
+        exerciseId
+    );
+
+    for (let i = 0; i < updatedTemplates.length; i++) {
+        const template = updatedTemplates[i];
+
+        if (affectedTemplateIds.includes(template.id)) {
+            await firebaseStorage.saveTemplateToFirebase(
+                template
+            );
+        }
+    }
 
     renderExerciseOverview();
 }

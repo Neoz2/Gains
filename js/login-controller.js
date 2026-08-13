@@ -33,6 +33,7 @@ async function startAuthProcess() {
 
 async function startSignOutProcess() {
     try {
+        await flushPendingSetTimeSave();
         await firebaseStorage.signOutUser();
     } catch (error) {
         console.error("Could not sign out:", error);
