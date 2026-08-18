@@ -91,6 +91,7 @@ async function showLoggedInApp() {
         setupExerciseController();
         setupTemplateController();
         setupProgressController();
+		setupSettingsController();
 
         authenticatedControllersReady = true;
     }

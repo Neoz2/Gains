@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
     exercises: "gym-app-exercises",
     templates: "gym-app-templates",
     workouts: "gym-app-workouts",
+    settings: "gym-app-settings",
     selectedProgressExerciseId: "gym-app-selected-progress-exercise-id"
 };
 
@@ -92,6 +93,15 @@ function createWorkoutExerciseSet(weight, timeUnderLoad) {
         id: createId(),
         weight: weight,
         timeUnderLoad: timeUnderLoad
+    };
+}
+
+function createDefaultSettings() {
+    return {
+        id: "preferences",
+        minTul: 50,
+        maxTul: 70,
+        countdownSeconds: 10
     };
 }
 
@@ -310,6 +320,56 @@ function getSelectedProgressExercise() {
     }
 
     return exercise;
+}
+
+// =========================================================
+// SETTINGS STORAGE
+// =========================================================
+
+function loadSettings() {
+    const savedSettings =
+        localStorage.getItem(STORAGE_KEYS.settings);
+
+    if (savedSettings === null) {
+        const defaultSettings =
+            createDefaultSettings();
+
+        saveSettingsToLocalStorage(
+            defaultSettings
+        );
+
+        return defaultSettings;
+    }
+
+    const settings =
+        JSON.parse(savedSettings);
+
+    if (
+        settings === null ||
+        typeof settings !== "object" ||
+        Array.isArray(settings)
+    ) {
+        throw new Error(
+            "Invalid local settings data"
+        );
+    }
+
+    return settings;
+}
+
+function saveSettingsToLocalStorage(settings) {
+    localStorage.setItem(
+        STORAGE_KEYS.settings,
+        JSON.stringify(settings)
+    );
+}
+
+async function saveSettings(settings) {
+    saveSettingsToLocalStorage(settings);
+
+    await firebaseStorage.saveSettingsToFirebase(
+        settings
+    );
 }
 
 // =========================================================

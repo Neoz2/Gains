@@ -9,6 +9,7 @@ import {
     getFirestore,
     collection,
     doc,
+    getDoc,
     getDocs,
     setDoc,
     deleteDoc
@@ -167,6 +168,13 @@ function deleteWorkoutFromFirebase(workoutId) {
     );
 }
 
+function saveSettingsToFirebase(settings) {
+    return saveDocumentToFirebase(
+        "settings",
+        settings
+    );
+}
+
 // =========================================================
 // FIREBASE HELPERS
 // =========================================================
@@ -307,9 +315,7 @@ function saveAppDataToLocalStorage(appData) {
     validateAppData(appData);
 
     saveItemsToLocalStorage(STORAGE_KEYS.exercises, appData.exercises);
-
     saveItemsToLocalStorage(STORAGE_KEYS.templates, appData.templates);
-
     saveItemsToLocalStorage(STORAGE_KEYS.workouts, appData.workouts);
 }
 
@@ -665,6 +671,7 @@ window.firebaseStorage = {
     deleteWorkoutFromFirebase,
     deleteTemplateFromFirebase,
     deleteExerciseFromFirebase,
+    saveSettingsToFirebase,
 };
 
 window.dispatchEvent(new Event("firebaseStorageReady"));

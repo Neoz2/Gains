@@ -109,10 +109,7 @@ async function saveWorkoutSet(exercise, elapsedTime, weight) {
         return false;
     }
 
-    const set = createWorkoutExerciseSet(
-        numericWeight,
-        elapsedTime
-    );
+    const set = createWorkoutExerciseSet(numericWeight, elapsedTime);
 
     exercise.sets.push(set);
 
@@ -135,6 +132,7 @@ function decreaseSetTimeUnderLoad(set, exercise, card) {
     }
 
     set.timeUnderLoad -= 1;
+
     renderWorkoutSets(exercise, card);
 
     scheduleSetTimeSave();

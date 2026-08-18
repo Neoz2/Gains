@@ -1709,12 +1709,6 @@ main {
   font-size: 16px;
 }
 
-.setting-adjust-button:active,
-.setting-adjust-button.is-pressed {
-  background: rgba(234, 34, 102, 0.12);
-  transform: scale(0.94);
-}
-
 .setting-time-display {
   display: flex;
   align-items: baseline;

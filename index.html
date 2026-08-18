@@ -425,16 +425,16 @@
           </div>
 
           <div class="setting-time-adjuster">
-            <button class="setting-adjust-button" type="button">
+            <button id="max-tul-minus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-minus"></i>
             </button>
 
             <div class="setting-time-display">
-              <span class="setting-time-number">70</span>
+              <span id="setting-time-number-max" class="setting-time-number">70</span>
               <span class="setting-time-unit">sec</span>
             </div>
 
-            <button class="setting-adjust-button" type="button">
+            <button id="max-tul-plus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
@@ -454,16 +454,16 @@
           </div>
 
           <div class="setting-time-adjuster">
-            <button class="setting-adjust-button" type="button">
+            <button id="min-tul-minus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-minus"></i>
             </button>
 
             <div class="setting-time-display">
-              <span class="setting-time-number">50</span>
+              <span id="setting-time-number-min" class="setting-time-number">50</span>
               <span class="setting-time-unit">sec</span>
             </div>
 
-            <button class="setting-adjust-button" type="button">
+            <button id="min-tul-plus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
@@ -482,16 +482,16 @@
           </div>
 
           <div class="setting-time-adjuster">
-            <button class="setting-adjust-button" type="button">
+            <button id="countdown-minus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-minus"></i>
             </button>
 
             <div class="setting-time-display">
-              <span class="setting-time-number">10</span>
+              <span id="setting-time-number-countdown" class="setting-time-number">10</span>
               <span class="setting-time-unit">sec</span>
             </div>
 
-            <button class="setting-adjust-button" type="button">
+            <button id="countdown-plus-button" class="setting-adjust-button" type="button">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
@@ -545,7 +545,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 
-  <script src="js/mock-data.js"></script>
   <script src="js/login-controller.js?v=6"></script>
   <script src="js/storage.js?v=6"></script>
   <script type="module" src="js/firebase-storage.js?v=1"></script>
@@ -564,6 +563,7 @@
   <script src="js/exercise/exercise-controller.js?v=6"></script>
   <script src="js/template/template-controller.js?v=6"></script>
   <script src="js/progress/progress-controller.js?v=6"></script>
+  <script src="js/settings/settings-controller.js?v=6"></script>
 
   <script src="js/app.js?v=6"></script>
 </body>
