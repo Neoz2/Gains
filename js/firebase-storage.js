@@ -46,6 +46,7 @@ const googleProvider = new GoogleAuthProvider();
 
 let currentUser = null;
 let saveQueue = Promise.resolve();
+let settingsSaveTimeout = null;
 
 // =========================================================
 // FIREBASE CONTROLLER
@@ -191,10 +192,44 @@ function deleteWorkoutFromFirebase(workoutId) {
 }
 
 function saveSettingsToFirebase(settings) {
-    return saveDocumentToFirebase(
-        "settings",
-        settings
+    const user = currentUser;
+
+    if (user === null) {
+        return Promise.reject(
+            new Error(
+                "Cannot save settings without logged-in user"
+            )
+        );
+    }
+
+    const settingsSnapshot =
+        structuredClone(settings);
+
+    const pendingWrite = {
+        id: crypto.randomUUID(),
+        type: "save",
+        collectionName: "settings",
+        documentId: settingsSnapshot.id,
+        data: settingsSnapshot
+    };
+
+    storePendingWrite(
+        user.uid,
+        pendingWrite
     );
+
+    clearTimeout(settingsSaveTimeout);
+
+    settingsSaveTimeout = setTimeout(function () {
+        settingsSaveTimeout = null;
+
+        queuePendingWriteInBackground(
+            user,
+            pendingWrite
+        );
+    }, 500);
+
+    return Promise.resolve();
 }
 
 async function loadSettingsFromFirebase() {

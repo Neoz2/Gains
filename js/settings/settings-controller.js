@@ -157,7 +157,7 @@ function calculate(value) {
     }
 }
 
-async function saveCurrentSettings() {
+function saveCurrentSettings() {
     const settings = {
         id: "preferences",
         minTul: minTulValue,
@@ -165,7 +165,11 @@ async function saveCurrentSettings() {
         countdownSeconds: countdownValue
     };
 
-    await saveSettings(settings);
+    saveSettings(settings)
+        .catch(function (error) {
+            console.error(
+                "Could not save settings:",
+                error
+            );
+        });
 }
-
-
