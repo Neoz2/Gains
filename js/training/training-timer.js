@@ -118,19 +118,21 @@ function startCountdownTimer(timer, button, displayElement, intervalSpeed = 1000
 }
 
 function updateCountdownTimer(timer, button, displayElement, timerHeader) {
+    const settings = loadSettings();
+
     const elapsedMilliseconds = Date.now() - timer.countdownStartTime;
     const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
 
-    if (10 - elapsedSeconds <= 0) {
+    if (settings.countdownSeconds - elapsedSeconds <= 0) {
         timer.remainingCountdownSeconds = 0;
     } else {
-        timer.remainingCountdownSeconds = 10 - elapsedSeconds;
+        timer.remainingCountdownSeconds = settings.countdownSeconds - elapsedSeconds;
     }
 
     displayElement.textContent = timer.remainingCountdownSeconds;
 
     if (timer.remainingCountdownSeconds !== timer.lastPlayedCountdownSecond) {
-        playCountdownSounds(timer.remainingCountdownSeconds);
+        playCountdownSounds(timer.remainingCountdownSeconds, settings);
         timer.lastPlayedCountdownSecond = timer.remainingCountdownSeconds;
     }
 
@@ -186,7 +188,7 @@ function updateWorkoutTimer(timer, displayElement, formatter) {
 // HELPERS
 // =========================================================
 
-function playCountdownSounds(secondsRemaining) {
+function playCountdownSounds(secondsRemaining, settings) {
     if (
         secondsRemaining === 3 ||
         secondsRemaining === 2 ||
@@ -195,7 +197,7 @@ function playCountdownSounds(secondsRemaining) {
         playAudioFromStart(middleBeep);
     }
 
-    if (secondsRemaining === 0) {
+    if (secondsRemaining === 0 && settings.countdownSeconds !== 0) {
         playAudioFromStart(endBeep);
     }
 }

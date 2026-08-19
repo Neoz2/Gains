@@ -34,9 +34,13 @@ function setupSettingsController() {
 // =========================================================
 
 function setupVariables() {
-    maxTulValue = parseInt(maxTulTime.textContent);
-    minTulValue = parseInt(minTulTime.textContent);
-    countdownValue = parseInt(countdownTime.textContent);
+    const settings = loadSettings();
+
+    maxTulValue = settings.maxTul;
+    minTulValue = settings.minTul;
+    countdownValue = settings.countdownSeconds;
+
+    renderSettingsValues();
 }
 
 function setupAddAndSubtractButtons() {
@@ -46,7 +50,8 @@ function setupAddAndSubtractButtons() {
             .withLowerLimit(minTulValue + 5)
             .result();
 
-            maxTulTime.textContent = maxTulValue;
+        renderSettingsValues();
+        saveCurrentSettings();
     })
 
     maxTulPlus.addEventListener("click", function () {
@@ -54,8 +59,9 @@ function setupAddAndSubtractButtons() {
             .add(1)
             .withUpperLimit(300)
             .result();
-            
-            maxTulTime.textContent = maxTulValue;
+
+        renderSettingsValues();
+        saveCurrentSettings();
     })
 
     minTulMinus.addEventListener("click", function () {
@@ -64,7 +70,8 @@ function setupAddAndSubtractButtons() {
             .withLowerLimit(0)
             .result();
 
-            minTulTime.textContent = minTulValue;
+        renderSettingsValues();
+        saveCurrentSettings();
     })
 
     minTulPlus.addEventListener("click", function () {
@@ -73,7 +80,8 @@ function setupAddAndSubtractButtons() {
             .withUpperLimit(maxTulValue - 5)
             .result();
 
-            minTulTime.textContent = minTulValue;
+        renderSettingsValues();
+        saveCurrentSettings();
     })
 
     countdownMinus.addEventListener("click", function () {
@@ -82,7 +90,8 @@ function setupAddAndSubtractButtons() {
             .withLowerLimit(0)
             .result();
 
-            countdownTime.textContent = countdownValue;
+        renderSettingsValues();
+        saveCurrentSettings();
     })
 
     countdownPlus.addEventListener("click", function () {
@@ -91,8 +100,19 @@ function setupAddAndSubtractButtons() {
             .withUpperLimit(60)
             .result();
 
-            countdownTime.textContent = countdownValue;
+        renderSettingsValues();
+        saveCurrentSettings();
     })
+}
+
+// =========================================================
+// RENDERING
+// =========================================================
+
+function renderSettingsValues() {
+    maxTulTime.textContent = maxTulValue;
+    minTulTime.textContent = minTulValue;
+    countdownTime.textContent = countdownValue;
 }
 
 // =========================================================
@@ -137,5 +157,15 @@ function calculate(value) {
     }
 }
 
+async function saveCurrentSettings() {
+    const settings = {
+        id: "preferences",
+        minTul: minTulValue,
+        maxTul: maxTulValue,
+        countdownSeconds: countdownValue
+    };
+
+    await saveSettings(settings);
+}
 
 

@@ -66,6 +66,28 @@ async function setupFirebaseSync() {
     saveAppDataToLocalStorage(
         appData
     );
+
+    let settings = appData.settings;
+
+    if (settings === null) {
+        settings = createDefaultSettings();
+
+        saveSettingsToLocalStorage(
+            settings
+        );
+
+        await saveSettingsToFirebase(
+            settings
+        );
+
+        return;
+    }
+
+    validateSettings(settings);
+
+    saveSettingsToLocalStorage(
+        settings
+    );
 }
 
 // =========================================================
@@ -173,6 +195,32 @@ function saveSettingsToFirebase(settings) {
         "settings",
         settings
     );
+}
+
+async function loadSettingsFromFirebase() {
+    const user = currentUser;
+
+    if (user === null) {
+        throw new Error(
+            "Cannot load settings without logged-in user"
+        );
+    }
+
+    const settingsRef = doc(
+        firestore,
+        "users",
+        user.uid,
+        "settings",
+        "preferences"
+    );
+
+    const snapshot = await getDoc(settingsRef);
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    return snapshot.data();
 }
 
 // =========================================================
@@ -321,6 +369,8 @@ function saveAppDataToLocalStorage(appData) {
 
 function clearLocalAppData() {
     saveAppDataToLocalStorage(createEmptyAppData());
+
+    localStorage.removeItem(STORAGE_KEYS.settings);
 }
 
 function getPendingWritesKey(userId) {
@@ -534,10 +584,14 @@ async function loadFirebaseAppData() {
             "workouts"
         );
 
+    const settings =
+        await loadSettingsFromFirebase();
+
     return {
         exercises: exercises,
         templates: templates,
-        workouts: workouts
+        workouts: workouts,
+        settings: settings
     };
 }
 
@@ -647,6 +701,25 @@ function validateWorkout(workout) {
     ) {
         throw new Error(
             "Invalid Firebase workout"
+        );
+    }
+}
+
+function validateSettings(settings) {
+    if (
+        settings === null ||
+        typeof settings !== "object" ||
+        Array.isArray(settings) ||
+        settings.id !== "preferences" ||
+        !Number.isFinite(settings.minTul) ||
+        !Number.isFinite(settings.maxTul) ||
+        !Number.isFinite(settings.countdownSeconds) ||
+        settings.minTul < 0 ||
+        settings.maxTul < settings.minTul ||
+        settings.countdownSeconds < 0
+    ) {
+        throw new Error(
+            "Invalid Firebase settings"
         );
     }
 }

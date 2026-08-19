@@ -508,6 +508,8 @@ function renderProgressGraphs(selectedExercise, points) {
 }
 
 function createProgressChart(canvas, title, data, labels, showTargetLines) {
+    const settings = loadSettings();
+
     return new Chart(canvas, {
         type: "line",
 
@@ -612,8 +614,8 @@ function createProgressChart(canvas, title, data, labels, showTargetLines) {
                         minTargetLine: {
                             display: showTargetLines,
                             type: "line",
-                            yMin: 50,
-                            yMax: 50,
+                            yMin: settings.minTul,
+                            yMax: settings.minTul,
                             borderColor: "rgba(255, 157, 46, 0.8)",
                             borderWidth: 2,
                             borderDash: [6, 6]
@@ -622,8 +624,8 @@ function createProgressChart(canvas, title, data, labels, showTargetLines) {
                         maxTargetLine: {
                             display: showTargetLines,
                             type: "line",
-                            yMin: 70,
-                            yMax: 70,
+                            yMin: settings.maxTul,
+                            yMax: settings.maxTul,
                             borderColor: "rgba(93, 227, 109, 0.8)",
                             borderWidth: 2,
                             borderDash: [6, 6]

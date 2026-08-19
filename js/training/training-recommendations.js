@@ -1,6 +1,8 @@
 //training-recommendations.js
 
-// --- Recommendation helpers --- //
+// =========================================================
+// RECOMMENDATION HELPERS
+// =========================================================
 
 function getRecommendationForExercise(exercise) {
     const nextSetNumber = exercise.sets.length + 1;
@@ -18,24 +20,26 @@ function getRecommendationForExercise(exercise) {
 }
 
 function createRecommendationConfiguration(timeUnderLoad) {
-    if (timeUnderLoad < 50) {
+    const settings = loadSettings();
+
+    if (timeUnderLoad < settings.minTul) {
         return {
             recommendationState: "bad",
             indicationIconStyle: "fa-arrow-trend-down",
             title: "Decrease weight this workout",
             baseText: "Below ",
-            targetText: "0:50",
+            targetText: formatShortTimer(settings.minTul),
             endText: " minimum"
         };
     }
 
-    if (timeUnderLoad >= 70) {
+    if (timeUnderLoad >= settings.maxTul) {
         return {
             recommendationState: "good",
             indicationIconStyle: "fa-arrow-trend-up",
             title: "Increase weight this workout",
             baseText: "Above ",
-            targetText: "1:10",
+            targetText: formatShortTimer(settings.maxTul),
             endText: " target"
         };
     }
@@ -45,12 +49,14 @@ function createRecommendationConfiguration(timeUnderLoad) {
         indicationIconStyle: "fa-arrow-right-arrow-left",
         title: "Stick to weight this workout",
         baseText: "Within ",
-        targetText: "0:50 - 1:10",
+        targetText: `${formatShortTimer(settings.minTul)} - ${formatShortTimer(settings.maxTul)}`,
         endText: " range"
     };
 }
 
-// --- DOM builders --- //
+// =========================================================
+// DOM BUILDERS
+// =========================================================
 
 function createRecommendationCard(exercise) {
     const recommendation = getRecommendationForExercise(exercise);
@@ -87,4 +93,18 @@ function createRecommendationTextRow(iconType, iconStyle, startText, highlightTe
     container.append(icon, start, highlight, end);
 
     return container;
+}
+
+// =========================================================
+// HELPERS
+// =========================================================
+
+function formatShortTimer(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedSeconds =
+        String(seconds).padStart(2, "0");
+
+    return `${minutes}:${formattedSeconds}`;
 }
