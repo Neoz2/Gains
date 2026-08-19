@@ -151,15 +151,17 @@ function showSelectedScreen(screenId) {
 }
 
 function updateSelectedBottomNavButton(screenId) {
-	const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
+    const bottomNavButtons = document.querySelectorAll(".bottom-nav-item");
 
-	for (let i = 0; i < bottomNavButtons.length; i++) {
-		if (screenId === bottomNavButtons[i].dataset.screen) {
-			bottomNavButtons[i].classList.add("selected");
-		} else {
-			bottomNavButtons[i].classList.remove("selected");
-		}
-	}
+    const selectedScreenId = screenId === "settings-screen" ? "home-screen" : screenId;
+
+    for (let i = 0; i < bottomNavButtons.length; i++) {
+        if (selectedScreenId === bottomNavButtons[i].dataset.screen) {
+            bottomNavButtons[i].classList.add("selected");
+        } else {
+            bottomNavButtons[i].classList.remove("selected");
+        }
+    }
 }
 
 // =========================================================
