@@ -43,16 +43,28 @@ function setupEditWorkoutPicker() {
     const allExercises = loadExercises();
     const activeWorkoutExercises = appState.activeWorkout.exercises;
 
-    for (let exerciseIndex = 0; exerciseIndex < allExercises.length; exerciseIndex++) {
-        const exercise = allExercises[exerciseIndex];
+    for (let i = 0; i < activeWorkoutExercises.length; i++) {
+        const workoutExercise = activeWorkoutExercises[i];
 
-        const exerciseIsInWorkout = activeWorkoutExercises.some(function (workoutExercise) {
-            return workoutExercise.exerciseId === exercise.id;
-        });
+        const exercise = allExercises.find(function (exercise) {
+                return exercise.id === workoutExercise.exerciseId;
+            }
+        );
 
-        if (exerciseIsInWorkout) {
+        if (exercise !== undefined) {
             appState.workoutSelectedExercises.push(exercise);
-        } else {
+        }
+    }
+
+    for (let i = 0; i < allExercises.length; i++) {
+        const exercise = allExercises[i];
+
+        const isSelected = activeWorkoutExercises.some(function (workoutExercise) {
+                    return workoutExercise.exerciseId === exercise.id;
+                }
+            );
+
+        if (!isSelected) {
             appState.workoutUnselectedExercises.push(exercise);
         }
     }

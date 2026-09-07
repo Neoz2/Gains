@@ -220,21 +220,20 @@ async function updateWorkout(updatedWorkout) {
     });
 
     if (workoutIndex === -1) {
-        throw new Error(
-            `Cannot update missing workout: ${updatedWorkout.id}`
-        );
+        throw new Error(`Cannot update missing workout: ${updatedWorkout.id}`);
+    }
+
+    const existingWorkout = workouts[workoutIndex];
+
+    if (existingWorkout.finishedAt !== null) {
+        throw new Error(`Cannot modify finished workout: ${updatedWorkout.id}`);
     }
 
     workouts[workoutIndex] = updatedWorkout;
 
-    saveItemsToLocalStorage(
-        STORAGE_KEYS.workouts,
-        workouts
-    );
+    saveItemsToLocalStorage(STORAGE_KEYS.workouts, workouts);
 
-    await firebaseStorage.saveWorkoutToFirebase(
-        updatedWorkout
-    );
+    await firebaseStorage.saveWorkoutToFirebase(updatedWorkout);
 }
 
 function getDescendingArrayOfWorkouts() {
