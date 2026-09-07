@@ -1403,9 +1403,54 @@ main {
   flex-shrink: 0;
 }
 
-.available-exercise-row span,
-.selected-exercise-row span {
+.available-exercise-row > span {
   flex: 1;
+}
+
+.exercise-picker-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  flex: 1;
+  min-width: 0;
+}
+
+.exercise-picker-content > span {
+  flex: 1;
+}
+
+.drag-handle {
+  width: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 24px;
+
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.sortable-chosen,
+.sortable-drag {
+  transition: none !important;
+}
+
+.sortable-chosen:active,
+.sortable-drag:active {
+  filter: none;
+}
+
+.sortable-ghost {
+  opacity: 0.35;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .selected-exercise-row.locked {

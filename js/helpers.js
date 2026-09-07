@@ -114,3 +114,53 @@ function removeSelectedExercise(exercises, exercise) {
     }
 }
 
+// =========================================================
+// ARRAY SORTING
+// =========================================================
+
+function setupTemplateExerciseSorting(selectedExercisesList) {
+    if (templateExerciseSortable !== null) {
+        templateExerciseSortable.destroy();
+        templateExerciseSortable = null;
+    }
+
+    if (appState.templateSelectedExercises.length < 2) {
+        return;
+    }
+
+    templateExerciseSortable = Sortable.create(selectedExercisesList, {
+        animation: 150,
+        handle: ".drag-handle",
+        forceFallback: true,
+        fallbackOnBody: true,
+        fallbackTolerance: 0,
+
+        onEnd: function (event) {
+            moveArrayItem(
+                appState.templateSelectedExercises,
+                event.oldIndex,
+                event.newIndex
+            );
+        }
+    });
+}
+
+function moveArrayItem(items, fromIndex, toIndex) {
+    if (
+        fromIndex === undefined ||
+        toIndex === undefined ||
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= items.length ||
+        toIndex >= items.length
+    ) {
+        return false;
+    }
+
+    const movedItem = items.splice(fromIndex, 1)[0];
+
+    items.splice(toIndex, 0, movedItem);
+
+    return true;
+}

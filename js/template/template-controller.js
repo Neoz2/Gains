@@ -29,6 +29,7 @@ const templateList = document.getElementById("template-list");
 const TEMPLATE_MODES = [];
 let templateNoSelectedItems = null;
 let templateNoUnselectedItems = null;
+let templateExerciseSortable = null;
 
 // --- Controller entry points --- //
 
@@ -343,8 +344,9 @@ function renderSelectedTemplateExercises() {
         const exercise = appState.templateSelectedExercises[exerciseIndex];
 
         const row = createExercisePickerRow(exercise, true);
+        const content = row.querySelector(".exercise-picker-content");
 
-        row.addEventListener("click", function () {
+        content.addEventListener("click", function () {
             runWithPressFeedback(row, function () {
                 unselectTemplateExercise(exercise);
             }, 60);
@@ -352,6 +354,40 @@ function renderSelectedTemplateExercises() {
 
         selectedExercisesList.append(row);
     }
+
+    setupTemplateExerciseSorting(selectedExercisesList);
+}
+
+// --- Sorting helpers --- //
+
+function setupTemplateExerciseSorting(selectedExercisesList) {
+    if (templateExerciseSortable !== null) {
+        templateExerciseSortable.destroy();
+        templateExerciseSortable = null;
+    }
+
+    if (appState.templateSelectedExercises.length < 2) {
+        return;
+    }
+
+    templateExerciseSortable = Sortable.create(
+        selectedExercisesList,
+        {
+            animation: 150,
+            handle: ".drag-handle",
+
+            delay: 120,
+            delayOnTouchOnly: true,
+
+            onEnd: function (event) {
+                moveArrayItem(
+                    appState.templateSelectedExercises,
+                    event.oldIndex,
+                    event.newIndex
+                );
+            }
+        }
+    );
 }
 
 // --- DOM builders --- //

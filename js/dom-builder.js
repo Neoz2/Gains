@@ -92,16 +92,6 @@ function addClasses(element, classes) {
 
 function createExercisePickerRow(exercise, isSelected) {
 	const row = createButton("interactive-row");
-
-	if (isSelected) {
-		row.classList.add("selected-exercise-row");
-
-		const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
-		row.append(barsIcon);
-	} else {
-		row.classList.add("available-exercise-row");
-	}
-
 	const exerciseName = createText(exercise.name);
 
 	let checkIcon;
@@ -112,7 +102,20 @@ function createExercisePickerRow(exercise, isSelected) {
 		checkIcon = createIcon("fa-regular", "fa-circle", "exercise-picker-status-icon");
 	}
 
-	row.append(exerciseName, checkIcon);
+	if (isSelected) {
+		row.classList.add("selected-exercise-row");
+
+		const dragHandle = createElement("span", "drag-handle");
+		const barsIcon = createIcon("fa-solid", "fa-grip-vertical");
+		const content = createElement("span", "exercise-picker-content");
+
+		dragHandle.append(barsIcon);
+		content.append(exerciseName, checkIcon);
+		row.append(dragHandle, content);
+	} else {
+		row.classList.add("available-exercise-row");
+		row.append(exerciseName, checkIcon);
+	}
 
 	return row;
 }
