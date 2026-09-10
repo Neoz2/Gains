@@ -4,16 +4,87 @@
 const workoutExerciseList = document.getElementById("workout-exercise-list");
 
 let unfoldedWorkoutCardIndex = 0;
+let workoutExerciseSortable = null;
+
+// --- Sorting helpers --- //
+
+function setupWorkoutExerciseSorting(workout) {
+    if (workout.finishedAt !== null || workout.exercises.length < 2) {
+        return;
+    }
+
+    workoutExerciseSortable = Sortable.create(workoutExerciseList, {
+        animation: 150,
+        handle: ".workout-drag-handle",
+        forceFallback: true,
+        fallbackOnBody: true,
+        fallbackTolerance: 0,
+
+        onEnd: function (event) {
+            const wasMoved = moveArrayItem(
+                workout.exercises,
+                event.oldIndex,
+                event.newIndex
+            );
+
+            if (!wasMoved) {
+                return;
+            }
+
+            updateWorkoutExerciseIndexes();
+            updateStoredWorkoutCardIndex();
+
+            updateWorkout(workout).catch(function (error) {
+                console.error(
+                    "Could not save workout order:",
+                    error
+                );
+            });
+        }
+    });
+}
+
+function updateWorkoutExerciseIndexes() {
+    const workoutCards = workoutExerciseList.querySelectorAll(".workout-card");
+
+    for (let cardIndex = 0; cardIndex < workoutCards.length; cardIndex++) {
+        const index = workoutCards[cardIndex].querySelector(".workout-exercise-index");
+
+        if (index !== null) {
+            index.textContent = cardIndex + 1;
+        }
+    }
+}
+
+function updateStoredWorkoutCardIndex() {
+    const workoutCards = workoutExerciseList.querySelectorAll(".workout-card");
+
+    for (let cardIndex = 0; cardIndex < workoutCards.length; cardIndex++) {
+        const inputRow = workoutCards[cardIndex].querySelector(".workout-input-row");
+
+        if (inputRow !== null && !inputRow.classList.contains("hidden")) {
+            unfoldedWorkoutCardIndex = cardIndex;
+            return;
+        }
+    }
+}
 
 // --- Rendering --- //
 
 function renderWorkoutExerciseList(workout) {
+    if (workoutExerciseSortable !== null) {
+        workoutExerciseSortable.destroy();
+        workoutExerciseSortable = null;
+    }
+
     workoutExerciseList.innerHTML = "";
 
     for (let exerciseIndex = 0; exerciseIndex < workout.exercises.length; exerciseIndex++) {
         const exerciseCard = createWorkoutExerciseCard(workout.exercises[exerciseIndex], exerciseIndex);
         workoutExerciseList.append(exerciseCard);
     }
+
+    setupWorkoutExerciseSorting(workout);
 }
 
 function renderWorkoutSets(exercise, card) {
@@ -196,7 +267,10 @@ function createSetWeightInput(
 
 function createWorkoutExerciseCard(exercise, exerciseIndex) {
     const card = createElement("li", "item-card", "workout-card");
-    const dragIcon = createIcon("fa-solid", "fa-grip-vertical", "drag-handle");
+    const dragHandle = createElement("span", "workout-drag-handle");
+    const dragIcon = createIcon("fa-solid", "fa-grip-vertical");
+
+    dragHandle.append(dragIcon);
 
     const content = createElement("div", "workout-card-content");
     const body = createWorkoutExerciseCardBody(exercise, exerciseIndex);
@@ -209,7 +283,7 @@ function createWorkoutExerciseCard(exercise, exerciseIndex) {
     });
 
     content.append(body);
-    card.append(dragIcon, content, details, inputRow);
+    card.append(dragHandle, content, details, inputRow);
 
     renderWorkoutSets(exercise, card);
 

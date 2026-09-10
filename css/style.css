@@ -926,9 +926,29 @@ main {
   grid-column: 1 / -1;
 }
 
-.workout-card>i:first-child {
+.workout-drag-handle {
+  width: 20px;
+  height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.workout-drag-handle i {
   color: var(--muted-text-color);
   font-size: 25px;
+}
+
+.workout-drag-handle:active {
+  cursor: grabbing;
 }
 
 .workout-card-body {
