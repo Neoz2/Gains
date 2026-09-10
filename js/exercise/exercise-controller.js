@@ -353,6 +353,9 @@ function renderEmptySettingsCard() {
 
     if (settingsRows.length === 0) {
         const noSettingRowsState = createText("Add optional machine settings here", "empty-setting-card");
+        noSettingRowsState.addEventListener("click", function(){
+            renderSettingsCards();
+        });
         settingsContainer.append(noSettingRowsState);
     } else {
         const noSettingRowsState = settingsContainer.querySelector(".empty-setting-card");
