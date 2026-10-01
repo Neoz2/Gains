@@ -43,6 +43,10 @@ function setupProgressController() {
 }
 
 function refreshProgressScreen(mode = null) {
+    if (mode === null) {
+        selectActiveWorkoutExerciseForProgress();
+    }
+
     if (mode === "progress-selection-mode") {
         enterSelectExerciseToAnalyseMode();
     } else {
@@ -432,6 +436,21 @@ function showProgressChartContent() {
 function showProgressEmptyContent() {
     progressChartContent.classList.add("hidden");
     progressEmptyState.classList.remove("hidden");
+}
+
+function selectActiveWorkoutExerciseForProgress() {
+    if (appState.activeWorkout === null) {
+        return;
+    }
+
+    const workoutExercise =
+        appState.activeWorkout.exercises[unfoldedWorkoutCardIndex];
+
+    if (workoutExercise === undefined) {
+        return;
+    }
+
+    saveSelectedProgressExerciseId(workoutExercise.exerciseId);
 }
 
 // --- Rendering --- //
