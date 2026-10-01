@@ -135,6 +135,9 @@ function setupTemplateExerciseSorting(selectedExercisesList) {
         fallbackOnBody: true,
         fallbackTolerance: 0,
 
+        delay: 80,
+        delayOnTouchOnly: true,
+
         onEnd: function (event) {
             moveArrayItem(
                 appState.templateSelectedExercises,

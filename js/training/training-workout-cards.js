@@ -20,6 +20,9 @@ function setupWorkoutExerciseSorting(workout) {
         fallbackOnBody: true,
         fallbackTolerance: 0,
 
+        delay: 80,
+        delayOnTouchOnly: true,
+
         onEnd: function (event) {
             const wasMoved = moveArrayItem(
                 workout.exercises,
